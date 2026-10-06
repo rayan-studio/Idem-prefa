@@ -1,0 +1,310 @@
+<?php
+
+/** @var array<string, mixed> $row */
+/** @var bool $canViewAllPrefa */
+/** @var bool $isAdmin */
+/** @var array<int, array<int, array<string, mixed>>> $attachmentsByRequest */
+/** @var array<int, array<int, array<string, mixed>>> $qmosByRequest */
+/** @var array<int, array<int, array<string, mixed>>> $dmosByRequest */
+
+$requestId = (int) $row['id'];
+
+$documentGroups = [
+    [
+        'title' => 'Plans BPE / ISO',
+        'files' => $attachmentsByRequest[$requestId] ?? [],
+        'action' => 'download_prefa_attachment.php',
+        'legacy' => $row['plan_bpe_iso'] ?? '',
+    ],
+    [
+        'title' => 'QMOS',
+        'files' => $qmosByRequest[$requestId] ?? [],
+        'action' => 'download_qmos.php',
+        'legacy' => $row['QMOS'] ?? '',
+    ],
+    [
+        'title' => 'DMOS',
+        'files' => $dmosByRequest[$requestId] ?? [],
+        'action' => 'download_dmos.php',
+        'legacy' => '',
+    ],
+];
+
+$materialAvailability = match ($row['matiere_disponibilite'] ?? '') {
+    'stock' => 'En stock',
+    'commande' => 'À commander',
+    default => 'Non précisée',
+};
+
+$facts = [
+    'Statut' => $row['libelle'],
+    'Pouces ISO' => $row['pouces_total_iso'],
+
+    'Durée estimée (jours)' =>
+        number_format((float) $row['heures_chiffrees'] / 24, 2, ',', ' ') . ' j',
+
+    'Date limite de livraison de la préfabrication' =>
+        prefaFormatDate($row['date_livraison_prevue']),
+
+    'Matière' =>
+        $row['matiere_libelle'] ?? 'Non précisée',
+
+    'Disponibilité matière' =>
+        $materialAvailability,
+
+    'Passivation' =>
+        $row['passivation_libelle'] ?? 'Aucune',
+
+    'CND' =>
+        !empty($row['CDN'])
+            ? $row['controles_cdn'] . ' %'
+            : 'Non',
+
+    'Radiographie RT' =>
+        !empty($row['RT'])
+            ? $row['controles_rt'] . ' %'
+            : 'Non',
+
+    'Ressuage PT' =>
+        !empty($row['PT'])
+            ? $row['controles_pt'] . ' %'
+            : 'Non',
+
+    'Revêtement' =>
+        !empty($row['revetement'])
+            ? ($row['commentaire_revetement'] ?: 'Oui')
+            : 'Non',
+
+    'Création' =>
+        prefaFormatDate($row['date_creation'], true),
+
+    'Mise à jour' =>
+        prefaFormatDate($row['DateUpdate'], true),
+];
+
+if ($canViewAllPrefa) {
+    $facts['Demandeur'] = trim(
+        ($row['prenom'] ?? '') . ' ' .
+        ($row['name'] ?? '')
+    );
+}
+
+if (!empty($row['valideur_prenom']) || !empty($row['valideur_name'])) {
+    $facts['Décision par'] = trim(
+        ($row['valideur_prenom'] ?? '') . ' ' .
+        ($row['valideur_name'] ?? '')
+    );
+}
+
+if (!empty($row['date_validation'])) {
+    $facts['Décision du'] = prefaFormatDate(
+        $row['date_validation'],
+        true
+    );
+}
+
+$planningFacts = [
+    'Début planifié' =>
+        !empty($row['date_debut_planifiee'])
+            ? prefaFormatDate($row['date_debut_planifiee'])
+            : 'Non planifié',
+
+    'Fin planifiée' =>
+        !empty($row['date_fin_planifiee'])
+            ? prefaFormatDate($row['date_fin_planifiee'])
+            : 'Non planifiée',
+
+];
+
+$isRefused = (int) $row['id_statut'] === 3;
+$decisionComment = trim((string) ($row['commentaire_validation'] ?? ''));
+
+?>
+
+<!-- En-tête -->
+<div class="prefa-detail-heading">
+    <h2>
+        Détails de la demande
+        <span>#<?= $requestId ?></span>
+    </h2>
+
+    <p>
+        Informations techniques et documents associés
+    </p>
+</div>
+
+
+<!-- Informations générales -->
+<dl class="prefa-facts">
+
+    <?php foreach ($facts as $label => $value): ?>
+
+        <div>
+            <dt><?= prefaEscape($label) ?></dt>
+            <dd><?= prefaEscape($value) ?></dd>
+        </div>
+
+    <?php endforeach; ?>
+
+</dl>
+
+
+<!-- Planning atelier -->
+<section
+    class="prefa-workshop-planning"
+    aria-labelledby="workshop-planning-<?= $requestId ?>"
+>
+
+    <h3 id="workshop-planning-<?= $requestId ?>">
+        Planning atelier
+    </h3>
+
+    <dl class="prefa-facts">
+
+        <?php foreach ($planningFacts as $label => $value): ?>
+
+            <div>
+                <dt><?= prefaEscape($label) ?></dt>
+                <dd><?= prefaEscape($value) ?></dd>
+            </div>
+
+        <?php endforeach; ?>
+
+    </dl>
+
+
+</section>
+
+<!-- Documents -->
+<?php if ((int) $row['id_statut'] === 2): ?>
+    <?php require __DIR__ . '/atelier_request.php'; ?>
+<?php endif; ?>
+<div class="prefa-document-groups">
+
+    <?php foreach ($documentGroups as $group): ?>
+
+        <section class="prefa-document-group">
+
+            <h3>
+                <?= prefaEscape($group['title']) ?>
+                <span><?= count($group['files']) ?></span>
+            </h3>
+
+
+            <?php if (!empty($group['files'])): ?>
+
+                <ul class="prefa-document-list">
+
+                    <?php foreach ($group['files'] as $document): ?>
+
+                        <?php
+                        $documentName =
+                            $document['name']
+                            ?? $document['nom']
+                            ?? 'Document';
+
+                        $documentKey =
+                            $document['key']
+                            ?? $document['id'];
+
+                        $isPdf =
+                            strtolower(
+                                pathinfo(
+                                    $documentName,
+                                    PATHINFO_EXTENSION
+                                )
+                            ) === 'pdf';
+
+                        $documentUrl =
+                            'actions/'
+                            . $group['action']
+                            . '?id='
+                            . $requestId
+                            . '&file='
+                            . rawurlencode((string) $documentKey);
+                        ?>
+
+                        <li>
+
+                            <a
+                                class="prefa-document-link<?= $isPdf ? ' prefa-pdf-link' : '' ?>"
+                                href="<?= prefaEscape($documentUrl) ?>"
+                                data-name="<?= prefaEscape($documentName) ?>"
+                                <?= $isPdf ? 'aria-haspopup="dialog"' : '' ?>
+                            >
+
+                                <span
+                                    class="prefa-document-type"
+                                    aria-hidden="true"
+                                >
+                                    <?= $isPdf ? 'PDF' : 'DOC' ?>
+                                </span>
+
+                                <span class="prefa-document-text">
+
+                                    <strong>
+                                        <?= prefaEscape($documentName) ?>
+                                    </strong>
+
+                                    <small>
+                                        <?= $isPdf
+                                            ? 'Ouvrir l’aperçu'
+                                            : 'Télécharger le document'
+                                        ?>
+                                    </small>
+
+                                </span>
+
+                                <span
+                                    class="prefa-document-arrow"
+                                    aria-hidden="true"
+                                >
+                                    ↗
+                                </span>
+
+                            </a>
+
+                        </li>
+
+                    <?php endforeach; ?>
+
+                </ul>
+
+            <?php else: ?>
+
+                <p class="prefa-no-document">
+                    <?= prefaEscape(
+                        $group['legacy'] ?: 'Aucun document'
+                    ) ?>
+                </p>
+
+            <?php endif; ?>
+
+        </section>
+
+    <?php endforeach; ?>
+
+</div>
+
+
+<!-- Décision -->
+<?php if ($decisionComment !== ''): ?>
+
+    <div
+        class="prefa-decision-comment<?= $isRefused ? ' is-refusal' : '' ?>"
+    >
+
+        <strong>
+            <?= $isRefused
+                ? 'Justification du refus'
+                : 'Justification / Commentaire de décision'
+            ?>
+        </strong>
+
+        <p>
+            <?= prefaEscape($decisionComment) ?>
+        </p>
+
+    </div>
+
+<?php endif; ?>

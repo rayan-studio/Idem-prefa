@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    min-height: 100dvh;
+    width: 100%;
+}
+
+label {
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    color: #333;
+
+    width: 100%;
+    margin: 0 0 6px;
+    padding: 0;
+}
+
+
+body {
+    min-height: 100dvh;
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.contenaire {
+    gap: 5px;
+    display: flex;
+    width: 100%;
+
+    box-sizing: border-box;
+    max-width: 500px;
+    margin-inline: auto;
+    padding: 24px 20px;
+}
+
+input {
+    width: 100%;
+    padding: 14px 10px;
+    font-size: 16px;
+    min-height: 44px;
+    margin: 0 0 16px;
+    color: #1a1a1a;
+    background-color: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    margin-top: 6px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+::selection {
+    background-color: rgba(110 198 250 / 0.6);
+    color: black;
+}
+
+button {
+    background-color: rgb(13, 13, 13);
+    border: none;
+    padding: 16px;
+
+    margin-top: 15px;
+    color: #fff;
+    font-size: 14px;
+    border-radius: 999px;
+
+    width: 100%;
+    cursor: pointer;
+
+    transition: all ease-in;
+}
+
+button:hover {
+    background-color: rgba(13, 13, 13, 0.774);
+    border: none;
+    padding: 16px;
+
+    margin-top: 15px;
+    color: #fff;
+    font-size: 14px;
+    border-radius: 999px;
+
+    width: 100%;
+}
+
+.box-submit {
+    margin-top: 5px;
+    width: 100%;
+}
+
+h1 {
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    text-align: center;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+
+    width: 100%;
+    margin-bottom: 18px;
+}
+
+svg {
+    color: #fff;
+}
+
+#form-message {
+    display: none;
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    text-align: center;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+}
+
+/* Dark theme, including native controls and autofill. */
+:root { color-scheme: dark; }
+body { background: #141820; color: #e2e7ef; }
+label { color: #e2e7ef; }
+input { color: #e2e7ef; background: #1c222d; border-color: #343d4c; }
+input::placeholder { color: #a2adbd; }
+input:focus-visible { outline: 2px solid #6095f5; outline-offset: 2px; }
+input:autofill { box-shadow: inset 0 0 0 1000px #1c222d; -webkit-text-fill-color: #e2e7ef; }
+button { background: #2563eb; }
+button:hover { background: #1d4ed8; }
+button:focus-visible { outline: 2px solid #6095f5; outline-offset: 3px; }
+::selection { background: #315a88; color: #e2e7ef; }

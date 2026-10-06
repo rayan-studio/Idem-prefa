@@ -1,0 +1,90 @@
+<?php
+require_once __DIR__ . '/../includes/prefa_context.php';
+require_once __DIR__ . '/../includes/prefa_workshop.php';
+require_once __DIR__ . '/../includes/prefa_attachments.php';
+require_once __DIR__ . '/../includes/atelier.php';
+prefaPost();
+if (!$canManageWorkshop) prefaError(403, 'Action réservée au chef d’atelier ou à l’administrateur.');
+$requestId = filter_var($_POST['id'] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+$operation = $_POST['operation'] ?? '';
+if (!$requestId || !in_array($operation, ['take', 'element', 'documents', 'assign', 'revoke'], true)) prefaError(400, 'Action atelier invalide.');
+try {
+    $db->beginTransaction();
+    $stmt = $db->prepare('SELECT * FROM demande_prefabrication WHERE id = ? AND id_statut = 2 FOR UPDATE');
+    $stmt->execute([$requestId]);
+    $request = $stmt->fetch();
+    if (!$request) { $db->rollBack(); prefaError(404, 'Demande validée introuvable.'); }
+    if ($operation !== 'take' && empty($request['prise_en_charge_atelier'])) {
+        $db->rollBack(); prefaError(409, 'Prenez d’abord en charge la demande.');
+    }
+    if ($operation === 'take') {
+        $chiefId = (int) $actor['id'];
+        if ($isAdmin) {
+            $chiefId = filter_var($_POST['chef'] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+            if (!$chiefId) { $db->rollBack(); prefaError(400, 'Sélectionnez un chef d’atelier.'); }
+            $stmt = $db->prepare('SELECT id FROM Utilisateur WHERE id = ? AND id_role = 2 FOR UPDATE');
+            $stmt->execute([$chiefId]);
+            if (!$stmt->fetchColumn()) { $db->rollBack(); prefaError(400, 'Le responsable doit être un chef d’atelier.'); }
+        }
+        if (!empty($request['prise_en_charge_atelier'])) { $db->rollBack(); prefaError(409, 'Cette demande est déjà prise en charge. Actualisez la liste.'); }
+        $db->prepare('UPDATE demande_prefabrication SET pris_en_charge_par = ?, date_prise_en_charge = NOW(), prise_en_charge_atelier = 1 WHERE id = ?')->execute([$chiefId, $requestId]);
+    } elseif (in_array($operation, ['element', 'documents'], true)) {
+        $reference = trim((string) ($_POST['reference'] ?? ''));
+        $label = trim((string) ($_POST['libelle'] ?? ''));
+        $documents = $_POST['documents'] ?? [];
+        if (($operation === 'element' && ($reference === '' || mb_strlen($reference) > 80 || $label === '' || mb_strlen($label) > 180)) || !is_array($documents) || count($documents) > 100) {
+            $db->rollBack(); prefaError(400, 'Indiquez une référence et un libellé valides.');
+        }
+        $links = [];
+        foreach ($documents as $token) {
+            if (!is_string($token)) { $db->rollBack(); prefaError(400, 'Document invalide.'); }
+            [$kind, $key] = array_pad(explode(':', $token, 2), 2, '');
+            if (!atelierDocumentName($db, $requestId, $kind, $key)) { $db->rollBack(); prefaError(400, 'Ce document n’appartient pas à la demande.'); }
+            $links[$token] = [$kind, $key];
+        }
+        if (!array_filter($links, fn($link) => $link[0] === 'plan')) {
+            $db->rollBack(); prefaError(400, 'Sélectionnez au moins un fichier de plan / ISO.');
+        }
+        if ($operation === 'element') {
+            $db->prepare('INSERT INTO element_atelier (id_demande, reference, libelle, cree_par) VALUES (?, ?, ?, ?)')->execute([$requestId, $reference, $label, $actor['id']]);
+            $elementId = (int) $db->lastInsertId();
+        } else {
+            $elementId = filter_var($_POST['element'] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+            $stmt = $db->prepare('SELECT id FROM element_atelier WHERE id = ? AND id_demande = ? FOR UPDATE');
+            $stmt->execute([$elementId ?: 0, $requestId]);
+            if (!$stmt->fetchColumn()) { $db->rollBack(); prefaError(400, 'Plan introuvable dans cette demande.'); }
+            $db->prepare('DELETE FROM element_atelier_document WHERE id_element = ?')->execute([$elementId]);
+        }
+        $link = $db->prepare('INSERT INTO element_atelier_document (id_element, type_document, cle_document) VALUES (?, ?, ?)');
+        foreach ($links as [$kind, $key]) $link->execute([$elementId, $kind, $key]);
+    } else {
+        $elementId = filter_var($_POST['element'] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $type = $_POST['type'] ?? '';
+        $stmt = $db->prepare('SELECT id FROM element_atelier WHERE id = ? AND id_demande = ?');
+        $stmt->execute([$elementId ?: 0, $requestId]);
+        if (!$stmt->fetchColumn() || !in_array($type, ['plan', 'montage', 'soudage'], true)) { $db->rollBack(); prefaError(400, 'Élément ou travail invalide.'); }
+        if ($operation === 'assign' && $type === 'plan') {
+            $stmt = $db->prepare("SELECT cle_document FROM element_atelier_document WHERE id_element = ? AND type_document = 'plan'");
+            $stmt->execute([$elementId]);
+            $validFiles = array_filter($stmt->fetchAll(PDO::FETCH_COLUMN), fn($key) => atelierDocumentName($db, $requestId, 'plan', $key) !== null);
+            if (!$validFiles) { $db->rollBack(); prefaError(400, 'Associez un fichier au plan avant de l’affecter.'); }
+        }
+        $stmt = $db->prepare('SELECT id, id_utilisateur FROM affectation_atelier WHERE id_element = ? AND type_affectation = ? AND actif = 1 FOR UPDATE');
+        $stmt->execute([$elementId, $type]);
+        $previous = $stmt->fetch();
+        $personnelId = $operation === 'assign' ? prefaWorkshopPersonnelId($db, $_POST['utilisateur'] ?? '') : null;
+        if ($operation === 'assign' && !$personnelId) { $db->rollBack(); prefaError(400, 'Sélectionnez un utilisateur atelier.'); }
+        if ($operation === 'revoke' || !$previous || (int) $previous['id_utilisateur'] !== $personnelId) {
+            $db->prepare('UPDATE affectation_atelier SET actif = NULL, date_fin_affectation = NOW() WHERE id_element = ? AND type_affectation = ? AND actif = 1')->execute([$elementId, $type]);
+            if ($operation === 'assign') $db->prepare('INSERT INTO affectation_atelier (id_element, id_utilisateur, type_affectation, affecte_par) VALUES (?, ?, ?, ?)')->execute([$elementId, $personnelId, $type, $actor['id']]);
+        }
+    }
+    $db->commit();
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['success' => true, 'message' => 'Atelier mis à jour.']);
+} catch (PDOException $e) {
+    if ($db->inTransaction()) $db->rollBack();
+    if ($e->getCode() === '23000') prefaError(409, 'Cette référence ou affectation existe déjà. Actualisez la liste.');
+    error_log('Atelier: ' . $e->getMessage());
+    prefaError(500, 'Impossible d’enregistrer. Réessayez.');
+}

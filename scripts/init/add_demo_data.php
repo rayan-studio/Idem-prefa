@@ -1,0 +1,117 @@
+<?php
+// Run from stdin in the local PHP container. Existing demo records are left intact.
+if (PHP_SAPI !== 'cli') exit(1);
+chdir('/var/www/html');
+require_once 'db.php';
+require_once 'dashboard/includes/planning.php';
+require_once 'dashboard/includes/prefa_attachments.php';
+$db = new MyPDO();
+$today = new DateTimeImmutable('today', new DateTimeZone('Europe/Paris'));
+$monday = $today->modify('monday this week');
+$created = ['users' => 0, 'requests' => 0, 'planned' => 0];
+$files = [];
+
+function demoPdf(string $title): string
+{
+    $stream = "BT /F1 18 Tf 50 780 Td (" . $title . ") Tj 0 -30 Td /F1 12 Tf (Document fictif - test uniquement) Tj ET";
+    $objects = [
+        '<< /Type /Catalog /Pages 2 0 R >>',
+        '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+        '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>',
+        '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+        '<< /Length ' . strlen($stream) . ">>\nstream\n" . $stream . "\nendstream",
+    ];
+    $pdf = "%PDF-1.4\n";
+    $offsets = [0];
+    foreach ($objects as $i => $object) {
+        $offsets[] = strlen($pdf);
+        $pdf .= ($i + 1) . " 0 obj\n" . $object . "\nendobj\n";
+    }
+    $xref = strlen($pdf);
+    $pdf .= "xref\n0 6\n0000000000 65535 f \n";
+    foreach (array_slice($offsets, 1) as $offset) $pdf .= sprintf("%010d 00000 n \n", $offset);
+    return $pdf . "trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n" . $xref . "\n%%EOF\n";
+}
+
+$db->beginTransaction();
+try {
+    $users = [];
+    $names = [['Martin', 'Emma'], ['Bernard', 'Louis'], ['Dubois', 'Jade'], ['Petit', 'Gabriel'], ['Moreau', 'Camille']];
+    $findUser = $db->prepare('SELECT id, id_role FROM Utilisateur WHERE identifiant = ?');
+    $insertUser = $db->prepare('INSERT INTO Utilisateur (name, prenom, identifiant, email, id_role, password) VALUES (?, ?, ?, ?, ?, ?)');
+    foreach (['charger' => [5, 5], 'demandeur' => [4, 4]] as $kind => [$role, $count]) {
+        for ($i = 0; $i < $count; $i++) {
+            $login = sprintf('demo.%s.%02d', $kind, $i + 1);
+            $findUser->execute([$login]);
+            $existing = $findUser->fetch();
+            if ($existing && (int) $existing['id_role'] !== $role) throw new RuntimeException('Demo account role changed: ' . $login);
+            if (!$existing) {
+                $insertUser->execute([$names[$i][0], $names[$i][1] . ' Test', $login, $login . '@example.test', $role, password_hash('DemoISO2026!', PASSWORD_BCRYPT)]);
+                $existing = ['id' => $db->lastInsertId()];
+                $created['users']++;
+            }
+            $users[$kind][] = (int) $existing['id'];
+        }
+    }
+    $admin = $db->query('SELECT id FROM Utilisateur WHERE id_role = 1 ORDER BY id LIMIT 1')->fetchColumn() ?: null;
+    $materials = $db->query('SELECT id FROM type_matiere ORDER BY id')->fetchAll(PDO::FETCH_COLUMN);
+    $passivations = $db->query('SELECT id FROM type_passivation ORDER BY id')->fetchAll(PDO::FETCH_COLUMN);
+    $findRequest = $db->prepare('SELECT id FROM demande_prefabrication WHERE nom_affaire = ? AND idUsers = ?');
+    $projects = ['Reseau vapeur', 'Collecteur inox', 'Circuit refroidissement', 'Skid filtration', 'Ligne air comprime', 'Station pompage'];
+    for ($i = 0; $i < 24; $i++) {
+        $owner = $users['demandeur'][$i % 4];
+        $name = sprintf('[TEST] ISO-%02d - %s', $i + 1, $projects[$i % 6]);
+        $findRequest->execute([$name, $owner]);
+        if ($findRequest->fetchColumn()) continue;
+        $status = $i < 16 ? 2 : ($i < 22 ? 1 : 3);
+        $hours = (1 + $i % 5) * 24;
+        $planned = $i < 12;
+        $period = $planned ? planningPeriod($monday->modify('+' . ($i % 4 * 2) . ' days'), $hours, true) : null;
+        $data = [
+            'idUsers' => $owner, 'DateUpdate' => $today->format('Y-m-d H:i:s'),
+            'date_creation' => $today->modify('-' . (24 - $i) . ' days')->format('Y-m-d H:i:s'),
+            'date_fin_prevue' => $monday->modify('+' . (3 + $i % 12) . ' days')->format('Y-m-d'),
+            'date_livraison_prevue' => $monday->modify('+' . (7 + $i % 12) . ' days')->format('Y-m-d'),
+            'nom_affaire' => $name, 'plan_bpe_iso' => 'Plan de demonstration',
+            'pouces_total_iso' => 10 + $i * 5, 'heures_chiffrees' => $hours,
+            'CDN' => 1, ' QMOS' => '', 'urgent' => (int) ($i % 4 === 0),
+            'id_statut' => $status, 'controles_cdn' => 10 + $i % 4 * 10,
+            'RT' => (int) ($i % 2 === 0), 'controles_rt' => $i % 2 === 0 ? 25 : null,
+            'PT' => (int) ($i % 3 === 0), 'controles_pt' => $i % 3 === 0 ? 100 : null,
+            'revetement' => (int) ($i % 2 === 1), 'commentaire_revetement' => $i % 2 === 1 ? 'Peinture anticorrosion - test' : null,
+            'id_matiere' => $materials ? $materials[$i % count($materials)] : null,
+            'matiere_disponibilite' => $materials ? ($i % 2 ? 'commande' : 'stock') : null,
+            'id_passivation' => $passivations && $i % 2 === 0 ? $passivations[$i % count($passivations)] : null,
+            'id_charger_affaire' => $status === 2 ? $users['charger'][$i % 5] : null,
+            'valide_par' => $status !== 1 ? $admin : null,
+            'date_validation' => $status !== 1 ? $today->format('Y-m-d H:i:s') : null,
+            'commentaire_validation' => $status === 3 ? 'Test : documents techniques a completer.' : null,
+            'date_debut_planifiee' => $period['start'] ?? null, 'date_fin_planifiee' => $period['end'] ?? null,
+            'planning_jours_ouvres' => 1, 'planning_revision' => $planned ? 1 : 0,
+        ];
+        $columns = implode(', ', array_map(fn($key) => '`' . $key . '`', array_keys($data)));
+        $stmt = $db->prepare('INSERT INTO demande_prefabrication (' . $columns . ') VALUES (' . implode(', ', array_fill(0, count($data), '?')) . ')');
+        $stmt->execute(array_values($data));
+        $id = (int) $db->lastInsertId();
+        $directory = prefaAttachmentDirectory($id);
+        if (!is_dir($directory) && !mkdir($directory, 0770, true)) throw new RuntimeException('Cannot create demo attachment directory.');
+        if (posix_geteuid() === 0 && (!chown($directory, 'www-data') || !chgrp($directory, 'www-data'))) {
+            throw new RuntimeException('Cannot set demo directory ownership.');
+        }
+        $path = $directory . '/' . bin2hex(random_bytes(16)) . '-Plan-ISO-TEST.pdf';
+        $files[] = $path;
+        if (file_put_contents($path, demoPdf(sprintf('Plan ISO TEST %02d', $i + 1))) === false) throw new RuntimeException('Cannot write demo PDF.');
+        if (!chmod($path, 0660)) throw new RuntimeException('Cannot set demo PDF permissions.');
+        if (posix_geteuid() === 0 && (!chown($path, 'www-data') || !chgrp($path, 'www-data'))) {
+            throw new RuntimeException('Cannot set demo PDF ownership.');
+        }
+        $created['requests']++;
+        if ($planned) $created['planned']++;
+    }
+    $db->commit();
+} catch (Throwable $error) {
+    $db->rollBack();
+    foreach ($files as $path) if (is_file($path)) unlink($path);
+    throw $error;
+}
+echo json_encode($created, JSON_PRETTY_PRINT) . PHP_EOL;

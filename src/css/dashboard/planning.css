@@ -1,0 +1,1606 @@
+/* ==========================================================================
+   PAGE PLANNING - THEME HARMONISÉ AVEC LE DASHBOARD (Variables globales)
+   ========================================================================== */
+
+.planning-page {
+    height: 100%;
+    overflow-y: auto;
+    padding: 24px 28px 48px;
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font, inherit);
+}
+
+.planning-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.planning-page h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.planning-subtitle {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.planning-refresh-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.planning-refresh-button .icon {
+    width: 15px;
+    height: 15px;
+}
+
+.planning-page h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.planning-page .planning-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 5px 12px;
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--frame);
+    color: var(--text);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.planning-page .planning-button:hover {
+    background: var(--hover);
+    border-color: #4b5563;
+}
+
+.planning-page button:focus-visible,
+.gantt-scroll-wrapper:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.planning-page .planning-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+}
+
+.planning-page .planning-primary:hover {
+    background: var(--accent-hover);
+}
+
+.planning-page button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* Toolbar & Filtres */
+.planning-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.planning-toolbar > .floating-field {
+    flex: 0 1 180px;
+    width: 180px;
+}
+
+.planning-toolbar > .floating-field:last-child {
+    flex-basis: 220px;
+    width: 220px;
+}
+
+.planning-date-nav {
+    display: flex;
+    gap: 4px;
+}
+
+.planning-page .planning-icon-button {
+    width: 32px;
+    padding: 5px;
+}
+
+.planning-calendar-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.planning-calendar-heading h2 {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.planning-outside-period {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    padding: 8px 14px;
+    background: var(--frame);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.planning-feedback {
+    margin: 4px 0 12px;
+    font-size: 12px;
+    min-height: 16px;
+}
+
+.planning-feedback.is-success {
+    color: #4ade80;
+}
+
+.planning-feedback.is-error {
+    color: #f87171;
+}
+
+#contenaire #planning-page-message.is-removed {
+    color: #fda4af !important;
+    background: #3f202b;
+    border-left: 3px solid #f87171;
+    border-radius: 4px;
+    padding: 10px 12px;
+}
+
+html[data-theme="pink"] #contenaire #planning-page-message.is-removed {
+    background: #881337;
+    color: #ffe4e6 !important;
+}
+
+/* ==========================================================================
+   DIAGRAMME GANTT (Disposition fidèle à la maquette - Dark Mode harmonisé)
+   ========================================================================== */
+
+.gantt-outer-container {
+    background: var(--frame);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    margin-bottom: 24px;
+}
+
+.gantt-scroll-wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    position: relative;
+}
+
+.gantt-layout {
+    --gantt-label-width: 210px;
+    --gantt-day-width: 38px;
+    min-width: calc(var(--gantt-label-width) + var(--gantt-days) * var(--gantt-day-width));
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* En-tête */
+.gantt-header-row {
+    display: grid;
+    grid-template-columns: var(--gantt-label-width) 1fr;
+    grid-template-rows: 28px 28px;
+    background: var(--frame);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.gantt-header-corner {
+    grid-row: 1 / span 2;
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--text-muted);
+    background: #181e28;
+    border-right: 1px solid var(--border);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Semaines (Ligne 1) */
+.gantt-weeks-header {
+    grid-row: 1;
+    grid-column: 2;
+    display: grid;
+    grid-template-columns: repeat(var(--gantt-days), minmax(0, 1fr));
+    border-bottom: 1px solid var(--border);
+    background: #181e28;
+}
+
+.gantt-week-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--text);
+    border-right: 1px solid var(--border);
+    background: #1b222e;
+}
+
+.gantt-week-cell:last-child {
+    border-right: none;
+}
+
+/* Numéros des jours (Ligne 2) */
+.gantt-days-header {
+    grid-row: 2;
+    grid-column: 2;
+    display: grid;
+    grid-template-columns: repeat(var(--gantt-days), minmax(0, 1fr));
+}
+
+.gantt-day-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    border-right: 1px solid var(--border);
+    color: var(--text);
+}
+
+.gantt-day-number.is-workday {
+    background: #183325; /* Vert sobre en dark mode */
+    color: #86efac;
+}
+
+.gantt-day-number.is-weekend {
+    background: #141922; /* Teinte sombre week-end */
+    color: #64748b;
+}
+
+.gantt-day-number.is-today {
+    font-weight: 800;
+    color: #93c5fd;
+    background: #1d364a;
+}
+
+/* Corps du Gantt */
+.gantt-body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Grille d'arrière-plan avec colonnes */
+.gantt-background-grid {
+    position: absolute;
+    top: 0;
+    left: var(--gantt-label-width);
+    right: 0;
+    bottom: 0;
+    display: grid;
+    grid-template-columns: repeat(var(--gantt-days), minmax(0, 1fr));
+    pointer-events: none;
+    z-index: 1;
+}
+
+.gantt-bg-col {
+    border-right: 1px solid rgba(52, 61, 76, 0.4);
+    height: 100%;
+}
+
+.gantt-bg-col.is-workday {
+    background: rgba(34, 197, 94, 0.04); /* Vert discret */
+}
+
+.gantt-bg-col.is-weekend {
+    background: rgba(15, 23, 42, 0.35); /* Gris week-end */
+}
+
+/* Ligne rouge verticale Aujourd'hui */
+.gantt-today-line {
+    position: absolute;
+    top: -28px;
+    bottom: 0;
+    width: 3px;
+    background: #ef4444;
+    z-index: 6;
+    margin-left: calc(50% - 1.5px);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+/* Lignes des affaires */
+.gantt-row {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: var(--gantt-label-width) 1fr;
+    min-height: 48px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    transition: background 0.15s;
+}
+
+.gantt-row:last-child {
+    border-bottom: none;
+}
+
+.gantt-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.gantt-row.is-selected {
+    background: rgba(37, 99, 235, 0.12);
+}
+
+/* Colonne étiquette d'affaire à gauche */
+.gantt-label-col {
+    padding: 6px 12px;
+    border-right: 1px solid var(--border);
+    background: var(--frame);
+    display: flex;
+    align-items: center;
+    position: sticky;
+    left: 0;
+    z-index: 4;
+}
+
+.gantt-affaire-badge {
+    width: 100%;
+    padding: 7px 10px;
+    background: #1f2735;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: all 0.15s;
+}
+
+.gantt-affaire-badge:hover {
+    border-color: #3b82f6;
+    background: #253347;
+    color: #93c5fd;
+}
+
+.gantt-row.is-selected .gantt-affaire-badge {
+    border-color: #3b82f6;
+    background: #1e3a5f;
+    color: #93c5fd;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.35);
+}
+
+/* Piste de la barre de Gantt */
+.gantt-track {
+    display: grid;
+    grid-template-columns: repeat(var(--gantt-days), minmax(0, 1fr));
+    align-items: center;
+    height: 100%;
+    padding: 6px 0;
+    position: relative;
+}
+
+/* Barres de Gantt */
+.gantt-bar {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    overflow: hidden;
+    text-align: left;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    transition: transform 0.1s, filter 0.15s, box-shadow 0.15s;
+}
+
+.gantt-bar:hover {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35);
+}
+
+.gantt-bar.is-selected {
+    box-shadow: 0 0 0 1px var(--accent), 0 3px 8px rgba(0, 0, 0, 0.25);
+    z-index: 5;
+}
+
+.gantt-marker {
+    font-size: 10px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.gantt-bar-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Couleurs des barres harmonisées */
+.gantt-yellow {
+    background: #3e331b;
+    border: 1px solid #ca8a04;
+    color: #fef08a;
+}
+
+.gantt-lightblue {
+    background: #1e3552;
+    border: 1px solid #3b82f6;
+    color: #bfdbfe;
+}
+
+.gantt-blue {
+    background: #1d4ed8;
+    border: 1px solid #60a5fa;
+    color: #ffffff;
+}
+
+.gantt-bar.is-urgent {
+    border-left: 4px solid #ea580c !important;
+}
+
+.gantt-empty-notice {
+    padding: 24px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+/* ==========================================================================
+   PANNEAU INFÉRIEUR : 4 BLOCS HARMONISÉS
+   ========================================================================== */
+
+.planning-details-panel {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.planning-details-panel[hidden] {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .planning-details-panel {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .planning-details-panel {
+        grid-template-columns: 1fr;
+    }
+}
+
+.planning-card {
+    background: var(--frame);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.planning-card-header {
+    background: #1a222e;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.3px;
+}
+
+.planning-card-body {
+    padding: 14px;
+    flex: 1;
+    font-size: 13px;
+    overflow-y: auto;
+    max-height: 220px;
+    color: var(--text);
+}
+
+.planning-card-footer {
+    padding: 8px 12px;
+    background: #161c26;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+/* Bloc 1: Information générale */
+.planning-info-list {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.planning-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    border-bottom: 1px dashed rgba(52, 61, 76, 0.7);
+    padding-bottom: 4px;
+}
+
+.planning-info-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.planning-info-item dt {
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 12px;
+}
+
+.planning-info-item dd {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text);
+    text-align: right;
+    word-break: break-word;
+    font-size: 12px;
+}
+
+.planning-info-item dd a {
+    color: #60a5fa;
+    text-decoration: underline;
+}
+
+/* Bloc 2: Matrice Avancement */
+.planning-table-container {
+    padding: 0;
+    overflow-x: auto;
+}
+
+.planning-matrix-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    text-align: center;
+}
+
+.planning-matrix-table th,
+.planning-matrix-table td {
+    border: 1px solid var(--border);
+    padding: 6px 8px;
+    white-space: nowrap;
+}
+
+.planning-matrix-table th {
+    background: #19202c;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.planning-matrix-table td.step-label {
+    text-align: left;
+    font-weight: 600;
+    background: #1a222e;
+    color: var(--text);
+    padding-left: 10px;
+}
+
+.planning-matrix-table td.status-ok {
+    background: #143825;
+    color: #86efac;
+    font-weight: 700;
+}
+
+.planning-matrix-table td.status-non-ok {
+    background: #3f2219;
+    color: #fdba74;
+    font-weight: 700;
+}
+
+.planning-matrix-table td.status-ras {
+    background: #1e2634;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Bloc 3: Commentaires */
+.planning-comments-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.comment-item {
+    padding: 8px 10px;
+    background: #1a212d;
+    border-left: 3px solid #3b82f6;
+    border-radius: 3px;
+    border-top: 1px solid rgba(52, 61, 76, 0.4);
+    border-right: 1px solid rgba(52, 61, 76, 0.4);
+    border-bottom: 1px solid rgba(52, 61, 76, 0.4);
+}
+
+.comment-meta {
+    font-size: 11px;
+    font-weight: 700;
+    color: #60a5fa;
+    margin-bottom: 3px;
+}
+
+.comment-text {
+    font-size: 12px;
+    color: var(--text);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.planning-empty-text {
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+    margin: 24px 0;
+}
+
+/* Bloc 4: Livraison */
+.planning-delivery-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: center;
+    height: 100%;
+}
+
+.planning-delivery-info p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.planning-delivery-info strong {
+    color: var(--text);
+    font-size: 14px;
+}
+
+/* Section Backlog (Demandes à planifier) */
+.planning-backlog {
+    margin-top: 24px;
+    background: var(--frame);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.planning-backlog-summary {
+    padding: 10px 16px;
+    background: #1a222e;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.planning-badge-count {
+    background: var(--accent);
+    color: #ffffff;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-size: 11px;
+}
+
+.planning-backlog-list {
+    max-height: 240px;
+    overflow-y: auto;
+    padding: 0 16px;
+}
+
+.planning-backlog-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.planning-backlog-item:last-child {
+    border-bottom: none;
+}
+
+.planning-backlog-owner {
+    margin-left: 8px;
+    color: var(--text-muted);
+}
+
+.planning-backlog-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.planning-urgent-badge {
+    background: #3f2219;
+    color: #fca5a5;
+    border: 1px solid #7f1d1d;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    margin-left: 6px;
+}
+
+/* ==========================================================================
+   MODALE DE PLANIFICATION (Parfaitement centrée & moderne)
+   ========================================================================== */
+dialog.planning-dialog,
+dialog#planning-dialog {
+    position: fixed !important;
+    inset: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    margin: auto !important;
+    transform: none !important;
+    width: 520px !important;
+    max-width: calc(100vw - 32px) !important;
+    height: fit-content !important;
+    max-height: calc(100vh - 40px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    padding: 0;
+    background: #1e2634;
+    color: var(--text);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    z-index: 99999;
+}
+
+dialog.planning-dialog::backdrop {
+    background: rgba(8, 12, 20, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.planning-dialog-form {
+    padding: 26px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.planning-dialog-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.planning-dialog-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.planning-dialog-badge {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #60a5fa;
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    padding: 2px 8px;
+    border-radius: 6px;
+    display: inline-block;
+    align-self: flex-start;
+}
+
+.planning-dialog-heading h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.planning-dialog-close {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    padding: 0;
+}
+
+.planning-dialog-close:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+.planning-request-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+}
+
+.planning-meta-chip {
+    background: #141a24;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.planning-meta-chip .meta-label {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.planning-meta-chip .meta-val {
+    color: #f1f5f9;
+    font-weight: 600;
+}
+
+.planning-dialog-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.planning-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.planning-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.planning-date-input {
+    background: #141a24;
+    border: 1px solid var(--border);
+    color: #f1f5f9;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    width: 100%;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.planning-date-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+.planning-help-text {
+    font-size: 11px;
+    color: #94a3b8;
+    line-height: 1.3;
+    margin-top: -8px;
+}
+
+.planning-preview {
+    background: #141a24;
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 10px 14px;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+}
+
+.planning-preview-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 12px;
+}
+
+.planning-preview-dates {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #f1f5f9;
+    font-weight: 600;
+}
+
+.preview-arrow {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.planning-preview-badge {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.planning-preview-placeholder {
+    color: #64748b;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.planning-preview-error {
+    color: #f87171;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.planning-dialog-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+    gap: 12px;
+}
+
+.planning-dialog-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.planning-btn-remove {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #f87171;
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+}
+
+.planning-btn-remove:hover {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #ffffff;
+}
+
+.planning-btn-cancel {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: #cbd5e1;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.planning-btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+.planning-btn-submit {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #ffffff;
+    border: none;
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+    transition: all 0.15s;
+}
+
+.planning-btn-submit:hover {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.55);
+    transform: translateY(-1px);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* ===== PLANNING - THEME ROSE INTENSE (100% PINK EDITION) ===== */
+[data-theme="pink"] .planning-page {
+    background: #831843 !important;
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .gantt-outer-container {
+    background: #a82062 !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="pink"] .gantt-header-row {
+    background: #9d174d !important;
+    border-bottom-color: var(--border) !important;
+}
+
+[data-theme="pink"] .gantt-header-corner {
+    background: #b3236c !important;
+    color: var(--text) !important;
+    border-right-color: var(--border) !important;
+    font-weight: 800;
+}
+
+[data-theme="pink"] .gantt-weeks-header {
+    background: #9d174d !important;
+    border-bottom-color: var(--border) !important;
+}
+
+[data-theme="pink"] .gantt-week-cell {
+    background: #b3236c !important;
+    color: var(--text) !important;
+    border-right-color: var(--border) !important;
+    font-weight: 800;
+}
+
+[data-theme="pink"] .gantt-day-number {
+    border-right-color: #b3236c !important;
+}
+
+[data-theme="pink"] .gantt-day-number.is-workday {
+    background: #831843 !important;
+    color: var(--text) !important;
+    font-weight: 700;
+}
+
+[data-theme="pink"] .gantt-day-number.is-weekend {
+    background: #9d174d !important;
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .gantt-day-number.is-today {
+    background: #be185d !important;
+    color: var(--text) !important;
+    font-weight: 900;
+}
+
+[data-theme="pink"] .gantt-bg-col.is-workday {
+    background: rgba(157, 23, 77, 0.65) !important;
+    border-right-color: rgba(244, 114, 182, 0.25) !important;
+}
+
+[data-theme="pink"] .gantt-bg-col.is-weekend {
+    background: rgba(131, 24, 67, 0.85) !important;
+    border-right-color: rgba(244, 114, 182, 0.3) !important;
+}
+
+[data-theme="pink"] .gantt-today-line {
+    background: #be185d !important;
+    width: 4px !important;
+}
+
+[data-theme="pink"] .gantt-row {
+    border-bottom-color: #9d174d !important;
+}
+
+[data-theme="pink"] .gantt-row.is-selected {
+    background: rgba(236, 72, 153, 0.12) !important;
+}
+
+[data-theme="pink"] .gantt-label-col {
+    background: #a82062 !important;
+    border-right-color: var(--border) !important;
+}
+
+[data-theme="pink"] .gantt-affaire-badge {
+    background: #831843 !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+    font-weight: 700;
+}
+
+[data-theme="pink"] .gantt-affaire-badge:hover,
+[data-theme="pink"] .gantt-row.is-selected .gantt-affaire-badge {
+    background: #be185d !important;
+    border-color: #9d174d !important;
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .gantt-bar.gantt-yellow {
+    background: #b3236c !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .gantt-bar.gantt-lightblue {
+    background: #f472b6 !important;
+    border-color: #be185d !important;
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .gantt-bar.gantt-blue {
+    background: #9d174d !important;
+    border-color: #be185d !important;
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .planning-card {
+    background: #a82062 !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="pink"] .planning-card-header {
+    background: linear-gradient(135deg, #be185d 0%, #9d174d 100%) !important;
+    color: var(--text) !important;
+    border-bottom-color: #be185d !important;
+    font-weight: 800;
+}
+
+[data-theme="pink"] .planning-card-body {
+    background: #a82062 !important;
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .planning-card-footer {
+    background: #831843 !important;
+    border-top-color: #9d174d !important;
+}
+
+[data-theme="pink"] .planning-matrix-table th {
+    background: #9d174d !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="pink"] .planning-matrix-table td {
+    border-color: #9d174d !important;
+}
+
+[data-theme="pink"] .planning-matrix-table td.step-label {
+    background: #831843 !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+    font-weight: 700;
+}
+
+[data-theme="pink"] .planning-matrix-table td.status-ok {
+    background: #b3236c !important;
+    color: var(--text) !important;
+    font-weight: 800;
+}
+
+[data-theme="pink"] .planning-matrix-table td.status-non-ok {
+    background: #881337 !important;
+    color: var(--text) !important;
+    font-weight: 800;
+}
+
+[data-theme="pink"] .planning-matrix-table td.status-ras {
+    background: #831843 !important;
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .comment-item {
+    background: #831843 !important;
+    border-left-color: #be185d !important;
+    border-color: #9d174d !important;
+}
+
+[data-theme="pink"] .comment-meta {
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .comment-text {
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .planning-info-item dt {
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .planning-info-item dd {
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .planning-delivery-info strong {
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .planning-button {
+    background: #9d174d !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+    font-weight: 700 !important;
+}
+
+[data-theme="pink"] .planning-button:hover {
+    background: #be185d !important;
+    color: var(--text) !important;
+    border-color: #9d174d !important;
+}
+
+/* Modale de planification en mode Rose */
+[data-theme="pink"] dialog.planning-dialog {
+    background: #a82062 !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] dialog.planning-dialog::backdrop {
+    background: rgba(131, 24, 67, 0.35) !important;
+    backdrop-filter: blur(8px) !important;
+}
+
+[data-theme="pink"] .planning-dialog-heading {
+    border-bottom-color: #9d174d !important;
+}
+
+[data-theme="pink"] .planning-dialog-badge {
+    color: var(--text) !important;
+    background: #831843 !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="pink"] .planning-dialog-heading h2 {
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .planning-dialog-close {
+    background: #831843 !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .planning-dialog-close:hover {
+    background: #9d174d !important;
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .planning-meta-chip {
+    background: #921653 !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="pink"] .planning-meta-chip .meta-label {
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .planning-meta-chip .meta-val {
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .planning-label {
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .planning-date-input {
+    background: #a82062 !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .planning-date-input:focus {
+    border-color: #be185d !important;
+}
+
+[data-theme="pink"] .planning-help-text {
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .planning-preview {
+    background: #921653 !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="pink"] .planning-preview-dates {
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .planning-preview-badge {
+    background: #b3236c !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="pink"] .planning-dialog-actions {
+    border-top-color: #9d174d !important;
+}
+
+[data-theme="pink"] .planning-btn-remove {
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+    background: #921653 !important;
+}
+
+[data-theme="pink"] .planning-btn-remove:hover {
+    background: #881337 !important;
+}
+
+[data-theme="pink"] .planning-btn-cancel {
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+    background: #a82062 !important;
+}
+
+[data-theme="pink"] .planning-btn-cancel:hover {
+    background: #9d174d !important;
+    color: var(--text) !important;
+}
+
+[data-theme="pink"] .planning-btn-submit {
+    background: linear-gradient(135deg, #be185d 0%, #9d174d 100%) !important;
+}
+
+[data-theme="pink"] .planning-btn-submit:hover {
+    background: linear-gradient(135deg, #be185d 0%, #be185d 100%) !important;
+}
+
+/* Compact planning form in both themes. */
+.planning-page .icon,
+.planning-page .icon-sm {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+}
+
+dialog#planning-dialog {
+    width: 480px !important;
+    border-radius: var(--radius);
+    border-color: var(--border);
+    background: var(--surface);
+    overflow-y: auto;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+dialog#planning-dialog::backdrop {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none;
+}
+
+#planning-dialog .planning-dialog-form {
+    padding: 20px;
+    gap: 16px;
+}
+
+#planning-dialog .planning-dialog-heading {
+    padding-bottom: 12px;
+    border-bottom: 0;
+}
+
+#planning-dialog .planning-dialog-close {
+    background: transparent !important;
+    border: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+}
+
+#planning-dialog .planning-dialog-fields {
+    gap: 14px;
+}
+
+#planning-dialog .planning-field-group {
+    gap: 6px;
+}
+
+#planning-dialog .planning-dialog-badge {
+    background: transparent !important;
+    border: 0;
+    padding: 0;
+    border-radius: 0;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-muted) !important;
+}
+
+#planning-dialog .planning-dialog-heading h2 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+#planning-dialog .planning-request-chips {
+    display: grid;
+    gap: 6px;
+}
+
+#planning-dialog .planning-meta-chip {
+    display: flex;
+    justify-content: space-between;
+    background: transparent !important;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    gap: 16px;
+}
+
+#planning-dialog .planning-meta-chip .meta-label {
+    font-size: 12px;
+}
+
+#planning-dialog .planning-meta-chip .meta-val {
+    font-weight: 500;
+    text-align: right;
+}
+
+#planning-dialog .planning-label {
+    white-space: nowrap;
+    font-weight: 400;
+}
+
+#planning-dialog .planning-date-input {
+    min-width: 0;
+    padding: 9px 10px;
+    border-radius: 4px !important;
+    background: var(--frame) !important;
+}
+
+#planning-dialog .planning-preview {
+    border: 0;
+    border-radius: 0;
+    background: transparent !important;
+    padding: 0;
+    min-height: 24px;
+}
+
+#planning-dialog .planning-preview-dates {
+    font-size: 12px;
+    font-weight: 400;
+    flex-wrap: wrap;
+}
+
+#planning-dialog .planning-preview-badge {
+    border: 0;
+    border-radius: 0;
+    background: transparent !important;
+    padding: 0;
+    font-weight: 400;
+}
+
+#planning-save-message:empty {
+    display: none;
+}
+
+#planning-dialog .planning-dialog-actions {
+    margin: 0;
+    padding-top: 14px;
+    border-top: 0;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+#planning-dialog .planning-dialog-actions-right {
+    gap: 8px;
+}
+
+#planning-dialog .planning-dialog-actions button {
+    min-height: 34px;
+    border-radius: 4px;
+    padding: 7px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: none;
+    transform: none;
+}
+
+#planning-dialog .planning-btn-remove {
+    background: transparent !important;
+    border: 0;
+    padding-left: 0;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+#planning-dialog .planning-btn-cancel {
+    border: 0;
+    background: transparent !important;
+}
+
+#planning-dialog .planning-btn-submit {
+    background: var(--accent) !important;
+}
+
+#planning-dialog .planning-btn-submit:hover {
+    background: var(--accent-hover) !important;
+}
+
+@media (max-width: 420px) {
+    #planning-dialog .planning-dialog-fields {
+        grid-template-columns: 1fr;
+    }
+
+    #planning-dialog .planning-preview-content {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+}

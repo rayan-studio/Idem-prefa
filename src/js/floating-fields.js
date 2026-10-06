@@ -1,0 +1,45 @@
+(() => {
+    function enhanceFields() {
+        document.querySelectorAll('label[for]').forEach(label => {
+            const field = document.getElementById(label.htmlFor);
+            if (!field || label.closest('[data-static-fields]') || label.closest('.floating-field') || field.closest('.floating-field')) return;
+            if (!field.matches('input, textarea, select') || field.matches('input[type="hidden"], input[type="file"], input[type="checkbox"], input[type="radio"], input[type="range"], input[type="submit"], input[type="button"]')) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'floating-field';
+            const unit = field.closest('.input-unit');
+            const control = unit || field;
+            control.before(wrapper);
+            wrapper.append(control, label);
+            field.classList.add('floating-control');
+            if (field.matches('select, input[type="date"], input[type="datetime-local"], input[type="time"]')) {
+                wrapper.classList.add('floating-always');
+            } else if (!field.hasAttribute('placeholder')) {
+                field.setAttribute('placeholder', ' ');
+            }
+        });
+        // Match the surrounding panel so the floating label cuts the border
+        // without leaving a contrasting rectangle behind its text.
+        document.querySelectorAll('.floating-field').forEach(wrapper => {
+            let parent = wrapper.parentElement;
+            while (parent) {
+                const background = getComputedStyle(parent).backgroundColor;
+                if (background !== 'transparent' && background !== 'rgba(0, 0, 0, 0)') {
+                    if (wrapper.style.getPropertyValue('--field-surface') !== background) {
+                        wrapper.style.setProperty('--field-surface', background);
+                    }
+                    break;
+                }
+                parent = parent.parentElement;
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', enhanceFields);
+    } else {
+        enhanceFields();
+    }
+    // Dashboard pages and detail forms are inserted through jQuery and HTMX.
+    new MutationObserver(enhanceFields).observe(document.documentElement, { childList: true, subtree: true });
+})();

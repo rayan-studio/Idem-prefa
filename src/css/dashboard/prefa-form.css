@@ -1,0 +1,402 @@
+.prefa-page {
+    padding: 40px 36px;
+    background: var(--frame);
+}
+
+.prefa-shell {
+    width: 100%;
+    max-width: 860px;
+    min-width: 0;
+    margin: 0 auto;
+}
+
+.prefa-heading {
+    margin-bottom: 28px;
+}
+
+.prefa-eyebrow {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.4px;
+}
+
+.prefa-heading h1 {
+    font-size: 25px;
+    line-height: 1.3;
+    font-weight: 600;
+    letter-spacing: -.5px;
+    color: var(--text);
+}
+
+.prefa-heading p {
+    margin-top: 8px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.prefa-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.prefa-section {
+    min-width: 0;
+    padding: 20px 24px 24px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+}
+
+.prefa-section legend {
+    padding: 0 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.prefa-section legend span {
+    margin-right: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.prefa-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+}
+
+.prefa-full {
+    grid-column: 1 / -1;
+}
+
+.prefa-form .form-group {
+    gap: 7px;
+    min-width: 0;
+}
+
+.prefa-form .form-group input,
+.prefa-form .form-group select {
+    height: 38px;
+    padding: 0 11px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 14px;
+    width: 100%;
+}
+
+.prefa-form .form-group select:focus {
+    border-color: var(--accent);
+    outline: none;
+}
+
+.prefa-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 0;
+    cursor: pointer;
+}
+
+.prefa-option-block {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+}
+
+.prefa-option+.prefa-option,
+.prefa-option+.prefa-option-block,
+.prefa-option-block+.prefa-option {
+    border-top: 1px solid var(--border);
+}
+
+.prefa-option input {
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+}
+
+.prefa-option strong {
+    font-weight: 500;
+    display: block;
+}
+
+.prefa-option small {
+    display: block;
+    margin-top: 5px;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+.prefa-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 4px 0 16px;
+}
+
+.prefa-form-footer>span {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.prefa-form [hidden] {
+    display: none;
+}
+
+.prefa-form textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font: inherit;
+    resize: vertical;
+}
+
+.required-mark {
+    color: #f08080;
+    font-weight: 700;
+}
+
+.prefa-form button,
+#refresh-prefa {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 36px;
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background: var(--accent);
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.prefa-form button:hover:not(:disabled) {
+    background: var(--accent-hover);
+}
+
+.prefa-form button:focus-visible,
+#refresh-prefa:focus-visible,
+.prefa-details summary:focus-visible,
+.prefa-form textarea:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+.prefa-form button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.prefa-form button.reject {
+    background: var(--surface);
+    color: #f6a4a4;
+    border-color: #694047;
+}
+
+.prefa-form button.reject:hover:not(:disabled) {
+    background: #382326;
+}
+
+.prefa-list-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+#refresh-prefa {
+    background: var(--surface);
+    color: var(--text);
+    border-color: var(--border);
+    flex-shrink: 0;
+}
+
+#refresh-prefa:hover {
+    background: var(--hover);
+}
+
+.prefa-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.prefa-message {
+    margin: 0;
+    font-size: 13px;
+}
+
+.prefa-message:empty {
+    display: none;
+}
+
+.prefa-message.success,
+.status-2 {
+    color: #86dba6;
+}
+
+.prefa-message.error,
+.status-3 {
+    color: #f6a4a4;
+}
+
+.status-1 {
+    color: #e6c078;
+}
+
+.prefa-list {
+    display: block;
+}
+
+.prefa-request {
+    padding: 22px 24px 0;
+    margin-bottom: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow-wrap: anywhere;
+}
+
+.prefa-request-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.prefa-request-number {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 10px;
+    letter-spacing: .8px;
+    color: var(--text-muted);
+}
+
+.prefa-request h2 {
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.prefa-labels {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.prefa-status {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.prefa-status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.prefa-urgent {
+    font-size: 11px;
+    color: #efb078;
+}
+
+.prefa-overview {
+    display: flex;
+    gap: 12px 24px;
+    flex-wrap: wrap;
+    padding: 18px 0;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.prefa-overview strong {
+    color: var(--text);
+    font-weight: 500;
+}
+
+.prefa-details {
+    border-top: 1px solid var(--border);
+}
+
+.prefa-details summary {
+    padding: 13px 0;
+    color: var(--accent);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.prefa-details[open] {
+    padding-bottom: 20px;
+}
+
+.prefa-review {
+    border-top: 1px solid var(--border);
+    padding-top: 18px;
+    margin-top: 20px;
+}
+
+.prefa-request dl {
+    display: grid;
+    grid-template-columns: minmax(100px, 1fr) 2fr;
+    gap: 8px 16px;
+    margin: 16px 0;
+    font-size: 13px;
+}
+
+.prefa-request dd {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.prefa-request dt {
+    color: var(--text-muted);
+}
+
+.prefa-empty {
+    padding: 64px 20px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+}
+
+.prefa-empty svg {
+    width: 36px;
+    height: 36px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.prefa-empty h2 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.prefa-empty p {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
