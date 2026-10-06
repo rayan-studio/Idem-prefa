@@ -189,13 +189,7 @@
     background: var(--accent-hover);
 }
 
-.prefa-form button:focus-visible,
-#refresh-prefa:focus-visible,
-.prefa-details summary:focus-visible,
-.prefa-form textarea:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
-}
+
 
 .prefa-form button:disabled {
     opacity: .55;

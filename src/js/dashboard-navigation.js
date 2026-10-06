@@ -40,7 +40,7 @@ $(function () {
 
 });
 
-$('#btn-create-user, #btn-list-users, #btn-prefa, #btn-list-prefa, #btn-urgent-prefa, #btn-planning, #btn-settings').on('click', function () {
+$('#btn-create-user, #btn-list-users, #btn-prefa, #btn-list-prefa, #btn-urgent-prefa, #btn-plans-iso, #btn-planning, #btn-settings').on('click', function () {
     const button = $(this);
     const pages = {
         'btn-create-user': 'pages/create_users.php',
@@ -48,6 +48,7 @@ $('#btn-create-user, #btn-list-users, #btn-prefa, #btn-list-prefa, #btn-urgent-p
         'btn-prefa': 'pages/create_prefa.php',
         'btn-list-prefa': 'pages/lists_prefa.php',
         'btn-urgent-prefa': 'pages/lists_prefa.php?view=urgent',
+        'btn-plans-iso': 'pages/plans_iso.php',
         'btn-planning': 'pages/planning.php',
         'btn-settings': 'pages/settings.php'
     };

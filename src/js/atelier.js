@@ -58,18 +58,29 @@
         $.ajax({ url: 'actions/' + endpoint, method: 'POST', data: data.toString(), dataType: 'json' })
             .done(function () {
                 if (endpoint === 'update_atelier.php') { refreshStaff(expanded); return; }
-                const params = new URLSearchParams(new FormData(document.getElementById('prefa-filters')));
-                params.set('results', '1');
-                $.get('pages/lists_prefa.php?' + params.toString()).done(function (html) {
-                    $('#prefa-results').replaceWith(html);
-                    expanded.forEach(id => {
-                        const row = document.getElementById(id);
-                        if (row) row.hidden = false;
-                        document.querySelectorAll('.prefa-toggle').forEach(button => {
-                            if (button.getAttribute('aria-controls') === id) button.setAttribute('aria-expanded', 'true');
+                const prefaFilters = document.getElementById('prefa-filters');
+                if (prefaFilters) {
+                    const params = new URLSearchParams(new FormData(prefaFilters));
+                    params.set('results', '1');
+                    $.get('pages/lists_prefa.php?' + params.toString()).done(function (html) {
+                        $('#prefa-results').replaceWith(html);
+                        expanded.forEach(id => {
+                            const row = document.getElementById(id);
+                            if (row) row.hidden = false;
+                            document.querySelectorAll('.prefa-toggle').forEach(button => {
+                                if (button.getAttribute('aria-controls') === id) button.setAttribute('aria-expanded', 'true');
+                            });
+                        });
+                    }).fail(function () { message.text('Enregistrement effectué. Actualisez pour voir le résultat.'); });
+                } else if (document.getElementById('plans-iso-page')) {
+                    const openCardIds = Array.from(document.querySelectorAll('.plans-iso-card[open]')).map(c => c.id);
+                    $('#content').load('pages/plans_iso.php', function () {
+                        openCardIds.forEach(id => {
+                            const card = document.getElementById(id);
+                            if (card) card.open = true;
                         });
                     });
-                }).fail(function () { message.text('Enregistrement effectué. Actualisez pour voir le résultat.'); });
+                }
             })
             .fail(xhr => message.text(xhr.responseJSON?.message || 'Enregistrement impossible. Réessayez.'))
             .always(() => buttons.prop('disabled', false));

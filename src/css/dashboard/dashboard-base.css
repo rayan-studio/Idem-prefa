@@ -614,10 +614,6 @@ body[data-theme="pink"],
     background: #921653 !important;
 }
 
-[data-theme="pink"] tbody tr:hover td {
-    background: #9d174d !important;
-}
-
 /* Badges et alertes */
 [data-theme="pink"] .prefa-badge,
 [data-theme="pink"] .atelier-state,

@@ -550,8 +550,55 @@ $(document).on('click', '.prefa-toggle[aria-controls]', function () {
     const details = document.getElementById(this.getAttribute('aria-controls'));
     if (!details) return;
     const expanded = this.getAttribute('aria-expanded') === 'true';
+
+    // Fermer les autres panneaux de détails ouverts pour n'en afficher qu'un à droite
+    if (!expanded) {
+        document.querySelectorAll('.prefa-detail-row:not([hidden])').forEach(row => {
+            row.hidden = true;
+        });
+        document.querySelectorAll('.prefa-toggle[aria-expanded="true"]').forEach(btn => {
+            btn.setAttribute('aria-expanded', 'false');
+        });
+    }
+
     this.setAttribute('aria-expanded', String(!expanded));
     details.hidden = expanded;
+});
+
+$(document).on('click', '.prefa-detail-close', function () {
+    const targetId = this.dataset.closeTarget;
+    const details = targetId ? document.getElementById(targetId) : this.closest('.prefa-detail-row');
+    if (details) {
+        details.hidden = true;
+        const toggleBtn = document.querySelector(`.prefa-toggle[aria-controls="${details.id}"]`);
+        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+    }
+});
+
+$(document).on('keydown', function (event) {
+    if (event.key === 'Escape') {
+        const openDetail = document.querySelector('.prefa-detail-row:not([hidden])');
+        if (openDetail) {
+            openDetail.hidden = true;
+            const toggleBtn = document.querySelector(`.prefa-toggle[aria-controls="${openDetail.id}"]`);
+            if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+        }
+    }
+});
+
+$(document).on('click', '.btn-goto-plans-iso', function () {
+    const reqId = $(this).data('request-id');
+    $('#btn-plans-iso').trigger('click');
+    if (!reqId) return;
+    const checkCard = setInterval(function () {
+        const card = document.getElementById('plans-iso-card-' + reqId);
+        if (card) {
+            clearInterval(checkCard);
+            card.open = true;
+            card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 50);
+    setTimeout(function () { clearInterval(checkCard); }, 2000);
 });
 
 $(document).on('submit', '#prefa-form, .prefa-review', function (event) {

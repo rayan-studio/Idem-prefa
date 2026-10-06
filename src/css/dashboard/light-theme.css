@@ -1,0 +1,1139 @@
+/* ==========================================================================
+   THÈME CLAIR (LIGHT THEME) - DASHBOARD & APPLICATIONS
+   ========================================================================== */
+
+html[data-theme="light"],
+body[data-theme="light"],
+[data-theme="light"] {
+    color-scheme: light;
+    --frame: #f1f5f9;
+    --surface: #ffffff;
+    --border: #cbd5e1;
+    --border-subtle: #e2e8f0;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --hover: #f1f5f9;
+    --active: #e2e8f0;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --radius: 8px;
+    --scrollbar-thumb: #cbd5e1;
+    --scrollbar-thumb-hover: #94a3b8;
+}
+
+[data-theme="light"] ::selection {
+    background: #bfdbfe !important;
+    color: #1e3a8a !important;
+}
+
+/* ===== STRUCTURE GÉNÉRALE ===== */
+
+[data-theme="light"] #contenaire {
+    background: var(--frame) !important;
+}
+
+[data-theme="light"] #right-panel {
+    background: var(--surface) !important;
+    border-color: var(--border) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] #content {
+    background: transparent !important;
+}
+
+[data-theme="light"] .page,
+[data-theme="light"] .page.prefa-list,
+[data-theme="light"] .settings-page,
+[data-theme="light"] .atelier-page,
+[data-theme="light"] .planning-page,
+[data-theme="light"] .plans-iso-page {
+    background: transparent !important;
+}
+
+/* ===== BARRE LATÉRALE (SIDEBAR) ===== */
+
+[data-theme="light"] #left-panel {
+    background: #ffffff !important;
+    border-right: 1px solid var(--border) !important;
+}
+
+[data-theme="light"] #left-panel .sidebar-mobile-header {
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+}
+
+[data-theme="light"] #left-panel .nav-btn {
+    color: #334155 !important;
+    font-weight: 500;
+}
+
+[data-theme="light"] #left-panel .nav-btn .icon {
+    color: #64748b !important;
+}
+
+[data-theme="light"] #left-panel .nav-btn:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+}
+
+[data-theme="light"] #left-panel .nav-btn.is-active {
+    background: #eff6ff !important;
+    color: #2563eb !important;
+    font-weight: 600;
+}
+
+[data-theme="light"] #left-panel .nav-btn.is-active .icon {
+    color: #2563eb !important;
+}
+
+[data-theme="light"] #left-panel .nav-footer {
+    border-top: 1px solid var(--border-subtle);
+}
+
+[data-theme="light"] #left-panel .nav-footer:hover,
+[data-theme="light"] #left-panel .nav-footer:focus-within {
+    background: #f1f5f9 !important;
+}
+
+[data-theme="light"] .user-avatar {
+    background: #e2e8f0 !important;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1 !important;
+    font-weight: 700;
+}
+
+[data-theme="light"] .nav-subfooter .title {
+    color: #0f172a !important;
+    font-weight: 600;
+}
+
+[data-theme="light"] .nav-subfooter .subtitle {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .nav-logout {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .nav-logout:hover {
+    background: #fee2e2 !important;
+    color: #b91c1c !important;
+}
+
+/* ===== BARRE D'OUTILS & HEADER ===== */
+
+[data-theme="light"] .dashboard-toolbar {
+    background: #ffffff !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+[data-theme="light"] #btn-hide {
+    background: #f8fafc !important;
+    border: 1px solid var(--border) !important;
+    color: #64748b !important;
+}
+
+[data-theme="light"] #btn-hide:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+}
+
+/* ===== CARTES & SECTIONS ===== */
+
+[data-theme="light"] .welcome-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .welcome-card h1 {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .welcome-card p {
+    color: #475569 !important;
+}
+
+[data-theme="light"] .settings-card,
+[data-theme="light"] .prefa-section,
+[data-theme="light"] .prefa-card,
+[data-theme="light"] .atelier-card,
+[data-theme="light"] .atelier-element-card,
+[data-theme="light"] .plans-iso-card,
+[data-theme="light"] .planning-card {
+    background: #ffffff !important;
+    border-color: var(--border) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] .settings-header h1,
+[data-theme="light"] .list-h1,
+[data-theme="light"] .prefa-heading h1,
+[data-theme="light"] .settings-card-title,
+[data-theme="light"] .atelier-heading h1 {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] p,
+[data-theme="light"] label,
+[data-theme="light"] .settings-header p,
+[data-theme="light"] .settings-card-desc,
+[data-theme="light"] .prefa-heading p {
+    color: #475569 !important;
+}
+
+/* ===== PLANS ISO & ACCORDÉONS ===== */
+
+[data-theme="light"] .plans-iso-card {
+    background: #ffffff !important;
+    border: 1px solid var(--border) !important;
+}
+
+[data-theme="light"] .plans-iso-summary {
+    background: #f8fafc !important;
+    border-bottom: 1px solid var(--border-subtle);
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .plans-iso-summary:hover {
+    background: #f1f5f9 !important;
+}
+
+[data-theme="light"] .plans-iso-body {
+    background: #ffffff !important;
+}
+
+[data-theme="light"] .atelier-start {
+    background: #f8fafc !important;
+    border: 1px solid var(--border) !important;
+}
+
+[data-theme="light"] .atelier-new-element {
+    background: #f8fafc !important;
+    border: 1px solid var(--border) !important;
+}
+
+[data-theme="light"] .atelier-new-element summary {
+    background: #f1f5f9 !important;
+    color: #1e293b !important;
+    font-weight: 600;
+}
+
+[data-theme="light"] .atelier-manage-panel {
+    background: #f8fafc !important;
+    border: 1px solid var(--border) !important;
+}
+
+/* ===== ONGLETS ===== */
+
+[data-theme="light"] .settings-tabs-bar {
+    border-bottom-color: var(--border) !important;
+}
+
+[data-theme="light"] .settings-tab-btn {
+    color: #64748b !important;
+    font-weight: 600;
+}
+
+[data-theme="light"] .settings-tab-btn:hover {
+    color: #0f172a !important;
+    background: #f1f5f9 !important;
+}
+
+[data-theme="light"] .settings-tab-btn.is-active {
+    color: #2563eb !important;
+    border-bottom-color: #2563eb !important;
+    background: #eff6ff !important;
+    font-weight: 700;
+}
+
+/* ===== BOUTONS ===== */
+
+[data-theme="light"] button.settings-btn-primary,
+[data-theme="light"] button.btn-primary,
+[data-theme="light"] button.prefa-btn-primary,
+[data-theme="light"] button.atelier-btn-primary,
+[data-theme="light"] button.planning-btn-primary,
+[data-theme="light"] .btn-apply-theme[data-theme="light"],
+[data-theme="light"] input[type="submit"] {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    border: none !important;
+    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
+}
+
+[data-theme="light"] button.settings-btn-primary:hover,
+[data-theme="light"] button.btn-primary:hover,
+[data-theme="light"] button.prefa-btn-primary:hover,
+[data-theme="light"] button.atelier-btn-primary:hover,
+[data-theme="light"] button.planning-btn-primary:hover,
+[data-theme="light"] input[type="submit"]:hover {
+    background: #1d4ed8 !important;
+}
+
+[data-theme="light"] button.settings-btn-secondary,
+[data-theme="light"] button.btn-secondary,
+[data-theme="light"] button.prefa-btn-secondary,
+[data-theme="light"] .atelier-cancel-assignment,
+[data-theme="light"] .prefa-toggle {
+    background: #ffffff !important;
+    color: #334155 !important;
+    border: 1px solid var(--border) !important;
+    font-weight: 600 !important;
+}
+
+[data-theme="light"] button.settings-btn-secondary:hover,
+[data-theme="light"] button.btn-secondary:hover,
+[data-theme="light"] button.prefa-btn-secondary:hover,
+[data-theme="light"] .prefa-toggle:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    border-color: #94a3b8 !important;
+}
+
+[data-theme="light"] .atelier-person-button {
+    background: #ffffff !important;
+    border: 1px dashed var(--border) !important;
+    color: #2563eb !important;
+}
+
+[data-theme="light"] .atelier-person-button:hover {
+    background: #eff6ff !important;
+    border-color: #93c5fd !important;
+}
+
+[data-theme="light"] .atelier-person-button.is-assigned {
+    background: #eff6ff !important;
+    border: 1px solid #93c5fd !important;
+    color: #1d4ed8 !important;
+}
+
+/* ===== FORMULAIRES & INPUTS ===== */
+
+[data-theme="light"] .floating-field {
+    --field-surface: #ffffff;
+    --field-text: #0f172a;
+    --field-muted: #64748b;
+    --field-border: #cbd5e1;
+    --field-focus: #2563eb;
+}
+
+[data-theme="light"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+[data-theme="light"] input:focus,
+[data-theme="light"] select:focus,
+[data-theme="light"] textarea:focus {
+    border-color: #2563eb !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+}
+
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
+    color: #94a3b8 !important;
+}
+
+[data-theme="light"] option {
+    background: #ffffff !important;
+    color: #0f172a !important;
+}
+
+[data-theme="light"] input[type="checkbox"],
+[data-theme="light"] input[type="radio"],
+[data-theme="light"] progress {
+    accent-color: #2563eb;
+}
+
+[data-theme="light"] input:autofill {
+    -webkit-text-fill-color: #0f172a !important;
+    box-shadow: inset 0 0 0 1000px #ffffff !important;
+}
+
+/* ===== TABLEAUX ===== */
+
+[data-theme="light"] table,
+[data-theme="light"] .prefa-table,
+[data-theme="light"] .atelier-plans-table,
+[data-theme="light"] #users-results table {
+    background: #ffffff !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="light"] th,
+[data-theme="light"] thead th,
+[data-theme="light"] .prefa-table th,
+[data-theme="light"] .atelier-plans-table th {
+    background: #f8fafc !important;
+    color: #334155 !important;
+    font-weight: 700 !important;
+    border-bottom: 2px solid var(--border) !important;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+
+[data-theme="light"] td,
+[data-theme="light"] .prefa-table td,
+[data-theme="light"] .atelier-plans-table td {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-bottom: 1px solid var(--border-subtle) !important;
+}
+
+[data-theme="light"] tbody tr:nth-child(even) td {
+    background: #fafbfc !important;
+}
+
+/* hover sur lignes de tableau désactivé – uniquement sur les boutons/actions */
+
+[data-theme="light"] .atelier-editor-row td {
+    background: #f8fafc !important;
+}
+
+/* ===== BADGES, ALERTES & MESSAGES ===== */
+
+[data-theme="light"] .prefa-badge,
+[data-theme="light"] .atelier-state,
+[data-theme="light"] .status-badge {
+    background: #f1f5f9 !important;
+    color: #334155 !important;
+    border: 1px solid #cbd5e1 !important;
+    font-weight: 600 !important;
+}
+
+[data-theme="light"] .nav-urgent-badge,
+[data-theme="light"] .prefa-urgent,
+[data-theme="light"] .is-urgent {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .prefa-message.success {
+    background: #f0fdf4 !important;
+    border: 1px solid #86efac !important;
+    color: #166534 !important;
+    font-weight: 600;
+}
+
+[data-theme="light"] .prefa-message.error,
+[data-theme="light"] .prefa-decision-comment.is-refusal {
+    background: #fef2f2 !important;
+    border: 1px solid #fca5a5 !important;
+    color: #991b1b !important;
+}
+
+[data-theme="light"] .prefa-document-link {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #2563eb !important;
+}
+
+[data-theme="light"] .prefa-document-link:hover {
+    background: #eff6ff !important;
+    border-color: #bfdbfe !important;
+}
+
+/* ===== PLANNING & GANTT ===== */
+
+[data-theme="light"] .planning-timeline {
+    background: #ffffff !important;
+    border-color: var(--border) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .planning-timeline-toolbar {
+    background: #f8fafc !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+[data-theme="light"] .planning-timeline .vis-panel.vis-top {
+    background: #f8fafc !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+[data-theme="light"] .planning-timeline .vis-panel.vis-left {
+    background: #ffffff !important;
+    border-right: 1px solid var(--border) !important;
+}
+
+[data-theme="light"] .planning-timeline .vis-time-axis .vis-text.vis-major {
+    color: #2563eb !important;
+}
+
+[data-theme="light"] .planning-timeline .vis-time-axis .vis-text.vis-minor {
+    color: #334155 !important;
+}
+
+[data-theme="light"] .planning-timeline .vis-time-axis .vis-grid.vis-minor {
+    border-color: rgba(203, 213, 225, 0.6) !important;
+}
+
+[data-theme="light"] .planning-timeline .vis-grid.vis-saturday,
+[data-theme="light"] .planning-timeline .vis-grid.vis-sunday {
+    background: rgba(241, 245, 249, 0.7) !important;
+}
+
+[data-theme="light"] .planning-timeline .vis-item {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    border-color: #60a5fa !important;
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .planning-timeline .vis-item.vis-selected {
+    box-shadow: 0 0 0 2px #2563eb, 0 4px 12px rgba(37, 99, 235, 0.4) !important;
+}
+
+[data-theme="light"] .planning-timeline-label {
+    color: #0f172a !important;
+    border-bottom-color: var(--border) !important;
+}
+
+[data-theme="light"] .planning-timeline-label:hover {
+    background: #f1f5f9 !important;
+}
+
+[data-theme="light"] .planning-timeline-label[aria-pressed="true"] {
+    background: #eff6ff !important;
+    box-shadow: inset 3px 0 0 #2563eb !important;
+}
+
+[data-theme="light"] .planning-matrix-table th {
+    background: #f8fafc !important;
+    color: #334155 !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="light"] .planning-matrix-table td {
+    background: #ffffff !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="light"] .planning-matrix-table td.status-ok {
+    background: #dcfce7 !important;
+    color: #166534 !important;
+}
+
+[data-theme="light"] .planning-matrix-table td.status-non-ok {
+    background: #fee2e2 !important;
+    color: #991b1b !important;
+}
+
+[data-theme="light"] .planning-matrix-table td.status-ras {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+}
+
+[data-theme="light"] .gantt-outer-container {
+    background: #ffffff !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="light"] .gantt-header-row,
+[data-theme="light"] .gantt-header-corner,
+[data-theme="light"] .gantt-weeks-header {
+    background: #f8fafc !important;
+    border-color: var(--border) !important;
+    color: #334155 !important;
+}
+
+[data-theme="light"] .gantt-bg-col.is-weekend {
+    background: #f8fafc !important;
+}
+
+[data-theme="light"] .gantt-bg-col.is-workday {
+    background: #ffffff !important;
+}
+
+[data-theme="light"] .gantt-label-col {
+    background: #ffffff !important;
+    border-color: var(--border) !important;
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .gantt-row {
+    border-color: var(--border) !important;
+}
+
+/* gantt-row:hover désactivé pour éviter l'effet "tout change" sur tableau */
+
+/* ===== DIALOGS / POPUPS ===== */
+
+[data-theme="light"] dialog {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] dialog::backdrop {
+    background: rgba(15, 23, 42, 0.45) !important;
+}
+
+/* ==========================================================================
+   PLANNING & GANTT - CORRECTIONS THÈME CLAIR
+   ========================================================================== */
+
+/* ===== PAGE DE PLANNING ===== */
+[data-theme="light"] .planning-page {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .planning-feedback.is-success {
+    color: #16a34a !important;
+}
+
+[data-theme="light"] .planning-feedback.is-error {
+    color: #dc2626 !important;
+}
+
+[data-theme="light"] #contenaire #planning-page-message.is-removed {
+    color: #991b1b !important;
+    background: #fef2f2 !important;
+    border-left: 3px solid #ef4444 !important;
+}
+
+/* ===== BOUTONS PLANNING ===== */
+[data-theme="light"] .planning-page .planning-button {
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #334155 !important;
+}
+
+[data-theme="light"] .planning-page .planning-button:hover {
+    background: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .planning-page .planning-primary {
+    background: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .planning-page .planning-primary:hover {
+    background: #1d4ed8 !important;
+}
+
+/* ===== GANTT - EN-TÊTE ===== */
+[data-theme="light"] .gantt-header-corner {
+    background: #f8fafc !important;
+    color: #64748b !important;
+    border-right-color: var(--border) !important;
+}
+
+[data-theme="light"] .gantt-weeks-header {
+    background: #f8fafc !important;
+    border-bottom-color: var(--border) !important;
+}
+
+[data-theme="light"] .gantt-week-cell {
+    background: #f1f5f9 !important;
+    color: #334155 !important;
+    border-right-color: var(--border) !important;
+    font-weight: 700;
+}
+
+/* ===== GANTT - NUMÉROS DE JOURS ===== */
+[data-theme="light"] .gantt-day-number {
+    color: #334155 !important;
+    border-right-color: var(--border) !important;
+}
+
+[data-theme="light"] .gantt-day-number.is-workday {
+    background: #f0fdf4 !important;
+    color: #166534 !important;
+}
+
+[data-theme="light"] .gantt-day-number.is-weekend {
+    background: #f8fafc !important;
+    color: #94a3b8 !important;
+}
+
+[data-theme="light"] .gantt-day-number.is-today {
+    background: #eff6ff !important;
+    color: #2563eb !important;
+    font-weight: 800;
+}
+
+/* ===== GANTT - GRILLE D'ARRIÈRE-PLAN ===== */
+[data-theme="light"] .gantt-bg-col {
+    border-right-color: rgba(203, 213, 225, 0.5) !important;
+}
+
+[data-theme="light"] .gantt-bg-col.is-workday {
+    background: rgba(240, 253, 244, 0.4) !important;
+}
+
+[data-theme="light"] .gantt-bg-col.is-weekend {
+    background: rgba(241, 245, 249, 0.5) !important;
+}
+
+/* ===== GANTT - LIGNES ===== */
+[data-theme="light"] .gantt-row:hover {
+    background: #f1f5f9 !important;
+}
+
+[data-theme="light"] .gantt-row.is-selected {
+    background: #eff6ff !important;
+}
+
+/* ===== GANTT - BADGE AFFAIRES ===== */
+[data-theme="light"] .gantt-affaire-badge {
+    background: #f8fafc !important;
+    border-color: var(--border) !important;
+    color: #0f172a !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="light"] .gantt-affaire-badge:hover {
+    background: #eff6ff !important;
+    border-color: #93c5fd !important;
+    color: #1e40af !important;
+}
+
+[data-theme="light"] .gantt-row.is-selected .gantt-affaire-badge {
+    background: #dbeafe !important;
+    border-color: #3b82f6 !important;
+    color: #1e40af !important;
+}
+
+/* ===== GANTT - BARRES ===== */
+[data-theme="light"] .gantt-yellow {
+    background: #fef9c3 !important;
+    border-color: #ca8a04 !important;
+    color: #713f12 !important;
+}
+
+[data-theme="light"] .gantt-lightblue {
+    background: #dbeafe !important;
+    border-color: #3b82f6 !important;
+    color: #1e3a8a !important;
+}
+
+[data-theme="light"] .gantt-blue {
+    background: #2563eb !important;
+    border-color: #1d4ed8 !important;
+    color: #ffffff !important;
+}
+
+/* ===== BLOCS INFÉRIEURS DU PLANNING (4 CARTES) ===== */
+[data-theme="light"] .planning-card {
+    background: #ffffff !important;
+    border-color: var(--border) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .planning-card-header {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    border-bottom-color: var(--border) !important;
+}
+
+[data-theme="light"] .planning-card-body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .planning-card-footer {
+    background: #f8fafc !important;
+    border-top-color: var(--border) !important;
+}
+
+/* ===== INFOS GÉNÉRALES (carte 1) ===== */
+[data-theme="light"] .planning-info-item {
+    border-bottom-color: rgba(203, 213, 225, 0.7) !important;
+}
+
+[data-theme="light"] .planning-info-item dt {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .planning-info-item dd {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .planning-info-item dd a {
+    color: #2563eb !important;
+}
+
+/* ===== MATRICE AVANCEMENT (carte 2) ===== */
+[data-theme="light"] .planning-matrix-table th {
+    background: #f8fafc !important;
+    color: #334155 !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="light"] .planning-matrix-table td {
+    background: #ffffff !important;
+    color: #334155 !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="light"] .planning-matrix-table td.step-label {
+    background: #f8fafc !important;
+    color: #334155 !important;
+}
+
+/* ===== COMMENTAIRES (carte 3) ===== */
+[data-theme="light"] .comment-item {
+    background: #f8fafc !important;
+    border-left-color: #3b82f6 !important;
+    border-top-color: var(--border) !important;
+    border-right-color: var(--border) !important;
+    border-bottom-color: var(--border) !important;
+}
+
+[data-theme="light"] .comment-meta {
+    color: #2563eb !important;
+}
+
+[data-theme="light"] .comment-text {
+    color: #0f172a !important;
+}
+
+/* ===== LIVRAISON (carte 4) ===== */
+[data-theme="light"] .planning-delivery-info p {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .planning-delivery-info strong {
+    color: #0f172a !important;
+}
+
+/* ===== BACKLOG ===== */
+[data-theme="light"] .planning-backlog {
+    background: #ffffff !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="light"] .planning-backlog-summary {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    border-bottom: 1px solid var(--border);
+}
+
+[data-theme="light"] .planning-backlog-summary:hover {
+    background: #f1f5f9 !important;
+}
+
+[data-theme="light"] .planning-urgent-badge {
+    background: #fef2f2 !important;
+    color: #dc2626 !important;
+    border-color: #fca5a5 !important;
+}
+
+/* ===== DIALOG DE PLANIFICATION ===== */
+[data-theme="light"] dialog.planning-dialog,
+[data-theme="light"] dialog#planning-dialog {
+    background: #ffffff !important;
+    border-color: var(--border) !important;
+    color: #0f172a !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+}
+
+[data-theme="light"] dialog.planning-dialog::backdrop,
+[data-theme="light"] dialog#planning-dialog::backdrop {
+    background: rgba(15, 23, 42, 0.4) !important;
+    backdrop-filter: blur(4px) !important;
+}
+
+[data-theme="light"] .planning-dialog-badge {
+    color: #2563eb !important;
+    background: rgba(37, 99, 235, 0.08) !important;
+    border-color: rgba(37, 99, 235, 0.25) !important;
+}
+
+[data-theme="light"] .planning-dialog-heading h2 {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .planning-dialog-close {
+    background: #f1f5f9 !important;
+    border-color: var(--border) !important;
+    color: #64748b !important;
+}
+
+[data-theme="light"] .planning-dialog-close:hover {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .planning-meta-chip {
+    background: #f8fafc !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="light"] .planning-meta-chip .meta-label {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .planning-meta-chip .meta-val {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .planning-label {
+    color: #475569 !important;
+}
+
+[data-theme="light"] .planning-date-input {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .planning-date-input:focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+}
+
+[data-theme="light"] .planning-help-text {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .planning-preview {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+}
+
+[data-theme="light"] .planning-preview-dates {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .planning-preview-badge {
+    background: rgba(37, 99, 235, 0.1) !important;
+    color: #1e40af !important;
+    border-color: rgba(37, 99, 235, 0.3) !important;
+}
+
+[data-theme="light"] .planning-dialog-actions {
+    border-top-color: var(--border) !important;
+}
+
+[data-theme="light"] .planning-btn-remove {
+    background: rgba(239, 68, 68, 0.07) !important;
+    border-color: rgba(239, 68, 68, 0.25) !important;
+    color: #dc2626 !important;
+}
+
+[data-theme="light"] .planning-btn-remove:hover {
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #b91c1c !important;
+}
+
+[data-theme="light"] .planning-btn-cancel {
+    background: #f8fafc !important;
+    border-color: var(--border) !important;
+    color: #475569 !important;
+}
+
+[data-theme="light"] .planning-btn-cancel:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+}
+
+/* ===== ATELIER - ÉLÉMENTS HARDCODÉS ===== */
+[data-theme="light"] .atelier-documents a {
+    color: #2563eb !important;
+}
+
+[data-theme="light"] .atelier-status-progress {
+    color: #2563eb !important;
+}
+
+[data-theme="light"] .atelier-state.is-taken {
+    color: #166534 !important;
+    border-color: #86efac !important;
+    background: #f0fdf4 !important;
+}
+
+[data-theme="light"] .atelier-new-element > summary {
+    color: #2563eb !important;
+}
+
+[data-theme="light"] .atelier-plan-heading {
+    background: #eff6ff !important;
+    border-left-color: #3b82f6 !important;
+}
+
+[data-theme="light"] .atelier-plan-label {
+    color: #2563eb !important;
+}
+
+[data-theme="light"] .atelier-edit-assignment {
+    color: #2563eb !important;
+    border-color: var(--border) !important;
+    background: #ffffff !important;
+}
+
+[data-theme="light"] .atelier-edit-assignment:hover {
+    background: #eff6ff !important;
+    border-color: #93c5fd !important;
+}
+
+[data-theme="light"] .atelier-manage-form .atelier-remove-assignment {
+    color: #dc2626 !important;
+}
+
+[data-theme="light"] .atelier-missing-file {
+    color: #b45309 !important;
+}
+
+[data-theme="light"] .atelier-assignment-count.is-complete {
+    color: #16a34a !important;
+}
+
+[data-theme="light"] .atelier-history-kind {
+    color: #2563eb !important;
+}
+
+[data-theme="light"] .plans-iso-card.is-urgent {
+    border-left-color: #f59e0b !important;
+}
+
+/* ===== HOVER PLAN ROWS & BUTTONS ===== */
+[data-theme="light"] .atelier-plans-table > tbody > tr.atelier-plan-summary > td {
+    background: #ffffff !important;
+}
+
+[data-theme="light"] .atelier-plans-table > tbody > tr.atelier-plan-summary:hover > td {
+    background: #f8fafc !important;
+}
+
+[data-theme="light"] .atelier-plan-toggle:hover {
+    background: #f1f5f9 !important;
+}
+
+[data-theme="light"] .atelier-plans-table .atelier-person-button {
+    color: #64748b !important;
+    border-color: #cbd5e1 !important;
+}
+
+[data-theme="light"] .atelier-plans-table .atelier-person-button.is-assigned {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .atelier-plans-table .atelier-person-button:hover,
+[data-theme="light"] .atelier-plans-table .atelier-person-button[aria-expanded="true"] {
+    background: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+}
+
+[data-theme="light"] .atelier-editor-row .atelier-manage-panel {
+    background: #f8fafc !important;
+    border-bottom-color: var(--border) !important;
+}
+
+/* ===== HISTORY TIMELINE ATELIER ===== */
+[data-theme="light"] .atelier-history-timeline {
+    border-left-color: var(--border) !important;
+}
+
+[data-theme="light"] .atelier-history-timeline li::before {
+    background: #94a3b8 !important;
+    border-color: #ffffff !important;
+}
+
+/* ===== VIS-TIMELINE (planning-timeline.css) overrides ===== */
+[data-theme="light"] .planning-timeline .vis-panel,
+[data-theme="light"] .planning-timeline .vis-label,
+[data-theme="light"] .planning-timeline .vis-foreground .vis-group,
+[data-theme="light"] .planning-timeline .vis-time-axis .vis-grid {
+    border-color: var(--border) !important;
+}
+
+[data-theme="light"] .planning-timeline .vis-time-axis {
+    background: #f8fafc !important;
+}
+
+/* ===== PREFA LIST STICKY HEADER ===== */
+[data-theme="light"] .prefa-list-head-row,
+[data-theme="light"] .prefa-table thead tr {
+    background: #f8fafc !important;
+}
+
+[data-theme="light"] .prefa-table tbody tr:hover td {
+    background: #f1f5f9 !important;
+}
+
+/* ===== DROPDOWN / SELECT GÉNÉRAL ===== */
+[data-theme="light"] select option {
+    background: #ffffff !important;
+    color: #0f172a !important;
+}
+
+/* ===== PREFA DETAIL SECTION (résumé demande) ===== */
+[data-theme="light"] .prefa-section {
+    background: #ffffff !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="light"] .prefa-section h2,
+[data-theme="light"] .prefa-section h3 {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .prefa-fact-label {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .prefa-fact-value {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .prefa-request {
+    background: #ffffff !important;
+    border-color: var(--border) !important;
+}
+
+[data-theme="light"] .prefa-request:hover {
+    background: #f8fafc !important;
+}
+
+/* ===== ÉLÉMENTS DE FILTRES ===== */
+[data-theme="light"] .floating-field {
+    --field-surface: #ffffff;
+    --field-text: #0f172a;
+    --field-muted: #64748b;
+    --field-border: #cbd5e1;
+    --field-focus: #2563eb;
+}
+
+[data-theme="light"] .floating-field label {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .floating-field input:not(:placeholder-shown) ~ label,
+[data-theme="light"] .floating-field select:not([value=""]) ~ label,
+[data-theme="light"] .floating-field input:focus ~ label,
+[data-theme="light"] .floating-field select:focus ~ label {
+    color: #2563eb !important;
+}
+
+/* ===== BADGES / COMPTEURS ===== */
+[data-theme="light"] .planning-badge-count {
+    background: #2563eb !important;
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .prefa-list-summary strong {
+    color: #0f172a !important;
+}
+
+/* ===== PLANNING ISO - CARD URGENTE ===== */
+[data-theme="light"] .plans-iso-card.is-urgent .plans-iso-summary {
+    border-left: 3px solid #f59e0b;
+}

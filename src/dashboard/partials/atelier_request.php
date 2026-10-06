@@ -21,15 +21,9 @@ foreach (['qmos' => $qmosByRequest[$requestId] ?? [], 'dmos' => $dmosByRequest[$
 $activeCount = 0;
 foreach ($elements as $element) foreach ($element['affectations'] as $assignment) if ($assignment['actif']) $activeCount++;
 ?>
-<section class="prefa-workshop-planning atelier-section" aria-labelledby="atelier-title-<?= $requestId ?>">
-    <header class="atelier-overview">
-        <div>
-            <h3 id="atelier-title-<?= $requestId ?>">Travaux à affecter</h3>
-            <p class="atelier-muted">Plan / ISO, montage et soudage sont les travaux à réaliser. Les fichiers de plan, QMOS et DMOS sont les documents utilisés.</p>
-        </div>
-        <span class="atelier-state <?= $taken ? 'is-taken' : '' ?>"><?= $taken ? 'Pris en charge' : 'À prendre en charge' ?></span>
-    </header>
+<section class="atelier-section" aria-label="Travaux à affecter pour la demande #<?= $requestId ?>">
     <div class="atelier-overview-meta">
+        <span class="atelier-state <?= $taken ? 'is-taken' : '' ?>"><?= $taken ? 'Pris en charge' : 'À prendre en charge' ?></span>
         <span>Responsable atelier : <strong><?= prefaEscape($row['prise_en_charge_nom'] ?: ($taken ? 'Non renseigné' : 'En attente')) ?></strong></span>
         <?php if ($elements): ?><span><?= count($elements) ?> <?= count($elements) === 1 ? 'plan' : 'plans' ?> · <?= $activeCount ?> <?= $activeCount === 1 ? 'travail affecté' : 'travaux affectés' ?></span><?php endif; ?>
     </div>
@@ -49,13 +43,14 @@ foreach ($elements as $element) foreach ($element['affectations'] as $assignment
             </form>
         </div>
     <?php endif; ?>
+
     <?php if ($canManageWorkshop && $taken): ?>
         <details class="atelier-new-element" <?= !$elements ? 'open' : '' ?>>
             <summary>Ajouter un plan</summary>
             <?php if (!$elements): ?><p class="atelier-muted">Commencez par un plan, par exemple ISO-01, et sélectionnez ses documents.</p><?php endif; ?>
             <form class="atelier-action prefa-form atelier-grid" data-endpoint="save_atelier.php">
                 <input type="hidden" name="csrf" value="<?= prefaEscape($_SESSION['prefa_csrf']) ?>"><input type="hidden" name="id" value="<?= $requestId ?>"><input type="hidden" name="operation" value="element">
-                <div><label for="atelier-ref-<?= $requestId ?>">Libele</label><input id="atelier-ref-<?= $requestId ?>" name="reference" maxlength="80" required></div>
+                <div><label for="atelier-ref-<?= $requestId ?>">Libellé</label><input id="atelier-ref-<?= $requestId ?>" name="reference" maxlength="80" required></div>
                 <div><label for="atelier-label-<?= $requestId ?>">Description</label><input id="atelier-label-<?= $requestId ?>" name="libelle" maxlength="180" required></div>
                 <?php if ($documentOptions): ?>
                     <fieldset class="atelier-document-picker">
@@ -70,6 +65,7 @@ foreach ($elements as $element) foreach ($element['affectations'] as $assignment
     <?php elseif (!$elements && !$canManageWorkshop): ?>
         <p class="atelier-muted atelier-no-plans">Le chef d’atelier n’a pas encore préparé les plans et les tâches.</p>
     <?php endif; ?>
+
     <?php if ($elements): ?>
         <div class="atelier-plans-scroll">
             <table class="atelier-plans-table">
@@ -102,23 +98,30 @@ foreach ($elements as $element) foreach ($element['affectations'] as $assignment
                         <tr class="atelier-plan-summary">
                             <td><strong><?= prefaEscape($element['reference']) ?></strong><span class="atelier-row-description"><?= prefaEscape($element['libelle']) ?></span>
                                 <?php if (!$availableDocuments): ?><span class="atelier-missing-file"><?= !empty($attachmentsByRequest[$requestId]) ? 'Le fichier de la demande reste à rattacher à ce plan.' : 'Aucun fichier rattaché à ce plan.' ?></span><?php endif; ?>
-                                <?php if ($canManageWorkshop && $taken): ?>
-                                    <details class="atelier-plan-information">
-                                        <summary><?= $availableDocuments ? 'Modifier les documents' : 'Associer un fichier' ?></summary>
-                                        <form class="atelier-action prefa-form atelier-document-edit" data-endpoint="save_atelier.php">
-                                            <input type="hidden" name="csrf" value="<?= prefaEscape($_SESSION['prefa_csrf']) ?>"><input type="hidden" name="id" value="<?= $requestId ?>"><input type="hidden" name="operation" value="documents"><input type="hidden" name="element" value="<?= (int) $element['id'] ?>">
-                                            <p class="atelier-muted">Sélectionnez au moins un fichier de plan / ISO.</p>
-                                            <?php $selectedDocuments = array_map(fn($doc) => $doc['type_document'] . ':' . $doc['cle_document'], $element['documents']); ?>
-                                            <?php foreach ($documentOptions as $token => $label): ?><label class="atelier-checkbox"><input type="checkbox" name="documents[]" value="<?= prefaEscape($token) ?>" <?= in_array($token, $selectedDocuments, true) ? 'checked' : '' ?>><span><?= prefaEscape($label) ?></span></label><?php endforeach; ?>
-                                            <?php if (!$documentOptions): ?><p class="atelier-muted">Ajoutez d’abord un fichier à la demande.</p><?php endif; ?>
-                                            <div class="atelier-form-actions"><button type="submit" <?= !$documentOptions ? 'disabled' : '' ?>>Enregistrer les documents</button><span class="atelier-message" role="status" aria-live="polite"></span></div>
-                                        </form>
-                                    </details>
-                                <?php endif; ?>
-                                <?php if ($availableDocuments): ?>
+                                <?php if ($availableDocuments || ($canManageWorkshop && $taken)): ?>
                                     <details class="atelier-plan-information">
                                         <summary>Documents (<?= count($availableDocuments) ?>)</summary>
-                                        <div class="atelier-plan-files"><?php foreach ($availableDocuments as $doc): ?><a class="prefa-document-link<?= strtolower(pathinfo($doc['name'], PATHINFO_EXTENSION)) === 'pdf' ? ' prefa-pdf-link' : '' ?>" data-name="<?= prefaEscape($doc['name']) ?>" href="<?= prefaEscape($doc['url']) ?>"><?= prefaEscape($doc['name']) ?></a><?php endforeach; ?></div>
+
+                                        <?php if ($availableDocuments): ?>
+                                            <div class="atelier-plan-files">
+                                                <?php foreach ($availableDocuments as $doc): ?>
+                                                    <a class="prefa-document-link<?= strtolower(pathinfo($doc['name'], PATHINFO_EXTENSION)) === 'pdf' ? ' prefa-pdf-link' : '' ?>" data-name="<?= prefaEscape($doc['name']) ?>" href="<?= prefaEscape($doc['url']) ?>"><?= prefaEscape($doc['name']) ?></a>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <?php if ($canManageWorkshop && $taken): ?>
+                                            <form class="atelier-action prefa-form atelier-document-edit" data-endpoint="save_atelier.php">
+                                                <input type="hidden" name="csrf" value="<?= prefaEscape($_SESSION['prefa_csrf']) ?>"><input type="hidden" name="id" value="<?= $requestId ?>"><input type="hidden" name="operation" value="documents"><input type="hidden" name="element" value="<?= (int) $element['id'] ?>">
+                                                <p class="atelier-muted">Fichiers associés à ce plan (au moins un plan / ISO) :</p>
+                                                <?php $selectedDocuments = array_map(fn($doc) => $doc['type_document'] . ':' . $doc['cle_document'], $element['documents']); ?>
+                                                <?php foreach ($documentOptions as $token => $label): ?>
+                                                    <label class="atelier-checkbox"><input type="checkbox" name="documents[]" value="<?= prefaEscape($token) ?>" <?= in_array($token, $selectedDocuments, true) ? 'checked' : '' ?>><span><?= prefaEscape($label) ?></span></label>
+                                                <?php endforeach; ?>
+                                                <?php if (!$documentOptions): ?><p class="atelier-muted">Ajoutez d’abord un fichier à la demande.</p><?php endif; ?>
+                                                <div class="atelier-form-actions"><button type="submit" <?= !$documentOptions ? 'disabled' : '' ?>>Enregistrer</button><span class="atelier-message" role="status" aria-live="polite"></span></div>
+                                            </form>
+                                        <?php endif; ?>
                                     </details>
                                 <?php endif; ?>
                                 <?php if ($history): ?>
@@ -141,34 +144,41 @@ foreach ($elements as $element) foreach ($element['affectations'] as $assignment
                                             <?= $assignment ? prefaEscape($assignment['utilisateur_nom']) : '+ Affecter' ?>
                                         </button>
                                     <?php else: ?><span><?= $assignment ? prefaEscape($assignment['utilisateur_nom']) : 'Non affecté' ?></span><?php endif; ?>
-                                    <?php if ($assignment): ?><span class="atelier-work-status"><?= (int) $assignment['avancement'] === 100 ? 'Terminé' : ((int) $assignment['avancement'] > 0 ? 'En cours' : 'À commencer') ?></span><?php endif; ?>
+
+                                    <?php if ($assignment):
+                                        $pct = (int) $assignment['avancement'];
+                                        $state = $pct === 100 ? 'done' : ($pct > 0 ? 'progress' : 'todo');
+                                        $stateLabel = ['done' => 'Terminé', 'progress' => 'En cours', 'todo' => 'À commencer'][$state];
+                                    ?>
+                                        <span class="atelier-work-status is-<?= $state ?>"><?= $stateLabel ?></span>
+                                    <?php endif; ?>
+
                                     <?php if ($assignment && $assignment['commentaire']): ?><details class="atelier-work-report">
                                             <summary>Compte rendu</summary>
                                             <p class="atelier-note"><?= prefaEscape($assignment['commentaire']) ?></p>
-                                        </details><?php endif; ?>
+                                        </details>
+                                    <?php endif; ?>
                                 </td>
                             <?php endforeach; ?>
                         </tr>
                         <?php if ($canManageWorkshop && $taken): ?>
                             <tr class="atelier-editor-row" hidden>
                                 <td colspan="4">
-                                    <?php if ($canManageWorkshop && $taken): ?>
-                                        <div id="<?= $formId ?>" class="atelier-manage-panel" hidden>
-                                            <h5 class="atelier-manage-title">Affecter une personne</h5>
-                                            <form class="atelier-action prefa-form atelier-manage-form" data-endpoint="save_atelier.php">
-                                                <input type="hidden" name="csrf" value="<?= prefaEscape($_SESSION['prefa_csrf']) ?>"><input type="hidden" name="id" value="<?= $requestId ?>"><input type="hidden" name="operation" value="assign"><input type="hidden" name="element" value="<?= (int) $element['id'] ?>"><input type="hidden" name="type" value="plan">
-                                                <div><label for="atelier-user-<?= $element['id'] ?>">Personnel atelier</label><select id="atelier-user-<?= $element['id'] ?>" name="utilisateur" required>
-                                                        <option value="">Sélectionner une personne</option><?php foreach ($workshopUsers as $user): ?><option value="<?= (int) $user['id'] ?>"><?= prefaEscape($user['nom']) ?></option><?php endforeach; ?>
-                                                    </select></div>
-                                                <div class="atelier-form-actions">
-                                                    <button type="submit" <?= !$workshopUsers ? 'disabled' : '' ?>>Enregistrer</button>
-                                                    <button type="submit" value="revoke" formnovalidate class="atelier-remove-assignment" hidden>Retirer l’affectation</button>
-                                                    <button type="button" class="atelier-cancel-assignment">Annuler</button>
-                                                    <span class="atelier-message" role="status" aria-live="polite"></span>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    <?php endif; ?>
+                                    <div id="<?= $formId ?>" class="atelier-manage-panel" hidden>
+                                        <h5 class="atelier-manage-title">Affecter une personne</h5>
+                                        <form class="atelier-action prefa-form atelier-manage-form" data-endpoint="save_atelier.php">
+                                            <input type="hidden" name="csrf" value="<?= prefaEscape($_SESSION['prefa_csrf']) ?>"><input type="hidden" name="id" value="<?= $requestId ?>"><input type="hidden" name="operation" value="assign"><input type="hidden" name="element" value="<?= (int) $element['id'] ?>"><input type="hidden" name="type" value="plan">
+                                            <div><label for="atelier-user-<?= $element['id'] ?>">Personnel atelier</label><select id="atelier-user-<?= $element['id'] ?>" name="utilisateur" required>
+                                                    <option value="">Sélectionner une personne</option><?php foreach ($workshopUsers as $user): ?><option value="<?= (int) $user['id'] ?>"><?= prefaEscape($user['nom']) ?></option><?php endforeach; ?>
+                                                </select></div>
+                                            <div class="atelier-form-actions">
+                                                <button type="submit" <?= !$workshopUsers ? 'disabled' : '' ?>>Enregistrer</button>
+                                                <button type="submit" value="revoke" formnovalidate class="atelier-remove-assignment" hidden>Retirer l’affectation</button>
+                                                <button type="button" class="atelier-cancel-assignment">Annuler</button>
+                                                <span class="atelier-message" role="status" aria-live="polite"></span>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endif; ?>
@@ -177,6 +187,7 @@ foreach ($elements as $element) foreach ($element['affectations'] as $assignment
             </table>
         </div>
     <?php endif; ?>
+
     <?php if (!empty($row['id_personnel_atelier'])): ?>
         <details class="atelier-legacy">
             <summary>Ancienne affectation de la demande</summary>

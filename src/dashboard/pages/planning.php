@@ -77,14 +77,16 @@ foreach ($requests as &$req) {
                 'texte' => $c['texte']
             ];
         }
-    } catch (PDOException) {}
+    } catch (PDOException) {
+    }
     $req['commentaires'] = $comms;
 }
 unset($req);
 
-$visible = array_values(array_filter($requests, static fn($r) =>
-    (!$creatorFilter || (int) $r['creator_id'] === $creatorFilter)
-    && ($requestSearch === '' || (string) $r['id'] === $requestNumber)
+$visible = array_values(array_filter(
+    $requests,
+    static fn($r) => (!$creatorFilter || (int) $r['creator_id'] === $creatorFilter)
+        && ($requestSearch === '' || (string) $r['id'] === $requestNumber)
 ));
 
 $unplanned = [];
@@ -179,12 +181,6 @@ $initialSelectedId = null;
             <p class="planning-subtitle">Visualisation et ordonnancement temporel des demandes de préfabrication.</p>
         </div>
         <button type="button" class="planning-button planning-refresh-button" id="planning-refresh">
-            <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                <path d="M3 3v5h5" />
-                <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-                <path d="M21 21v-5h-5" />
-            </svg>
             <span>Actualiser</span>
         </button>
     </header>
@@ -192,13 +188,17 @@ $initialSelectedId = null;
     <form id="planning-filters" class="planning-toolbar">
         <div class="floating-field floating-always"><label for="planning-request-filter">Numéro de demande</label><input class="floating-control" id="planning-request-filter" type="search" inputmode="numeric" name="request" value="<?= prefaEscape($requestSearch) ?>" placeholder="Ex. : 123 ou #123"></div>
         <div class="planning-date-nav">
-            <button type="button" class="planning-button planning-icon-button" data-planning-shift="-1" aria-label="Période précédente" title="Période précédente"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <button type="button" class="planning-button planning-icon-button" data-planning-shift="-1" aria-label="Période précédente" title="Période précédente">
+                <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                     <path d="m14 6-6 6 6 6" />
-                </svg></button>
+                </svg>
+            </button>
             <button type="button" class="planning-button" data-planning-today>Aujourd’hui</button>
-            <button type="button" class="planning-button planning-icon-button" data-planning-shift="1" aria-label="Période suivante" title="Période suivante"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <button type="button" class="planning-button planning-icon-button" data-planning-shift="1" aria-label="Période suivante" title="Période suivante">
+                <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                     <path d="m10 6 6 6-6 6" />
-                </svg></button>
+                </svg>
+            </button>
         </div>
         <div class="floating-field floating-always"><label for="planning-start">Semaine du</label><input class="floating-control" id="planning-start" type="date" name="start" value="<?= $start->format('Y-m-d') ?>" required></div>
         <div class="floating-field floating-always"><label for="planning-period">Vue</label><select class="floating-control" id="planning-period" name="period">
@@ -261,7 +261,8 @@ $initialSelectedId = null;
                 <p>Aucune affaire n’est programmée sur cet intervalle. Naviguez avec les flèches ou glissez sur le calendrier avec la souris pour explorer d'autres dates.</p>
             </div>
         </div>
-        <script type="application/json" class="planning-timeline-data"><?php
+        <script type="application/json" class="planning-timeline-data">
+            <?php
             $timelineRows = array_map(static fn($row) => [
                 'id' => (int) $row['request']['id'],
                 'name' => $row['request']['nom_affaire'] ?: ('Demande #' . $row['request']['id']),
@@ -273,17 +274,18 @@ $initialSelectedId = null;
                 'urgent' => (bool) $row['request']['urgent'],
             ], array_values(array_filter($ganttRows, static fn($row) => $row['isVisible'])));
             echo json_encode($timelineRows, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE);
-        ?></script>
+            ?>
+        </script>
     </section>
     <div class="gantt-outer-container" data-gantt-fallback>
         <div class="gantt-scroll-wrapper" role="region" aria-label="Planning Gantt des affaires" tabindex="0">
             <div class="gantt-layout" style="--gantt-days: <?= count($days) ?>;">
-                
+
                 <!-- En-tête des colonnes -->
                 <div class="gantt-header-row">
                     <!-- Coin supérieur gauche (label affaire) -->
                     <div class="gantt-header-corner">Affaires</div>
-                    
+
                     <!-- Ligne 1 : Semaines -->
                     <div class="gantt-weeks-header">
                         <?php foreach ($weeks as $w): ?>
@@ -292,7 +294,7 @@ $initialSelectedId = null;
                             </div>
                         <?php endforeach; ?>
                     </div>
-                    
+
                     <!-- Ligne 2 : Numéros des jours -->
                     <div class="gantt-days-header">
                         <?php foreach ($days as $day): ?>
@@ -321,7 +323,8 @@ $initialSelectedId = null;
                             <p>Aucune affaire planifiée dans cette période.</p>
                         </div>
                     <?php else: ?>
-                        <?php foreach ($ganttRows as $row): $r = $row['request']; $titleAffaire = $r['nom_affaire'] ?: $r['demandeur']; ?>
+                        <?php foreach ($ganttRows as $row): $r = $row['request'];
+                            $titleAffaire = $r['nom_affaire'] ?: $r['demandeur']; ?>
                             <div class="gantt-row <?= $r['id'] == $initialSelectedId ? 'is-selected' : '' ?>" data-affaire-id="<?= (int) $r['id'] ?>">
                                 <!-- Étiquette blanche à gauche -->
                                 <div class="gantt-label-col">
@@ -354,7 +357,7 @@ $initialSelectedId = null;
     <!-- PANNEAU INFÉRIEUR : 4 BLOCS (Disposition de la maquette) -->
     <section class="planning-details-panel" id="planning-details-panel" aria-labelledby="planning-panel-title" hidden>
         <h2 id="planning-panel-title" class="sr-only">Détails de l'affaire sélectionnée</h2>
-        
+
         <!-- BLOC 1: INFORMATION GÉNÉRALE -->
         <div class="planning-card planning-card-info">
             <div class="planning-card-header">Information générale</div>
@@ -393,7 +396,9 @@ $initialSelectedId = null;
             <div class="planning-card-body planning-table-container">
                 <table class="planning-matrix-table" id="matrix-avancement">
                     <thead id="matrix-head">
-                        <tr><th></th></tr>
+                        <tr>
+                            <th></th>
+                        </tr>
                     </thead>
                     <tbody id="matrix-body">
                         <!-- Rempli dynamiquement en JS -->

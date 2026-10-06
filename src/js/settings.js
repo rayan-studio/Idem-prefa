@@ -32,6 +32,9 @@
             if (val === 'pink') {
                 card.style.borderColor = isCur ? '#ec4899' : '#f472b6';
                 card.style.boxShadow = isCur ? '0 0 0 3px #ec4899, 0 6px 16px rgba(236, 72, 153, 0.4)' : 'none';
+            } else if (val === 'light') {
+                card.style.borderColor = isCur ? '#2563eb' : '#cbd5e1';
+                card.style.boxShadow = isCur ? '0 0 0 3px #2563eb, 0 6px 16px rgba(37, 99, 235, 0.25)' : 'none';
             } else {
                 card.style.borderColor = isCur ? 'var(--accent)' : 'var(--border)';
                 card.style.boxShadow = isCur ? '0 0 0 2px var(--accent)' : 'none';
@@ -50,6 +53,16 @@
             if (msg) {
                 msg.className = 'prefa-message success';
                 msg.textContent = 'Thème Rose activé avec succès !';
+                msg.style.display = 'block';
+            }
+        } else if (themeName === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            document.body.setAttribute('data-theme', 'light');
+            localStorage.setItem('app_theme', 'light');
+            var msg = document.getElementById('theme-status-message');
+            if (msg) {
+                msg.className = 'prefa-message success';
+                msg.textContent = 'Thème Clair activé avec succès !';
                 msg.style.display = 'block';
             }
         } else {

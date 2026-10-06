@@ -123,14 +123,25 @@ $decisionComment = trim((string) ($row['commentaire_validation'] ?? ''));
 
 <!-- En-tête -->
 <div class="prefa-detail-heading">
-    <h2>
-        Détails de la demande
-        <span>#<?= $requestId ?></span>
-    </h2>
+    <div>
+        <h2>
+            Détails de la demande
+            <span>#<?= $requestId ?></span>
+        </h2>
 
-    <p>
-        Informations techniques et documents associés
-    </p>
+        <p>
+            Informations techniques et documents associés
+        </p>
+    </div>
+
+    <div class="prefa-detail-actions">
+        <?php if ((int) $row['id_statut'] === 2 && $canManageWorkshop): ?>
+            <button type="button" class="btn-goto-plans-iso" data-request-id="<?= $requestId ?>">
+                Voir les affectations ↗
+            </button>
+        <?php endif; ?>
+        <button type="button" class="prefa-detail-close" data-close-target="prefa-detail-<?= $requestId ?>" aria-label="Fermer le volet">✕</button>
+    </div>
 </div>
 
 
@@ -149,36 +160,7 @@ $decisionComment = trim((string) ($row['commentaire_validation'] ?? ''));
 </dl>
 
 
-<!-- Planning atelier -->
-<section
-    class="prefa-workshop-planning"
-    aria-labelledby="workshop-planning-<?= $requestId ?>"
->
-
-    <h3 id="workshop-planning-<?= $requestId ?>">
-        Planning atelier
-    </h3>
-
-    <dl class="prefa-facts">
-
-        <?php foreach ($planningFacts as $label => $value): ?>
-
-            <div>
-                <dt><?= prefaEscape($label) ?></dt>
-                <dd><?= prefaEscape($value) ?></dd>
-            </div>
-
-        <?php endforeach; ?>
-
-    </dl>
-
-
-</section>
-
 <!-- Documents -->
-<?php if ((int) $row['id_statut'] === 2): ?>
-    <?php require __DIR__ . '/atelier_request.php'; ?>
-<?php endif; ?>
 <div class="prefa-document-groups">
 
     <?php foreach ($documentGroups as $group): ?>

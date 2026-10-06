@@ -1,173 +1,1200 @@
-.atelier-section > p { margin: 12px 0; }
-.atelier-element { margin: 16px 0; padding: 18px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--frame); overflow-wrap: anywhere; }
-.atelier-element h2, .atelier-element h4 { margin: 0 0 8px; font-size: 16px; color: var(--text); }
-.atelier-element p { margin: 8px 0; }
-.atelier-muted { color: var(--text-muted); font-size: 13px; }
-.atelier-note { white-space: pre-wrap; }
-.atelier-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
-.atelier-grid > div { min-width: 0; }
-.atelier-wide, .atelier-form-actions, .atelier-document-picker { grid-column: 1 / -1; }
-.atelier-form-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-.atelier-message { color: var(--text-muted); font-size: 13px; }
-.atelier-document-picker { padding: 12px; border: 1px solid var(--border); border-radius: 6px; }
-.atelier-checkbox { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
-.atelier-checkbox input { width: auto; flex-shrink: 0; }
-.atelier-assignment { margin: 12px 0; padding: 12px; background: var(--surface); border-radius: 6px; }
-.atelier-new-element, .atelier-element details { margin-top: 16px; }
-.atelier-section summary, .atelier-page summary { cursor: pointer; padding: 8px 0; color: var(--text); }
-.atelier-documents { margin: 12px 0; padding-left: 20px; }
-.atelier-documents li { padding: 4px 0; }
-.atelier-documents a { color: #8ab4f8; }
-.atelier-progress { display: flex; align-items: center; gap: 12px; margin: 16px 0; flex-wrap: wrap; }
-.atelier-progress progress { accent-color: var(--accent); max-width: 100%; }
-.atelier-history-title { margin: 28px 0 12px; font-size: 18px; }
-.atelier-time-list p { padding: 10px; border-bottom: 1px solid var(--border); }
-.atelier-empty { margin: 20px 0; color: var(--text-muted); }
-.page.atelier-page { display: block; padding: 0; background: var(--surface); }
-.atelier-page .prefa-shell { max-width: none; }
-.atelier-page .prefa-heading { align-items: center; }
-.atelier-page .atelier-table { min-width: 850px; }
-.atelier-page .atelier-time-table { min-width: 700px; }
-.atelier-row-description { display: block; margin-top: 4px; color: var(--text-muted); font-size: 12px; }
-.atelier-page .prefa-table td { max-width: 300px; }
-.atelier-page .prefa-table td:last-child { width: 1%; }
-.atelier-page .prefa-detail-row > td { width: auto; max-width: none; }
-.atelier-page .atelier-time-table td:last-child { width: auto; }
-.atelier-page .prefa-toggle { white-space: nowrap; }
-.atelier-status-progress { color: #8ab4f8; }
-.atelier-detail-content { padding: 16px 4px; white-space: normal; }
-.atelier-detail-content h2 { margin: 0 0 12px; font-size: 14px; color: var(--text); }
-.atelier-files { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 16px; margin-bottom: 14px; }
-.atelier-files h2 { margin: 0; font-size: 12px; font-weight: 500; }
-.atelier-file-links { display: flex; flex-wrap: wrap; gap: 8px; }
-.atelier-file-links .prefa-document-link { border: 1px solid var(--border); background: var(--surface); }
-.atelier-detail-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); align-items: start; gap: 14px; }
-.atelier-detail-panel { min-width: 0; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
-.atelier-detail-panel .atelier-muted { font-size: 12px; line-height: 1.5; }
-.atelier-detail-panel .atelier-grid { margin-top: 10px; gap: 8px 10px; }
-.atelier-detail-panel .atelier-form-actions { margin-top: 4px; gap: 8px; }
-.atelier-detail-panel .atelier-saved-history { margin-top: 12px; }
-.atelier-detail-panel .atelier-saved-history-list { max-height: 240px; overflow-y: auto; overflow-wrap: anywhere; }
-.atelier-time-heading { padding: 18px 16px; border-top: 1px solid var(--border); }
-.atelier-time-heading h2 { margin-bottom: 5px; font-size: 16px; }
-.atelier-time-heading p { color: var(--text-muted); font-size: 12px; }
+.atelier-section>p {
+    margin: 12px 0;
+}
+
+.atelier-element {
+    margin: 16px 0;
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--frame);
+    overflow-wrap: anywhere;
+}
+
+.atelier-element h2,
+.atelier-element h4 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    color: var(--text);
+}
+
+.atelier-element p {
+    margin: 8px 0;
+}
+
+.atelier-muted {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.atelier-note {
+    white-space: pre-wrap;
+}
+
+.atelier-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.atelier-grid>div {
+    min-width: 0;
+}
+
+.atelier-wide,
+.atelier-form-actions,
+.atelier-document-picker {
+    grid-column: 1 / -1;
+}
+
+.atelier-form-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.atelier-message {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.atelier-document-picker {
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+.atelier-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+}
+
+.atelier-checkbox input {
+    width: auto;
+    flex-shrink: 0;
+}
+
+.atelier-assignment {
+    margin: 12px 0;
+    padding: 12px;
+    background: var(--surface);
+    border-radius: 6px;
+}
+
+.atelier-new-element,
+.atelier-element details {
+    margin-top: 16px;
+}
+
+.atelier-section summary,
+.atelier-page summary {
+    cursor: pointer;
+    padding: 8px 0;
+    color: var(--text);
+}
+
+.atelier-documents {
+    margin: 12px 0;
+    padding-left: 20px;
+}
+
+.atelier-documents li {
+    padding: 4px 0;
+}
+
+.atelier-documents a {
+    color: #8ab4f8;
+}
+
+.atelier-progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+}
+
+.atelier-progress progress {
+    accent-color: var(--accent);
+    max-width: 100%;
+}
+
+.atelier-history-title {
+    margin: 28px 0 12px;
+    font-size: 18px;
+}
+
+.atelier-time-list p {
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.atelier-empty {
+    margin: 20px 0;
+    color: var(--text-muted);
+}
+
+.page.atelier-page {
+    display: block;
+    padding: 0;
+    background: var(--surface);
+}
+
+.atelier-page .prefa-shell {
+    max-width: none;
+}
+
+.atelier-page .prefa-heading {
+    align-items: center;
+}
+
+.atelier-page .atelier-table {
+    min-width: 850px;
+}
+
+.atelier-page .atelier-time-table {
+    min-width: 700px;
+}
+
+.atelier-row-description {
+    display: block;
+    margin-top: 4px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.atelier-page .prefa-table td {
+    max-width: 300px;
+}
+
+.atelier-page .prefa-table td:last-child {
+    width: 1%;
+}
+
+.atelier-page .prefa-detail-row>td {
+    width: auto;
+    max-width: none;
+}
+
+.atelier-page .atelier-time-table td:last-child {
+    width: auto;
+}
+
+.atelier-page .prefa-toggle {
+    white-space: nowrap;
+}
+
+.atelier-status-progress {
+    color: #8ab4f8;
+}
+
+.atelier-detail-content {
+    padding: 16px 4px;
+    white-space: normal;
+}
+
+.atelier-detail-content h2 {
+    margin: 0 0 12px;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.atelier-files {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    margin-bottom: 14px;
+}
+
+.atelier-files h2 {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.atelier-file-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.atelier-file-links .prefa-document-link {
+    border: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.atelier-detail-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    align-items: start;
+    gap: 14px;
+}
+
+.atelier-detail-panel {
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+}
+
+.atelier-detail-panel .atelier-muted {
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.atelier-detail-panel .atelier-grid {
+    margin-top: 10px;
+    gap: 8px 10px;
+}
+
+.atelier-detail-panel .atelier-form-actions {
+    margin-top: 4px;
+    gap: 8px;
+}
+
+.atelier-detail-panel .atelier-saved-history {
+    margin-top: 12px;
+}
+
+.atelier-detail-panel .atelier-saved-history-list {
+    max-height: 240px;
+    overflow-y: auto;
+    overflow-wrap: anywhere;
+}
+
+.atelier-time-heading {
+    padding: 18px 16px;
+    border-top: 1px solid var(--border);
+}
+
+.atelier-time-heading h2 {
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.atelier-time-heading p {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
 @media (max-width: 900px) {
-    .atelier-detail-panel { padding: 14px; }
+    .atelier-detail-panel {
+        padding: 14px;
+    }
 }
-.atelier-overview, .atelier-plan-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
-.atelier-overview h3 { margin-bottom: 6px; }
-.atelier-overview-meta { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 16px 0; padding-bottom: 16px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
-.atelier-overview-meta strong { color: var(--text); }
-.atelier-state { display: inline-flex; align-items: center; flex-shrink: 0; padding: 5px 9px; border: 1px solid var(--border); border-radius: 5px; color: var(--text-muted); background: var(--surface); font-size: 12px; }
-.atelier-state.is-taken { color: #a7d7ba; border-color: #355b47; background: #1c3025; }
-.atelier-start { padding: 14px; background: var(--surface); border-radius: 6px; }
-.atelier-start > p { margin-bottom: 12px; }
-.atelier-chief-picker { max-width: 360px; margin-bottom: 12px; }
-.atelier-new-element { padding: 12px 16px; border: 1px dashed var(--border); border-radius: 6px; }
-.atelier-new-element > summary { font-weight: 600; color: #8ab4f8; }
-.atelier-plan-card { margin: 24px 0; padding: 0; background: var(--frame); overflow: hidden; }
-.atelier-plan-heading { padding: 20px; background: #1c293b; border-left: 3px solid #8ab4f8; margin-bottom: 16px; }
-.atelier-plan-label { display: block; margin-bottom: 8px; color: #8ab4f8; font-size: 11px; font-weight: 600; letter-spacing: .4px; }
-.atelier-plan-heading h4 { font-size: 18px; }
-.atelier-plan-heading h4, .atelier-plan-heading p { margin: 0; }
-.atelier-plan-heading p { margin-top: 5px; }
-.atelier-task-list { margin: 0 16px 16px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: var(--surface); }
-.atelier-tasks-heading { padding: 14px 16px; background: var(--frame); }
-.atelier-tasks-heading h5 { margin-bottom: 5px; font-size: 13px; color: var(--text); }
-.atelier-tasks-heading p { margin: 0; }
-.atelier-task-columns { display: grid; grid-template-columns: minmax(110px, 1fr) minmax(130px, 1.4fr) minmax(135px, 1fr) 80px; gap: 12px; padding: 10px 16px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--frame); color: var(--text-muted); font-size: 11px; }
-.atelier-task-row { display: grid; grid-template-columns: minmax(110px, 1fr) minmax(130px, 1.4fr) minmax(135px, 1fr) 80px; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
-.atelier-task-row:last-child { border-bottom: 0; }
-.atelier-task-row.is-unassigned .atelier-task-person { color: var(--text-muted); }
-.atelier-task-type { font-size: 13px; }
-.atelier-task-progress { display: flex; gap: 8px; align-items: center; }
-.atelier-task-progress { color: var(--text-muted); font-size: 12px; }
-.atelier-edit-assignment { padding: 6px 10px; border: 1px solid var(--border); border-radius: 5px; background: transparent; color: #8ab4f8; cursor: pointer; }
-.atelier-edit-assignment:hover { background: var(--hover); }
-.atelier-edit-assignment:focus-visible, .atelier-section summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.atelier-manage-panel { padding: 16px; background: var(--frame); border-top: 1px solid var(--border); }
-.atelier-manage-title { font-size: 14px; margin-bottom: 12px; }
-.atelier-manage-form { max-width: 540px; }
-.atelier-manage-form .atelier-remove-assignment, .atelier-manage-form .atelier-cancel-assignment { background: transparent; border-color: var(--border); color: var(--text-muted); }
-.atelier-manage-form .atelier-remove-assignment { color: #f6a4a4; }
-.atelier-plan-secondary { display: flex; gap: 20px; flex-wrap: wrap; padding: 8px 16px; background: var(--frame); border-top: 1px solid var(--border); }
-.atelier-plan-secondary details { margin: 0; flex: 1 1 200px; }
-.atelier-plan-secondary summary, .atelier-task-note summary, .atelier-legacy summary { font-size: 12px; color: var(--text-muted); }
-.atelier-task-note { padding: 0 16px 10px; }
-.atelier-history-row { padding: 8px 0; border-bottom: 1px solid var(--border); }
-.atelier-legacy { margin-top: 16px; }
-.atelier-plans-scroll { margin-top: 20px; overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; }
-.atelier-plans-table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 13px; table-layout: auto; }
-.atelier-plans-table > thead > tr > th { padding: 11px 16px; text-align: left; background: var(--surface); color: var(--text-muted); font-size: 12px; font-weight: 500; border-bottom: 1px solid var(--border); }
-.atelier-plans-table > tbody > tr.atelier-plan-summary > td { padding: 16px; background: var(--frame); border-bottom: 1px solid var(--border); white-space: normal; }
-.atelier-plans-table > tbody > tr.atelier-plan-summary:hover > td { background: var(--hover); }
-.atelier-plans-table > tbody > tr > td:first-child { width: 48%; }
-.atelier-plans-table > tbody > tr > td:last-child { width: auto; }
-.atelier-plan-summary > td:last-child { text-align: right; }
-.atelier-plan-toggle { display: inline-flex; align-items: center; gap: 12px; padding: 7px 11px; border: 1px solid var(--border); border-radius: 5px; background: transparent; color: var(--text); cursor: pointer; white-space: nowrap; }
-.atelier-plan-toggle:hover { background: var(--surface); }
-.atelier-plan-toggle[aria-expanded="true"] span { transform: rotate(180deg); }
-.atelier-assignment-count { color: var(--text-muted); white-space: nowrap; font-size: 12px; }
-.atelier-assignment-count.is-complete { color: #a7d7ba; }
-.atelier-plans-table > tbody > tr.atelier-plan-detail > td { padding: 0; white-space: normal; border-bottom: 1px solid var(--border); max-width: none; }
-.atelier-plan-content { padding: 16px 20px 20px; background: var(--surface); }
-.atelier-plan-content .atelier-task-list { margin: 0; border: 0; border-radius: 0; background: transparent; }
-.atelier-plan-content .atelier-tasks-heading { padding: 0 0 16px; background: transparent; }
-.atelier-plan-content .atelier-tasks-heading h5 { margin: 0; color: var(--text-muted); font-size: 12px; font-weight: 500; }
-.atelier-plan-content .atelier-task-columns { background: transparent; padding: 9px 0; border-top: 0; }
-.atelier-plan-content .atelier-task-row { padding: 12px 0; }
-.atelier-plan-content .atelier-manage-panel { margin-top: 12px; border: 1px solid var(--border); border-radius: 6px; }
-.atelier-plan-content .atelier-plan-secondary { margin-top: 12px; padding: 8px 0 0; background: transparent; }
-.atelier-plans-table > tbody > tr > td:first-child { width: 34%; }
-.atelier-plans-table { min-width: 680px; }
-.atelier-plans-table .atelier-plan-summary > td { vertical-align: top; }
-.atelier-plan-summary > td:last-child { text-align: left; }
-.atelier-plans-table .atelier-person-button { border: 1px dashed var(--border); padding: 8px 12px; color: var(--text-muted); font-size: 13px; text-align: left; max-width: 100%; }
-.atelier-plans-table .atelier-person-button.is-assigned { border-color: transparent; border-style: solid; color: var(--text); padding-left: 0; }
-.atelier-plans-table .atelier-person-button:hover, .atelier-plans-table .atelier-person-button[aria-expanded="true"] { background: var(--surface); border-color: var(--border); }
-.atelier-work-status { display: block; margin-top: 4px; color: var(--text-muted); font-size: 11px; }
-.atelier-plan-information, .atelier-work-report { margin-top: 8px; }
-.atelier-section .atelier-plan-information summary, .atelier-section .atelier-work-report summary { padding: 3px 0; font-size: 11px; color: var(--text-muted); }
-.atelier-plan-information .atelier-documents { font-size: 12px; }
-.atelier-plans-table > tbody > .atelier-editor-row > td { padding: 0; white-space: normal; max-width: none; }
-.atelier-editor-row .atelier-manage-panel { border-top: 0; border-bottom: 1px solid var(--border); background: var(--surface); }
-.atelier-new-element { border-style: solid; padding: 8px 12px; }
-.atelier-missing-file { display: block; margin-top: 6px; color: #e5b568; font-size: 12px; }
-.atelier-document-edit { margin-top: 10px; }
-.atelier-document-edit .atelier-form-actions { margin-top: 12px; }
-.atelier-plan-files { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-.atelier-plan-files .prefa-document-link { white-space: normal; overflow-wrap: anywhere; }
-.atelier-history-timeline { list-style: none; margin: 14px 0 0 5px; padding: 0 0 0 16px; border-left: 1px solid var(--border); }
-.atelier-history-timeline li { position: relative; padding: 0 0 18px; }
-.atelier-history-timeline li:last-child { padding-bottom: 4px; }
-.atelier-history-timeline li::before { content: ''; position: absolute; left: -20px; top: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--text-muted); border: 1px solid var(--frame); }
-.atelier-history-entry { display: flex; flex-direction: column; gap: 5px; font-size: 12px; }
-.atelier-history-kind { color: #8ab4f8; }
-.atelier-history-period, .atelier-history-ended { color: var(--text-muted); font-size: 11px; }
-.atelier-history-accessible { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.atelier-saved-history { margin-top: 16px; font-size: 12px; }
-.atelier-history-context { margin: 4px 0 8px; font-size: 12px; color: var(--text-muted); overflow-wrap: anywhere; }
-.atelier-archive-history { margin: 16px; }
-.atelier-archive-history > .atelier-muted { margin-bottom: 12px; }
-.atelier-saved-history-list { list-style: none; padding: 0; margin: 6px 0 0; }
-.atelier-saved-history-list > li { padding: 8px 0; }
-.atelier-saved-history-list .atelier-note { margin-top: 4px; }
-.atelier-step-snapshot { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 16px; margin-top: 6px; }
-.atelier-step-snapshot > div { display: flex; justify-content: space-between; gap: 8px; }
-.atelier-step-snapshot dd { margin: 0; }
+
+.atelier-overview,
+.atelier-plan-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.atelier-overview h3 {
+    margin-bottom: 6px;
+}
+
+.atelier-overview-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+}
+
+.atelier-overview-meta strong {
+    color: var(--text);
+}
+
+.atelier-state {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 5px 9px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--text-muted);
+    background: var(--surface);
+    font-size: 12px;
+}
+
+.atelier-state.is-taken {
+    color: #a7d7ba;
+    border-color: #355b47;
+    background: #1c3025;
+}
+
+.atelier-start {
+    padding: 14px;
+    background: var(--surface);
+    border-radius: 6px;
+}
+
+.atelier-start>p {
+    margin-bottom: 12px;
+}
+
+.atelier-chief-picker {
+    max-width: 360px;
+    margin-bottom: 12px;
+}
+
+.atelier-new-element {
+    padding: 12px 16px;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+}
+
+.atelier-new-element>summary {
+    font-weight: 600;
+    color: #8ab4f8;
+}
+
+.atelier-plan-card {
+    margin: 24px 0;
+    padding: 0;
+    background: var(--frame);
+    overflow: hidden;
+}
+
+.atelier-plan-heading {
+    padding: 20px;
+    background: #1c293b;
+    border-left: 3px solid #8ab4f8;
+    margin-bottom: 16px;
+}
+
+.atelier-plan-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #8ab4f8;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .4px;
+}
+
+.atelier-plan-heading h4 {
+    font-size: 18px;
+}
+
+.atelier-plan-heading h4,
+.atelier-plan-heading p {
+    margin: 0;
+}
+
+.atelier-plan-heading p {
+    margin-top: 5px;
+}
+
+.atelier-task-list {
+    margin: 0 16px 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--surface);
+}
+
+.atelier-tasks-heading {
+    padding: 14px 16px;
+    background: var(--frame);
+}
+
+.atelier-tasks-heading h5 {
+    margin-bottom: 5px;
+    font-size: 13px;
+    color: var(--text);
+}
+
+.atelier-tasks-heading p {
+    margin: 0;
+}
+
+.atelier-task-columns {
+    display: grid;
+    grid-template-columns: minmax(110px, 1fr) minmax(130px, 1.4fr) minmax(135px, 1fr) 80px;
+    gap: 12px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--frame);
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.atelier-task-row {
+    display: grid;
+    grid-template-columns: minmax(110px, 1fr) minmax(130px, 1.4fr) minmax(135px, 1fr) 80px;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.atelier-task-row:last-child {
+    border-bottom: 0;
+}
+
+.atelier-task-row.is-unassigned .atelier-task-person {
+    color: var(--text-muted);
+}
+
+.atelier-task-type {
+    font-size: 13px;
+}
+
+.atelier-task-progress {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.atelier-task-progress {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.atelier-edit-assignment {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: transparent;
+    color: #8ab4f8;
+    cursor: pointer;
+}
+
+.atelier-edit-assignment:hover {
+    background: var(--hover);
+}
+
+.atelier-edit-assignment:focus-visible,
+.atelier-section summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.atelier-manage-panel {
+    padding: 16px;
+    background: var(--frame);
+    border-top: 1px solid var(--border);
+}
+
+.atelier-manage-title {
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.atelier-manage-form {
+    max-width: 540px;
+}
+
+.atelier-manage-form .atelier-remove-assignment,
+.atelier-manage-form .atelier-cancel-assignment {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text-muted);
+}
+
+.atelier-manage-form .atelier-remove-assignment {
+    color: #f6a4a4;
+}
+
+.atelier-plan-secondary {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 8px 16px;
+    background: var(--frame);
+    border-top: 1px solid var(--border);
+}
+
+.atelier-plan-secondary details {
+    margin: 0;
+    flex: 1 1 200px;
+}
+
+.atelier-plan-secondary summary,
+.atelier-task-note summary,
+.atelier-legacy summary {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.atelier-task-note {
+    padding: 0 16px 10px;
+}
+
+.atelier-history-row {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.atelier-legacy {
+    margin-top: 16px;
+}
+
+.atelier-plans-scroll {
+    margin-top: 20px;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+.atelier-plans-table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    font-size: 13px;
+    table-layout: auto;
+}
+
+.atelier-plans-table>thead>tr>th {
+    padding: 11px 16px;
+    text-align: left;
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+}
+
+.atelier-plans-table>tbody>tr.atelier-plan-summary>td {
+    padding: 16px;
+    background: var(--frame);
+    border-bottom: 1px solid var(--border);
+    white-space: normal;
+}
+
+.atelier-plans-table>tbody>tr>td:first-child {
+    width: 48%;
+}
+
+.atelier-plans-table>tbody>tr>td:last-child {
+    width: auto;
+}
+
+.atelier-plan-summary>td:last-child {
+    text-align: right;
+}
+
+.atelier-plan-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 11px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.atelier-plan-toggle:hover {
+    background: var(--surface);
+}
+
+.atelier-plan-toggle[aria-expanded="true"] span {
+    transform: rotate(180deg);
+}
+
+.atelier-assignment-count {
+    color: var(--text-muted);
+    white-space: nowrap;
+    font-size: 12px;
+}
+
+.atelier-assignment-count.is-complete {
+    color: #a7d7ba;
+}
+
+.atelier-plans-table>tbody>tr.atelier-plan-detail>td {
+    padding: 0;
+    white-space: normal;
+    border-bottom: 1px solid var(--border);
+    max-width: none;
+}
+
+.atelier-plan-content {
+    padding: 16px 20px 20px;
+    background: var(--surface);
+}
+
+.atelier-plan-content .atelier-task-list {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.atelier-plan-content .atelier-tasks-heading {
+    padding: 0 0 16px;
+    background: transparent;
+}
+
+.atelier-plan-content .atelier-tasks-heading h5 {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.atelier-plan-content .atelier-task-columns {
+    background: transparent;
+    padding: 9px 0;
+    border-top: 0;
+}
+
+.atelier-plan-content .atelier-task-row {
+    padding: 12px 0;
+}
+
+.atelier-plan-content .atelier-manage-panel {
+    margin-top: 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+.atelier-plan-content .atelier-plan-secondary {
+    margin-top: 12px;
+    padding: 8px 0 0;
+    background: transparent;
+}
+
+.atelier-plans-table>tbody>tr>td:first-child {
+    width: 34%;
+}
+
+.atelier-plans-table {
+    min-width: 680px;
+}
+
+.atelier-plans-table .atelier-plan-summary>td {
+    vertical-align: top;
+}
+
+.atelier-plan-summary>td:last-child {
+    text-align: left;
+}
+
+.atelier-plans-table .atelier-person-button {
+    border: 1px dashed var(--border);
+    padding: 8px 12px;
+    color: var(--text-muted);
+    font-size: 13px;
+    text-align: left;
+    max-width: 100%;
+}
+
+.atelier-plans-table .atelier-person-button.is-assigned {
+    border-color: transparent;
+    border-style: solid;
+    color: var(--text);
+    padding-left: 0;
+}
+
+.atelier-plans-table .atelier-person-button:hover,
+.atelier-plans-table .atelier-person-button[aria-expanded="true"] {
+    background: var(--surface);
+    border-color: var(--border);
+}
+
+.atelier-work-status {
+    display: block;
+    margin-top: 4px;
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.atelier-plan-information,
+.atelier-work-report {
+    margin-top: 8px;
+}
+
+.atelier-section .atelier-plan-information summary,
+.atelier-section .atelier-work-report summary {
+    padding: 3px 0;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.atelier-plan-information .atelier-documents {
+    font-size: 12px;
+}
+
+.atelier-plans-table>tbody>.atelier-editor-row>td {
+    padding: 0;
+    white-space: normal;
+    max-width: none;
+}
+
+.atelier-editor-row .atelier-manage-panel {
+    border-top: 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.atelier-new-element {
+    border-style: solid;
+    padding: 8px 12px;
+}
+
+.atelier-missing-file {
+    display: block;
+    margin-top: 6px;
+    color: #e5b568;
+    font-size: 12px;
+}
+
+.atelier-document-edit {
+    margin-top: 10px;
+}
+
+.atelier-document-edit .atelier-form-actions {
+    margin-top: 12px;
+}
+
+.atelier-plan-files {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.atelier-plan-files .prefa-document-link {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.atelier-history-timeline {
+    list-style: none;
+    margin: 14px 0 0 5px;
+    padding: 0 0 0 16px;
+    border-left: 1px solid var(--border);
+}
+
+.atelier-history-timeline li {
+    position: relative;
+    padding: 0 0 18px;
+}
+
+.atelier-history-timeline li:last-child {
+    padding-bottom: 4px;
+}
+
+.atelier-history-timeline li::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 5px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    border: 1px solid var(--frame);
+}
+
+.atelier-history-entry {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 12px;
+}
+
+.atelier-history-kind {
+    color: #8ab4f8;
+}
+
+.atelier-history-period,
+.atelier-history-ended {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.atelier-history-accessible {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.atelier-saved-history {
+    margin-top: 16px;
+    font-size: 12px;
+}
+
+.atelier-history-context {
+    margin: 4px 0 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+    overflow-wrap: anywhere;
+}
+
+.atelier-archive-history {
+    margin: 16px;
+}
+
+.atelier-archive-history>.atelier-muted {
+    margin-bottom: 12px;
+}
+
+.atelier-saved-history-list {
+    list-style: none;
+    padding: 0;
+    margin: 6px 0 0;
+}
+
+.atelier-saved-history-list>li {
+    padding: 8px 0;
+}
+
+.atelier-saved-history-list .atelier-note {
+    margin-top: 4px;
+}
+
+.atelier-step-snapshot {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 16px;
+    margin-top: 6px;
+}
+
+.atelier-step-snapshot>div {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.atelier-step-snapshot dd {
+    margin: 0;
+}
+
 @media (max-width: 1100px) {
-    .atelier-task-row, .atelier-task-columns { grid-template-columns: minmax(100px, 1fr) minmax(110px, 1.2fr) minmax(125px, 1fr) 70px; }
+
+    .atelier-task-row,
+    .atelier-task-columns {
+        grid-template-columns: minmax(100px, 1fr) minmax(110px, 1.2fr) minmax(125px, 1fr) 70px;
+    }
 }
+
 @media (max-width: 700px) {
-    .atelier-overview, .atelier-plan-heading { flex-direction: column; gap: 10px; }
-    .atelier-plan-heading { padding: 16px; }
-    .atelier-task-list { margin: 0 10px 10px; }
-    .atelier-task-columns { display: none; }
-    .atelier-task-row { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; }
-    .atelier-task-type { grid-column: 1; }
-    .atelier-task-person { grid-column: 1; }
-    .atelier-task-progress { grid-column: 1; }
-    .atelier-edit-assignment { grid-column: 2; grid-row: 1 / span 3; min-height: 40px; }
-    .atelier-plan-card { padding: 0; }
+
+    .atelier-overview,
+    .atelier-plan-heading {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .atelier-plan-heading {
+        padding: 16px;
+    }
+
+    .atelier-task-list {
+        margin: 0 10px 10px;
+    }
+
+    .atelier-task-columns {
+        display: none;
+    }
+
+    .atelier-task-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px 12px;
+    }
+
+    .atelier-task-type {
+        grid-column: 1;
+    }
+
+    .atelier-task-person {
+        grid-column: 1;
+    }
+
+    .atelier-task-progress {
+        grid-column: 1;
+    }
+
+    .atelier-edit-assignment {
+        grid-column: 2;
+        grid-row: 1 / span 3;
+        min-height: 40px;
+    }
+
+    .atelier-plan-card {
+        padding: 0;
+    }
 }
-@media (max-width: 700px) { .atelier-grid { grid-template-columns: minmax(0, 1fr); } .atelier-element:not(.atelier-plan-card) { padding: 12px; } }
+
+@media (max-width: 700px) {
+    .atelier-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .atelier-element:not(.atelier-plan-card) {
+        padding: 12px;
+    }
+}
+/* Page Plans / ISO & Affectations */
+
+/* --- Liste des demandes --- */
+.plans-iso-list {
+    border-top: 1px solid var(--border);
+}
+
+.plans-iso-card {
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.plans-iso-card[hidden] {
+    display: none;
+}
+
+.plans-iso-card.is-urgent {
+    border-left: 3px solid #d98a32;
+}
+
+.plans-iso-summary {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    padding: 10px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.plans-iso-summary::-webkit-details-marker {
+    display: none;
+}
+
+.plans-iso-summary::before {
+    content: '›';
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1;
+    transition: transform .15s;
+}
+
+.plans-iso-card[open]>.plans-iso-summary::before {
+    transform: rotate(90deg);
+}
+
+.plans-iso-summary:hover {
+    background: var(--hover);
+}
+
+.plans-iso-summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+}
+
+.plans-iso-id {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.plans-iso-title {
+    font-weight: 500;
+    color: var(--text);
+}
+
+.plans-iso-owner,
+.plans-iso-meta {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.plans-iso-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
+.plans-iso-empty {
+    padding: 40px 16px;
+}
+
+/* --- Contenu déplié : à plat, même fond que la liste --- */
+.plans-iso-body {
+    padding: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+}
+
+.plans-iso-body .atelier-section {
+    margin: 0;
+}
+
+/* Résumé : état, responsable, compteurs */
+.plans-iso-body .atelier-overview-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin: 0;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+}
+
+.plans-iso-body .atelier-state {
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+/* Prise en charge */
+.plans-iso-body .atelier-start {
+    padding: 12px 16px;
+    background: transparent;
+    border-bottom: 1px solid var(--border);
+}
+
+/* "Ajouter un plan" : une simple ligne repliable */
+.plans-iso-body .atelier-new-element {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+}
+
+.plans-iso-body .atelier-new-element>summary {
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.plans-iso-body .atelier-new-element>form,
+.plans-iso-body .atelier-new-element>p {
+    margin: 0;
+    padding: 0 16px 16px;
+}
+
+.plans-iso-body .atelier-document-picker {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.plans-iso-body .atelier-document-picker legend {
+    padding: 0;
+    margin-bottom: 6px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+/* Tableau des plans : pleine largeur, sans cadre */
+.plans-iso-body .atelier-plans-scroll {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+}
+
+.plans-iso-body .atelier-plans-table {
+    font-size: 13px;
+}
+
+.plans-iso-body .atelier-plans-table>thead>tr>th {
+    padding: 8px 16px;
+    background: var(--frame);
+    text-transform: none;
+    letter-spacing: normal;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.plans-iso-body .atelier-plans-table>tbody>tr.atelier-plan-summary>td {
+    padding: 12px 16px;
+    background: transparent;
+}
+
+
+/* Boutons d'affectation : même style que le reste de l'appli */
+.plans-iso-body .atelier-plans-table .atelier-person-button {
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.plans-iso-body .atelier-plans-table .atelier-person-button.is-assigned {
+    padding-left: 0;
+    border-color: transparent;
+    background: transparent;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.plans-iso-body .atelier-plans-table .atelier-person-button:hover,
+.plans-iso-body .atelier-plans-table .atelier-person-button[aria-expanded="true"] {
+    border-color: var(--border);
+    background: var(--hover);
+}
+
+/* Panneau d'affectation sous la ligne */
+.plans-iso-body .atelier-editor-row .atelier-manage-panel {
+    padding: 12px 16px;
+    background: var(--frame);
+    border: 0;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Messages et ancienne affectation */
+.plans-iso-body .atelier-no-plans,
+.plans-iso-body .atelier-legacy {
+    margin: 0;
+    padding: 10px 16px;
+}
+
+@media (max-width: 700px) {
+    .plans-iso-meta {
+        margin-left: 0;
+        flex-basis: 100%;
+        flex-wrap: wrap;
+    }
+}
+
+/* Colonnes régulières */
+.plans-iso-body .atelier-plans-table {
+    table-layout: fixed;
+    min-width: 760px;
+}
+
+.plans-iso-body .atelier-plans-table>thead>tr>th:first-child,
+.plans-iso-body .atelier-plans-table>tbody>tr>td:first-child {
+    width: 30%;
+}
+
+/* Lignes plus compactes */
+.plans-iso-body .atelier-plan-information {
+    margin-top: 4px;
+}
+
+.plans-iso-body .atelier-row-description {
+    margin-top: 2px;
+}
+
+.plans-iso-body .atelier-document-edit {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+}
