@@ -65,8 +65,21 @@ foreach ($elements as $element) foreach ($element['affectations'] as $assignment
     <?php endif; ?>
 
     <?php if ($elements): ?>
+        <?php $plusieursPlans = count($elements) > 1; ?>
         <div class="atelier-plan-list">
-                    <?php foreach ($elements as $element):
+            <?php if ($plusieursPlans): ?>
+                <div class="atelier-tablist" role="tablist" aria-label="Plans de la demande">
+                    <?php foreach ($elements as $index => $element): ?>
+                        <button type="button" class="atelier-tab" role="tab"
+                            id="plan-tab-<?= (int) $element['id'] ?>"
+                            aria-controls="plan-pane-<?= (int) $element['id'] ?>"
+                            aria-selected="<?= $index === 0 ? 'true' : 'false' ?>"
+                            <?= $index === 0 ? '' : 'tabindex="-1"' ?>><?= prefaEscape($element['reference']) ?></button>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
+                    <?php foreach ($elements as $index => $element):
                         $active = [];
                         $history = [];
                         foreach ($element['affectations'] as $assignment) {
@@ -83,7 +96,7 @@ foreach ($elements as $element) foreach ($element['affectations'] as $assignment
                             }
                         }
                     ?>
-                        <article class="atelier-plan-block" aria-label="Plan <?= prefaEscape($element['reference']) ?>">
+                        <article class="atelier-plan-block" <?php if ($plusieursPlans): ?>role="tabpanel" id="plan-pane-<?= (int) $element['id'] ?>" aria-labelledby="plan-tab-<?= (int) $element['id'] ?>"<?= $index === 0 ? '' : ' hidden' ?><?php else: ?>aria-label="Plan <?= prefaEscape($element['reference']) ?>"<?php endif; ?>>
                             <div class="atelier-plan-identity"><h3><?= prefaEscape($element['reference']) ?></h3><span class="atelier-row-description"><?= prefaEscape($element['libelle']) ?></span>
                                 <?php if (!$availableDocuments): ?><span class="atelier-missing-file"><?= !empty($attachmentsByRequest[$requestId]) ? 'Le fichier de la demande reste à rattacher à ce plan.' : 'Aucun fichier rattaché à ce plan.' ?></span><?php endif; ?>
                                 <?php if ($availableDocuments): ?>
