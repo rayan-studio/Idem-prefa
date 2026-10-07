@@ -966,14 +966,13 @@
     gap: 16px;
 }
 
+/* Le volet porte déjà la surface et les onglets délimitent le plan : pas de carte
+   supplémentaire ici, sinon les fonds s'empilent (volet, panneau, carte, postes). */
 .atelier-plan-block {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 16px 20px;
-    padding: 20px 22px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--surface);
+    padding: 4px 0 0;
 }
 
 .atelier-plan-identity {
@@ -1482,8 +1481,6 @@
 
 .plans-iso-body {
     padding: 18px 22px 24px;
-    background: var(--frame);
-    border-left: 3px solid var(--accent);
 }
 
 .plans-iso-body .atelier-overview-meta {
