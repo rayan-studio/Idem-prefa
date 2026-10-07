@@ -1231,8 +1231,11 @@
 /* Le volet latéral fait 720 px quelle que soit la taille de la fenêtre : la media query
    ci-dessus ne s'y déclenche pas. On y replie donc les colonnes dans tous les cas. */
 .prefa-detail-row .atelier-plan-work {
-    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-    row-gap: 6px;
+    /* Personne · état · action : l'action est tenue à droite pour qu'on la
+       retrouve au même endroit d'une ligne à l'autre. */
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    row-gap: 8px;
+    column-gap: 12px;
     padding: 12px 14px;
 }
 
@@ -1243,6 +1246,7 @@
 .prefa-detail-row .atelier-plan-work .atelier-person-button,
 .prefa-detail-row .atelier-plan-work > span:not(.atelier-work-status) {
     grid-column: 1;
+    justify-self: start;
 }
 
 .prefa-detail-row .atelier-plan-work .atelier-work-status {
@@ -1250,7 +1254,11 @@
     justify-self: start;
 }
 
-.prefa-detail-row .atelier-plan-work .atelier-edit-progress,
+.prefa-detail-row .atelier-plan-work .atelier-edit-progress {
+    grid-column: 3;
+    justify-self: end;
+}
+
 .prefa-detail-row .atelier-plan-work .atelier-work-report {
     grid-column: 1 / -1;
 }
@@ -1275,8 +1283,9 @@
 /* Sous 1100 px les colonnes se replient : le libellé du poste coiffe sa ligne. */
 @media (max-width: 1100px) {
     .atelier-plan-work {
-        grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-        row-gap: 6px;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        row-gap: 8px;
+        column-gap: 12px;
         padding: 12px 14px;
     }
 
@@ -1287,6 +1296,7 @@
     .atelier-plan-work .atelier-person-button,
     .atelier-plan-work > span:not(.atelier-work-status) {
         grid-column: 1;
+        justify-self: start;
     }
 
     .atelier-plan-work .atelier-work-status {
@@ -1294,7 +1304,11 @@
         justify-self: start;
     }
 
-    .atelier-plan-work .atelier-edit-progress,
+    .atelier-plan-work .atelier-edit-progress {
+        grid-column: 3;
+        justify-self: end;
+    }
+
     .atelier-plan-work .atelier-work-report {
         grid-column: 1 / -1;
     }
@@ -1703,4 +1717,16 @@
         height: 44px;
         font-size: 16px;
     }
+}
+
+/* La prise en charge est une action de ligne : son formulaire doit se fondre
+   parmi les boutons voisins de la colonne Actions. */
+.plans-iso-take {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.plans-iso-take .atelier-message:empty {
+    display: none;
 }

@@ -1,8 +1,11 @@
 <?php
-// Crée les tables de la réception matériel (bons de livraison et leurs lignes) et des
-// demandes d'approvisionnement, puis y pose un jeu d'essai.
-// Relançable sans effet de bord : les tables sont créées si absentes et le jeu d'essai
-// n'est posé que sur les demandes qui n'ont encore aucun bon de livraison.
+// Crée les tables du module matériel.
+//
+// Seule demande_approvisionnement est exploitée par l'application : elle porte les
+// signalements de matériel manquant remontés par l'atelier. Les deux tables de bon de
+// livraison sont posées en vue du rattachement à un fournisseur, prévu plus tard ;
+// aucun écran ne les lit aujourd'hui.
+// Relançable sans effet de bord.
 $root = is_dir('/var/www/html/dashboard') ? '/var/www/html' : __DIR__ . '/../../src';
 require_once $root . '/db.php';
 $db = new MyPDO($root . '/my_setting.ini');
@@ -61,10 +64,9 @@ CREATE TABLE IF NOT EXISTS demande_approvisionnement (
     commentaire VARCHAR(1000) DEFAULT NULL,
     demande_par INT NOT NULL,
     date_creation DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    statut ENUM('nouvelle', 'prise_en_compte', 'commandee', 'livree', 'refusee') NOT NULL DEFAULT 'nouvelle',
+    statut ENUM('nouvelle', 'vue', 'traitee') NOT NULL DEFAULT 'nouvelle',
     traite_par INT DEFAULT NULL,
     date_traitement DATETIME DEFAULT NULL,
-    reponse VARCHAR(1000) DEFAULT NULL,
     KEY demande_approvisionnement_demande (id_demande),
     KEY demande_approvisionnement_statut (statut),
     CONSTRAINT demande_approvisionnement_demande_fk FOREIGN KEY (id_demande)
@@ -78,65 +80,30 @@ CREATE TABLE IF NOT EXISTS demande_approvisionnement (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 SQL);
 
+// Le volet approvisionnement a été ramené à un simple suivi de signalement :
+// deux états au lieu de cinq, et plus de champ de réponse. Les deux opérations sont
+// relançables telles quelles.
+$colonnes = $db->query('SHOW COLUMNS FROM demande_approvisionnement')->fetchAll(PDO::FETCH_COLUMN);
+if (in_array('reponse', $colonnes, true)) {
+    $db->exec('ALTER TABLE demande_approvisionnement DROP COLUMN reponse');
+    echo "Colonne reponse retirée.\n";
+}
+$type = (string) $db->query("SHOW COLUMNS FROM demande_approvisionnement LIKE 'statut'")->fetch(PDO::FETCH_ASSOC)['Type'];
+if (str_contains($type, 'commandee')) {
+    // Tout ce qui n'était pas « nouvelle » devient « traité ».
+    $db->exec("UPDATE demande_approvisionnement SET statut = 'livree' WHERE statut <> 'nouvelle'");
+    $db->exec("ALTER TABLE demande_approvisionnement MODIFY statut ENUM('nouvelle', 'vue', 'traitee') NOT NULL DEFAULT 'nouvelle'");
+    $db->exec("UPDATE demande_approvisionnement SET statut = 'traitee' WHERE statut = ''");
+    echo "Statuts ramenés à deux valeurs.\n";
+}
+// État intermédiaire ajouté après coup : « vue » dit que le chef d'atelier a vu le
+// signalement, sans prétendre qu'il est résolu. Rattrape aussi bien les bases à deux
+// valeurs que celles passées par le nom provisoire « en_cours ». Relançable.
+if (!str_contains($type, "'vue'")) {
+    $db->exec("ALTER TABLE demande_approvisionnement MODIFY statut ENUM('nouvelle', 'en_cours', 'vue', 'traitee') NOT NULL DEFAULT 'nouvelle'");
+    $db->exec("UPDATE demande_approvisionnement SET statut = 'vue' WHERE statut = 'en_cours'");
+    $db->exec("ALTER TABLE demande_approvisionnement MODIFY statut ENUM('nouvelle', 'vue', 'traitee') NOT NULL DEFAULT 'nouvelle'");
+    echo "État « vue » ajouté.\n";
+}
+
 echo "Tables en place.\n";
-
-// ===== Jeu d'essai =====
-// Un bon par demande validée, avec des lignes représentatives d'une préfa tuyauterie.
-$modeles = [
-    ['fournisseur' => 'Aciéries de l’Est', 'lignes' => [
-        ['TUB-304L-50', 'Tube inox 304L DN50 — 6 m', 'm', 36],
-        ['CDE-90-50', 'Coude 90° à souder DN50', 'u', 8],
-        ['BRI-PN16-50', 'Bride plate PN16 DN50', 'u', 4],
-        ['JNT-PN16-50', 'Joint plat PN16 DN50', 'u', 4],
-    ]],
-    ['fournisseur' => 'Comptoir du Tube', 'lignes' => [
-        ['TUB-316L-80', 'Tube inox 316L DN80 — 6 m', 'm', 24],
-        ['TE-EG-80', 'Té égal à souder DN80', 'u', 3],
-        ['RED-80-50', 'Réduction concentrique DN80/DN50', 'u', 2],
-        ['BOU-80', 'Bouchon elliptique DN80', 'u', 1],
-    ]],
-    ['fournisseur' => 'Visserie Industrielle SA', 'lignes' => [
-        ['BOU-M16-70', 'Boulon TH M16 × 70 inox A4', 'u', 32],
-        ['ECR-M16', 'Écrou H M16 inox A4', 'u', 32],
-        ['ELE-308L-32', 'Électrode 308L Ø 3,2 mm', 'kg', 5],
-    ]],
-];
-
-$demandes = $db->query('SELECT d.id FROM demande_prefabrication d
-    LEFT JOIN bon_livraison b ON b.id_demande = d.id
-    WHERE d.id_statut = 2 AND b.id IS NULL
-    ORDER BY d.id')->fetchAll(PDO::FETCH_COLUMN);
-
-if (!$demandes) {
-    echo "Aucune demande validée sans bon de livraison : jeu d'essai déjà en place.\n";
-    return;
-}
-
-$db->beginTransaction();
-try {
-    $insererBon = $db->prepare('INSERT INTO bon_livraison (id_demande, numero, fournisseur, date_bl) VALUES (?, ?, ?, ?)');
-    $insererLigne = $db->prepare('INSERT INTO bon_livraison_ligne (id_bon, ordre, reference_article, designation, unite, quantite_attendue) VALUES (?, ?, ?, ?, ?, ?)');
-    // Le compteur repart du plus grand numéro existant : relancer le script ne crée pas de doublon.
-    $dernier = (int) preg_replace('/\D/', '', (string) $db->query("SELECT numero FROM bon_livraison WHERE numero LIKE 'BL-%' ORDER BY id DESC LIMIT 1")->fetchColumn());
-    $compteur = $dernier % 1000;
-    $lignesPosees = 0;
-
-    foreach ($demandes as $index => $idDemande) {
-        $modele = $modeles[$index % count($modeles)];
-        $compteur++;
-        $numero = sprintf('BL-%s-%03d', date('Y'), $compteur);
-        $insererBon->execute([$idDemande, $numero, $modele['fournisseur'], date('Y-m-d', strtotime('-' . (3 + $index) . ' days'))]);
-        $idBon = (int) $db->lastInsertId();
-        foreach ($modele['lignes'] as $ordre => [$reference, $designation, $unite, $quantite]) {
-            $insererLigne->execute([$idBon, $ordre, $reference, $designation, $unite, $quantite]);
-            $lignesPosees++;
-        }
-    }
-
-    $db->commit();
-    echo count($demandes), " bon(s) de livraison posé(s), $lignesPosees ligne(s).\n";
-} catch (Throwable $erreur) {
-    $db->rollBack();
-    fwrite(STDERR, 'Jeu d’essai non posé : ' . $erreur->getMessage() . "\n");
-    exit(1);
-}

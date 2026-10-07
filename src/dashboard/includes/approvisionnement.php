@@ -16,63 +16,36 @@ function appoMotifs(): array
     ];
 }
 
-/** Étapes de traitement d'une demande d'approvisionnement. */
-function appoStatuts(): array
+/**
+ * Unités de comptage, en liste fermée.
+ *
+ * Un champ libre laissait passer « U », « unite », « Un. » pour la même chose, alors
+ * que les lignes de bon de livraison, elles, comptent en mètres ou en kilos.
+ */
+function appoUnites(): array
 {
     return [
-        'nouvelle' => 'Nouvelle',
-        'prise_en_compte' => 'Prise en compte',
-        'commandee' => 'Commandée',
-        'livree' => 'Livrée',
-        'refusee' => 'Refusée',
-    ];
-}
-
-/** États d'un bon de livraison. */
-function appoEtatsBon(): array
-{
-    return [
-        'attendu' => 'En attente de réception',
-        'partielle' => 'Réception partielle',
-        'complete' => 'Réception complète',
-        'refusee' => 'Réception refusée',
+        'u' => 'u — unité',
+        'm' => 'm — mètre',
+        'kg' => 'kg — kilogramme',
+        'l' => 'l — litre',
+        'm2' => 'm² — mètre carré',
+        'lot' => 'lot',
     ];
 }
 
 /**
- * Déduit l'état d'un bon des quantités pointées sur ses lignes.
- *
- * Une ligne non pointée (quantite_recue à NULL) laisse le bon « en attente » :
- * tant qu'il reste une ligne à voir, la réception n'est pas tranchée.
- *
- * @param array<int, array<string, mixed>> $lignes
+ * État d'un signalement. Deux valeurs suffisent : le chef d'atelier a besoin de
+ * voir ce qui lui est remonté et de retirer de sa liste ce qu'il a traité, pas de
+ * suivre un circuit d'achat.
  */
-function appoEtatDepuisLignes(array $lignes): string
+function appoStatuts(): array
 {
-    if (!$lignes) return 'attendu';
-
-    $pointees = 0;
-    $conformes = 0;
-    $recu = 0.0;
-
-    foreach ($lignes as $ligne) {
-        if ($ligne['quantite_recue'] === null) continue;
-        $pointees++;
-        $quantite = (float) $ligne['quantite_recue'];
-        $recu += $quantite;
-        if ($quantite + 0.0005 >= (float) $ligne['quantite_attendue']) $conformes++;
-    }
-
-    if ($pointees < count($lignes)) return 'attendu';
-    if ($conformes === count($lignes)) return 'complete';
-    return $recu > 0 ? 'partielle' : 'refusee';
-}
-
-/** Quantité manquante sur une ligne, 0 si elle est servie ou pas encore pointée. */
-function appoManquant(array $ligne): float
-{
-    if ($ligne['quantite_recue'] === null) return 0.0;
-    return max(0.0, (float) $ligne['quantite_attendue'] - (float) $ligne['quantite_recue']);
+    return [
+        'nouvelle' => 'À faire',
+        'vue' => 'Vue',
+        'traitee' => 'Traité',
+    ];
 }
 
 /** Affiche une quantité sans les zéros décimaux inutiles : 12,000 devient 12. */

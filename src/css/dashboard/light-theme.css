@@ -34,7 +34,7 @@ body[data-theme="light"],
 
 [data-theme="light"] #right-panel {
     background: var(--surface) !important;
-    border-color: var(--border) !important;
+    border-color: var(--border-subtle) !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
@@ -52,11 +52,6 @@ body[data-theme="light"],
 }
 
 /* ===== BARRE LATÉRALE (SIDEBAR) ===== */
-
-[data-theme="light"] #left-panel {
-    background: #ffffff !important;
-    border-right: 1px solid var(--border) !important;
-}
 
 [data-theme="light"] #left-panel .sidebar-mobile-header {
     border-bottom: 1px solid var(--border);
@@ -124,32 +119,7 @@ body[data-theme="light"],
     border-bottom: 1px solid var(--border) !important;
 }
 
-[data-theme="light"] #btn-hide {
-    background: #f8fafc !important;
-    border: 1px solid var(--border) !important;
-    color: #64748b !important;
-}
-
-[data-theme="light"] #btn-hide:hover {
-    background: #f1f5f9 !important;
-    color: #0f172a !important;
-}
-
 /* ===== CARTES & SECTIONS ===== */
-
-[data-theme="light"] .welcome-card {
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
-    border: 1px solid var(--border) !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-[data-theme="light"] .welcome-card h1 {
-    color: #0f172a !important;
-}
-
-[data-theme="light"] .welcome-card p {
-    color: #475569 !important;
-}
 
 [data-theme="light"] .settings-card,
 [data-theme="light"] .prefa-section,
@@ -373,19 +343,6 @@ body[data-theme="light"],
     border-color: var(--border) !important;
 }
 
-[data-theme="light"] th,
-[data-theme="light"] thead th,
-[data-theme="light"] .prefa-table th,
-[data-theme="light"] .atelier-plans-table th {
-    background: #f8fafc !important;
-    color: #334155 !important;
-    font-weight: 700 !important;
-    border-bottom: 2px solid var(--border) !important;
-    text-transform: uppercase;
-    font-size: 11px;
-    letter-spacing: 0.5px;
-}
-
 [data-theme="light"] td,
 [data-theme="light"] .prefa-table td,
 [data-theme="light"] .atelier-plans-table td {
@@ -442,62 +399,6 @@ body[data-theme="light"],
 }
 
 /* ===== PLANNING & GANTT ===== */
-
-[data-theme="light"] .planning-timeline {
-    background: #ffffff !important;
-    border-color: var(--border) !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-[data-theme="light"] .planning-timeline-toolbar {
-    background: #f8fafc !important;
-    border-bottom: 1px solid var(--border) !important;
-}
-
-[data-theme="light"] .planning-timeline .vis-panel.vis-top {
-    background: #f8fafc !important;
-    border-bottom: 1px solid var(--border) !important;
-}
-
-[data-theme="light"] .planning-timeline .vis-panel.vis-left {
-    background: #ffffff !important;
-    border-right: 1px solid var(--border) !important;
-}
-
-[data-theme="light"] .planning-timeline .vis-time-axis .vis-text.vis-major {
-    color: #2563eb !important;
-}
-
-[data-theme="light"] .planning-timeline .vis-time-axis .vis-text.vis-minor {
-    color: #334155 !important;
-}
-
-[data-theme="light"] .planning-timeline .vis-time-axis .vis-grid.vis-minor {
-    border-color: rgba(203, 213, 225, 0.6) !important;
-}
-
-[data-theme="light"] .planning-timeline .vis-grid.vis-saturday,
-[data-theme="light"] .planning-timeline .vis-grid.vis-sunday {
-    background: rgba(241, 245, 249, 0.7) !important;
-}
-
-[data-theme="light"] .planning-timeline .vis-item.vis-selected {
-    box-shadow: 0 0 0 2px #2563eb, 0 4px 12px rgba(37, 99, 235, 0.4) !important;
-}
-
-[data-theme="light"] .planning-timeline-label {
-    color: #0f172a !important;
-    border-bottom-color: var(--border) !important;
-}
-
-[data-theme="light"] .planning-timeline-label:hover {
-    background: #f1f5f9 !important;
-}
-
-[data-theme="light"] .planning-timeline-label[aria-pressed="true"] {
-    background: #eff6ff !important;
-    box-shadow: inset 3px 0 0 #2563eb !important;
-}
 
 [data-theme="light"] .planning-matrix-table th {
     background: #f8fafc !important;
@@ -569,6 +470,11 @@ body[data-theme="light"],
 
 [data-theme="light"] dialog::backdrop {
     background: rgba(15, 23, 42, 0.45) !important;
+}
+
+/* Le voile du volet lateral suit celui des fenetres modales. */
+[data-theme="light"] body:has(.prefa-detail-row:not([hidden]))::before {
+    background: rgba(15, 23, 42, 0.45);
 }
 
 /* ==========================================================================
@@ -1027,22 +933,10 @@ body[data-theme="light"],
     border-color: #ffffff !important;
 }
 
-/* ===== VIS-TIMELINE (planning-timeline.css) overrides ===== */
-[data-theme="light"] .planning-timeline .vis-panel,
-[data-theme="light"] .planning-timeline .vis-label,
-[data-theme="light"] .planning-timeline .vis-foreground .vis-group,
-[data-theme="light"] .planning-timeline .vis-time-axis .vis-grid {
-    border-color: var(--border) !important;
-}
-
-[data-theme="light"] .planning-timeline .vis-time-axis {
-    background: #f8fafc !important;
-}
-
 /* ===== PREFA LIST STICKY HEADER ===== */
 [data-theme="light"] .prefa-list-head-row,
 [data-theme="light"] .prefa-table thead tr {
-    background: #f8fafc !important;
+    background: var(--frame) !important;
 }
 
 /* ===== DROPDOWN / SELECT GÉNÉRAL ===== */

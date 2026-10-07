@@ -1,0 +1,364 @@
+/* ==========================================================================
+   PV & CONTRÔLES
+   Géométrie seulement : les couleurs propres à un thème vivent dans son fichier.
+   ========================================================================== */
+
+#pv-page .prefa-shell {
+    padding: 24px 28px 40px;
+}
+
+#pv-page .prefa-heading {
+    margin-bottom: 20px;
+}
+
+#pv-page .prefa-list-summary {
+    margin: 0 0 14px;
+}
+
+/* ===== ÉTATS ===== */
+
+.pv-etat {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--hover);
+    box-shadow: inset 0 0 0 1px var(--border);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Un point de couleur porte l'état : le libellé reste lisible sans dépendre du fond. */
+.pv-etat::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    margin-right: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.pv-etat-a_faire {
+    color: #e0a92a;
+}
+
+.pv-etat-fait {
+    color: #4caf7d;
+}
+
+.pv-etat-sans_objet {
+    color: var(--text-muted);
+}
+
+/* Nombre de documents rattachés, collé à l'état. */
+.pv-compte-doc {
+    margin-left: 7px;
+    padding: 0 5px;
+    border-radius: 7px;
+    background: var(--active);
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.pv-table td {
+    vertical-align: top;
+}
+
+/* ===== VOLET D'UNE DEMANDE ===== */
+
+/* La cellule du volet est forcée à padding 0 : c'est à son contenu de poser la marge. */
+.pv-volet {
+    padding: 24px 20px 40px;
+}
+
+.pv-bloc {
+    border-top: 1px solid var(--border);
+}
+
+.pv-bloc > summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+}
+
+/* La flèche native est remplacée par un chevron qui pivote à l'ouverture. */
+.pv-bloc > summary::-webkit-details-marker {
+    display: none;
+}
+
+.pv-bloc > summary::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-right: 1.5px solid var(--text-muted);
+    border-bottom: 1.5px solid var(--text-muted);
+    transform: rotate(-45deg);
+    transition: transform 0.15s ease;
+}
+
+.pv-bloc[open] > summary::before {
+    transform: rotate(45deg);
+}
+
+.pv-bloc > summary:hover {
+    color: var(--accent);
+}
+
+.pv-bloc-titre {
+    flex: 1;
+    min-width: 0;
+}
+
+.pv-bloc-date,
+.pv-bloc-docs {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.pv-bloc > form {
+    padding: 4px 4px 20px;
+}
+
+/* Le dépôt de fichiers et l'enregistrement tiennent sur une ligne. */
+.pv-depot {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: end;
+    margin-bottom: 12px;
+}
+
+/* L'input natif reste accessible au clavier mais invisible : c'est le label qui
+   porte le dessin de la zone de dépôt. */
+.pv-fichiers-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    opacity: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+}
+
+.pv-fichiers-zone {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.12s cubic-bezier(0.32, 0.72, 0, 1), background 0.12s cubic-bezier(0.32, 0.72, 0, 1), color 0.12s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.pv-fichiers-zone:hover {
+    border-color: var(--accent);
+    background: var(--hover);
+    color: var(--text);
+}
+
+.pv-fichiers-input:focus-visible + .pv-fichiers-zone {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.pv-fichiers-zone .icon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+}
+
+.pv-fichiers-texte {
+    flex: 1;
+    min-width: 0;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Le rappel des formats s'efface dès qu'il n'y a plus la place. */
+.pv-fichiers-aide {
+    flex-shrink: 0;
+    font-size: 12px;
+}
+
+/* État et date tiennent sur une ligne : ce sont les deux champs courts. */
+.pv-champs {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 180px;
+    gap: 16px;
+    align-items: start;
+    margin-bottom: 14px;
+}
+
+.pv-statut {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.pv-statut legend {
+    width: 100%;
+    padding: 0 0 6px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.pv-radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.pv-radio input {
+    margin: 0;
+    cursor: pointer;
+}
+
+/* ===== FICHE DE LECTURE (chargé d'affaire) ===== */
+
+.pv-lecture {
+    display: grid;
+    gap: 14px;
+    padding: 4px 4px 20px;
+}
+
+.pv-lecture-champs {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 180px;
+    gap: 16px;
+    margin: 0;
+}
+
+.pv-lecture-champs dt {
+    margin-bottom: 4px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.pv-lecture-champs dd {
+    margin: 0;
+    font-size: 13px;
+}
+
+.pv-lecture-bloc h3 {
+    margin: 0 0 6px;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.pv-lecture-bloc p {
+    margin: 0;
+    font-size: 13px;
+}
+
+/* La liste des documents sert aussi au formulaire : on neutralise sa marge ici. */
+.pv-lecture-bloc .pv-documents {
+    margin-bottom: 0;
+}
+
+.pv-lecture-vide {
+    color: var(--text-muted);
+}
+
+/* ===== DOCUMENTS ===== */
+
+.pv-documents {
+    list-style: none;
+    margin: 0 0 14px;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+}
+
+.pv-documents li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: var(--hover);
+}
+
+.pv-documents a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    color: var(--text);
+    font-size: 13px;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.pv-documents a:hover {
+    text-decoration: underline;
+}
+
+.pv-retirer-document {
+    flex-shrink: 0;
+    padding: 4px 9px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #e25c5c;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.12s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.pv-retirer-document:hover {
+    background: rgb(226 92 92 / 14%);
+    color: #ef7b7b;
+}
+
+.pv-signature {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+/* Deux lignes suffisent. floating-fields impose 112 px en !important a tous les
+   textarea : on ne peut le desserrer qu'avec la meme arme, et seulement ici. */
+body #pv-page .floating-field textarea.floating-control {
+    min-height: 72px !important;
+}
+
+@media (max-width: 700px) {
+    .pv-champs,
+    .pv-lecture-champs {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .pv-fichiers-aide {
+        display: none;
+    }
+}
+
+/* ===== FILTRES ===== */
+
+/* Une ligne masquee par le filtre : explicite, comme pour Plans / ISO, afin de ne pas
+   dependre de l'ordre des regles du navigateur sur un tbody. */
+#pv-page .pv-ligne[hidden] {
+    display: none !important;
+}

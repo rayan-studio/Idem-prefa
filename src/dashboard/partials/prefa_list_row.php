@@ -2,6 +2,9 @@
 $requestId = (int) $row['id'];
 $isPending = (int) $row['id_statut'] === 1;
 $isUrgentPending = !empty($row['urgent']) && $isPending;
+// Une demande validée que l'atelier n'a pas encore reprise : l'action de prise en
+// charge s'offre ici comme sur la page Plans / ISO.
+$isAPrendre = (int) $row['id_statut'] === 2 && empty($row['prise_en_charge_atelier']) && $canManageWorkshop;
 $ownerName = trim($row['prenom'] . ' ' . $row['name']);
 ?>
 <tbody class="prefa-request<?= $isUrgentPending ? ' is-urgent-pending' : '' ?>">
@@ -17,6 +20,15 @@ $ownerName = trim($row['prenom'] . ' ' . $row['name']);
         <td><?= $row['urgent'] ? '<span class="prefa-urgent">Urgente</span>' : 'Normale' ?></td>
         <td><span class="prefa-status status-<?= (int) $row['id_statut'] ?>"><?= prefaEscape($row['libelle']) ?></span></td>
         <td>
+            <?php if ((int) $row['id_statut'] !== 2): ?>
+                —
+            <?php elseif (!empty($row['prise_en_charge_nom'])): ?>
+                <?= prefaEscape($row['prise_en_charge_nom']) ?>
+            <?php else: ?>
+                <span class="prefa-a-prendre">À prendre en charge</span>
+            <?php endif; ?>
+        </td>
+        <td>
             <button type="button" class="prefa-toggle" aria-expanded="false" aria-controls="prefa-detail-<?= $requestId ?>">
                 <?= $isAdmin && $isPending ? 'Examiner' : 'Détails' ?>
             </button>
@@ -26,10 +38,12 @@ $ownerName = trim($row['prenom'] . ' ' . $row['name']);
                 <button type="button" class="delete-prefa" data-id="<?= $requestId ?>" data-csrf="<?= prefaEscape($_SESSION['prefa_csrf']) ?>">Supprimer</button>
             <?php endif; ?>
 
+            <?php if ($isAPrendre): ?><?php require __DIR__ . '/atelier_take.php'; ?><?php endif; ?>
+
         </td>
     </tr>
     <tr id="prefa-detail-<?= $requestId ?>" class="prefa-detail-row" hidden>
-        <td colspan="11">
+        <td colspan="12">
             <div class="prefa-table-detail">
                 <?php require __DIR__ . '/prefa_detail.php'; ?>
                 <?php if ($isAdmin && $isPending): ?>

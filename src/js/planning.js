@@ -78,7 +78,6 @@
         // Mettre à jour l'attribut data-selected-id
         const rootEl = root();
         if (rootEl) rootEl.dataset.selectedId = idNum;
-        window.PlanningTimeline?.select(idNum);
 
         // Mise à jour visuelle des lignes et barres de Gantt
         $('.gantt-row').removeClass('is-selected');
@@ -228,15 +227,12 @@
         if (!form) return;
         const params = new URLSearchParams(new FormData(form));
         if (loading) loading.abort();
-        const scroll = focusId ? 0 : current.querySelector('.gantt-scroll-wrapper')?.scrollLeft || 0;
         current.setAttribute('aria-busy', 'true');
         loading = $.get('pages/planning.php?' + params.toString()).done(html => {
             if (root() !== current) return;
             $('#content').html(html);
             const next = root();
-            window.PlanningTimeline?.mount(next);
-            const calendar = next?.querySelector('.gantt-scroll-wrapper');
-            if (calendar) calendar.scrollLeft = scroll;
+            window.PlanningGantt?.recentrer();
             
             const targetId = Number(focusId || (!removed && current.dataset.selectedId) || 0);
             if (targetId && next?.querySelector(`[data-select-affaire="${targetId}"], [data-plan-id="${targetId}"], [data-view-plan-id="${targetId}"]`)) {
@@ -290,6 +286,153 @@
     });
 
     // Clic pour sélectionner une affaire
+    // Le calendrier ne se fait plus glisser a la souris depuis le retrait de la
+    // timeline : Maj + molette au-dessus du Gantt le fait defiler horizontalement,
+    // comme le faisait l'ancienne vue. Les fleches marchent deja, le conteneur
+    // prenant le focus clavier.
+    $(document).on('wheel', '.gantt-scroll-wrapper', function (event) {
+        const brut = event.originalEvent;
+        if (!brut.shiftKey && Math.abs(brut.deltaX) <= Math.abs(brut.deltaY)) return;
+        const pas = brut.shiftKey ? brut.deltaY || brut.deltaX : brut.deltaX;
+        if (!pas) return;
+        const avant = this.scrollLeft;
+        this.scrollLeft += pas;
+        // On ne confisque l'evenement que si le calendrier a reellement defile,
+        // sinon la page ne peut plus defiler une fois le Gantt au bout.
+        if (this.scrollLeft !== avant) event.preventDefault();
+    });
+
+    // Glisser-deplacer du calendrier. Le seuil separe un glissement voulu d'un clic :
+    // une souris bouge de quelques pixels pendant un clic normal, 4 px classaient donc
+    // tous les clics en glissements et les faisaient avaler. 10 px demande un geste
+    // franc.
+    const SEUIL = 10;
+    let pan = null;
+    let ignorerProchainClic = false;
+
+    // Traces de mise au point. Mettre window.GANTT_DEBUG = false dans la console
+    // pour les couper, true pour les rallumer.
+    window.GANTT_DEBUG = window.GANTT_DEBUG !== false;
+    const nomCourt = el => {
+        if (!el || !el.tagName) return String(el);
+        const classes = typeof el.className === 'string' && el.className ? '.' + el.className.trim().split(/\s+/).join('.') : '';
+        return el.tagName.toLowerCase() + classes;
+    };
+    const trace = (quoi, detail) => {
+        if (!window.GANTT_DEBUG) return;
+        const etat = 'pan=' + (pan ? (pan.glisse ? 'glissement' : 'appui') : 'aucun')
+            + ' avalerClic=' + ignorerProchainClic;
+        const extra = Object.entries(detail || {}).map(([k, v]) => k + '=' + v).join(' ');
+        console.log('[gantt] ' + quoi + ' | ' + etat + (extra ? ' | ' + extra : ''));
+    };
+
+    const zoneGantt = () => document.querySelector('.gantt-scroll-wrapper');
+    const largeurJour = () => document.querySelector('.gantt-day-number')?.getBoundingClientRect().width || 0;
+    const margeJours = () => Number(document.querySelector('.gantt-layout')?.dataset.ganttMarge || 0);
+
+    // Le calendrier est dessine avec une periode de marge de chaque cote : au repos, on
+    // se place au debut de la periode demandee, c'est-a-dire apres la marge de gauche.
+    function recentrerCalendrier() {
+        const zone = zoneGantt();
+        if (!zone) return;
+        zone.scrollLeft = margeJours() * largeurJour();
+    }
+    window.PlanningGantt = { recentrer: recentrerCalendrier };
+
+    // Avaleur de clic installe une seule fois, en phase de capture. Un drapeau vaut
+    // mieux qu'un ecouteur pose puis retire a chaque geste : si le clic attendu
+    // n'arrive jamais, un ecouteur temporaire reste en embuscade et mange le clic
+    // suivant, ce qui donne des boutons qui ne repondent plus par intermittence.
+    document.addEventListener('click', event => {
+        if (!ignorerProchainClic) return;
+        ignorerProchainClic = false;
+        trace('clic AVALE', { cible: nomCourt(event.target) });
+        event.stopPropagation();
+        event.preventDefault();
+    }, true);
+
+    // Tout appui, ou qu'il soit, annule un avalement en attente. Sans ce garde-fou,
+    // un glissement termine sans clic laisse le drapeau arme, et c'est un clic
+    // legitime ailleurs dans la page qui se fait manger.
+    document.addEventListener('pointerdown', () => { ignorerProchainClic = false; }, true);
+
+    function finirPan(raison) {
+        if (!pan) return;
+        const { glisse, depart, dx = 0, pointer } = pan;
+        const zone = zoneGantt();
+        // On libere l'etat avant tout appel susceptible d'echouer : sinon une
+        // exception laisse « pan » en place et le calendrier croit qu'un glissement
+        // est toujours en cours, ce qui bloque les clics suivants.
+        pan = null;
+        document.body.classList.remove('is-panning-gantt');
+        try { zone && zone.releasePointerCapture && zone.releasePointerCapture(pointer); }
+        catch (e) { trace('releasePointerCapture a echoue (sans consequence)', { message: e.message }); }
+        const aBouge = zone && zone.scrollLeft !== depart;
+        // Un glissement ne doit pas ouvrir la demande sur laquelle il s'est termine,
+        // mais seulement s'il a vraiment deplace quelque chose.
+        if (glisse && raison === 'relachement' && aBouge) ignorerProchainClic = true;
+        trace('fin du geste', { raison, glissement: glisse, dx: Math.round(dx) });
+        if (glisse && raison === 'relachement') recentrerSurLaVue();
+    }
+
+    // En fin de geste, la periode affichee rattrape la position atteinte : on note la
+    // date passee sous le bord gauche et on la demande au serveur. Le rendu suivant
+    // replace cette date au meme endroit, donc rien ne saute a l'ecran.
+    function recentrerSurLaVue() {
+        const zone = zoneGantt();
+        const largeur = largeurJour();
+        if (!zone || !largeur) return;
+        const jours = Math.round(zone.scrollLeft / largeur) - margeJours();
+        if (!jours) return;
+        const champ = document.getElementById('planning-start');
+        const courant = date(champ && champ.value);
+        if (!courant) return;
+        champ.value = iso(addDays(courant, jours));
+        trace('periode rattrapee apres le geste', { jours, nouveauDebut: champ.value });
+        reload();
+    }
+
+    $(document).on('pointerdown', '.gantt-scroll-wrapper', function (event) {
+        const brut = event.originalEvent;
+        if (brut.button !== 0) { trace('appui ignore (bouton non principal)', { bouton: brut.button }); return; }
+        finirPan('nouvel appui');  // un geste precedent mal termine ne doit rien bloquer
+        pan = { x: brut.clientX, depart: this.scrollLeft, glisse: false, pointer: brut.pointerId };
+        trace('appui sur le calendrier', { x: Math.round(brut.clientX), scrollLeft: this.scrollLeft, cible: nomCourt(brut.target) });
+    });
+
+    // Pendant le geste, rien d'autre que du defilement : c'est ce qui le rend fluide.
+    $(document).on('pointermove', function (event) {
+        if (!pan) return;
+        const brut = event.originalEvent;
+        // Le bouton a ete relache hors de la fenetre : on referme le geste.
+        if (brut.buttons === 0) { finirPan('bouton relache hors de la page'); return; }
+        const zone = zoneGantt();
+        if (!zone) return;
+        const dx = brut.clientX - pan.x;
+        if (!pan.glisse) {
+            if (Math.abs(dx) < SEUIL) return;
+            pan.glisse = true;
+            document.body.classList.add('is-panning-gantt');
+            trace('glissement amorce', { dx: Math.round(dx), seuil: SEUIL });
+            try { zone.setPointerCapture && zone.setPointerCapture(pan.pointer); }
+            catch (e) { trace('setPointerCapture a echoue (sans consequence)', { message: e.message }); }
+        }
+        pan.dx = dx;
+        zone.scrollLeft = pan.depart - dx;
+        event.preventDefault();
+    });
+
+    $(document).on('pointerup', () => finirPan('relachement'));
+    $(document).on('pointercancel', () => finirPan('pointeur annule'));
+    $(document).on('lostpointercapture', () => finirPan('capture perdue'));
+    $(window).on('blur', () => finirPan('fenetre sans focus'));
+
+    // Les actions du planning passent par ces clics : on trace leur arrivee pour
+    // savoir si un clic s'est perdu en route.
+    $(document).on('click', '[data-plan-id], [data-view-plan-id], [data-select-affaire]', function () {
+        trace('clic recu par une action du planning', { cible: nomCourt(this) });
+    });
+
     $(document).on('click', '[data-select-affaire]', function () {
         selectAffaire(this.dataset.selectAffaire);
     });
@@ -355,8 +498,13 @@
         $chipDemandeur.find('.meta-val').text(request.demandeur || '—');
         $desc.append($chipDemandeur);
         if (inches > 0) {
-            const $chipChiffrage = $('<div class="planning-meta-chip"><span class="meta-label">Chiffrage</span><strong class="meta-val"></strong></div>');
-            $chipChiffrage.find('.meta-val').text(inches + ' pouce' + (inches > 1 ? 's' : '') + ' ISO (' + durationDays + ' j)');
+            // « 100 pouces ISO (100 j) » laisse croire a une coincidence : on montre les
+            // heures, qui font le lien entre les deux (100 pouces x 24 h = 2 400 h = 100 j).
+            const $chipChiffrage = $('<div class="planning-meta-chip"><span class="meta-label">Charge estimée</span><strong class="meta-val"></strong></div>');
+            $chipChiffrage.find('.meta-val').text(
+                inches + ' pouce' + (inches > 1 ? 's' : '') + ' ISO'
+                + ' · ' + Math.round(hours).toLocaleString('fr-FR') + ' h'
+                + ' (' + durationDays + ' j)');
             $desc.append($chipChiffrage);
         }
         const $chipLivraison = $('<div class="planning-meta-chip"><span class="meta-label">Livraison max</span><strong class="meta-val"></strong></div>');
@@ -434,4 +582,19 @@
         document.getElementById('planning-start').value = iso(addDays(today, -((today.getUTCDay() + 6) % 7)));
         reload();
     });
+    // La page planning est inseree par AJAX depuis le menu : il n'y a pas d'evenement
+    // de chargement a ecouter. On guette son apparition pour placer le calendrier au
+    // debut de la periode demandee, la marge de gauche etant deja dessinee.
+    function placerSiNecessaire() {
+        const layout = document.querySelector('.gantt-layout');
+        if (!layout || layout.dataset.ganttPlace === '1') return;
+        const largeur = largeurJour();
+        if (!largeur) return;          // pas encore mis en page, on repassera
+        layout.dataset.ganttPlace = '1';
+        recentrerCalendrier();
+    }
+    const contenu = document.getElementById('content');
+    if (contenu) new MutationObserver(placerSiNecessaire).observe(contenu, { childList: true, subtree: true });
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', placerSiNecessaire);
+    else placerSiNecessaire();
 })();

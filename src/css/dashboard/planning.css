@@ -201,6 +201,30 @@ html[data-theme="pink"] #contenaire #planning-page-message.is-removed {
     overflow-x: auto;
     overflow-y: hidden;
     position: relative;
+    /* La barre de defilement est masquee : on se deplace en tirant le calendrier,
+       a la molette avec Maj, ou par la navigation de dates. Le contenu reste
+       defilable, seul l'ascenseur disparait. */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    cursor: grab;
+}
+
+.gantt-scroll-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+/* L'etat de glissement vit sur body : le calendrier, lui, est remplace a chaque
+   changement de periode, une classe posee sur lui ne survivrait pas au geste. */
+body.is-panning-gantt .gantt-scroll-wrapper {
+    cursor: grabbing;
+    /* Pendant le glissement, la selection de texte et le survol des barres
+       parasiteraient le geste. */
+    user-select: none;
+}
+
+body.is-panning-gantt .gantt-bar:hover {
+    filter: none;
+    transform: none;
 }
 
 .gantt-layout {
@@ -213,10 +237,13 @@ html[data-theme="pink"] #contenaire #planning-page-message.is-removed {
 }
 
 /* En-tête */
+/* Le coin et la colonne des affaires restent visibles quand le calendrier defile.
+   Ils ne peuvent pas etre des elements de grille pour cela : le rectangle d'adherence
+   d'un element de grille se limite a sa propre cellule, soit 210 px, et la colonne
+   disparaissait des qu'on defilait au-dela. En flex, le bloc contenant est la ligne
+   entiere, qui fait toute la largeur du calendrier. */
 .gantt-header-row {
-    display: grid;
-    grid-template-columns: var(--gantt-label-width) 1fr;
-    grid-template-rows: 28px 28px;
+    display: flex;
     background: var(--frame);
     border-bottom: 1px solid var(--border);
     position: sticky;
@@ -224,9 +251,23 @@ html[data-theme="pink"] #contenaire #planning-page-message.is-removed {
     z-index: 10;
 }
 
+.gantt-header-cols {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.gantt-weeks-header,
+.gantt-days-header {
+    height: 28px;
+}
+
 .gantt-header-corner {
-    grid-row: 1 / span 2;
-    grid-column: 1;
+    flex: 0 0 var(--gantt-label-width);
+    position: sticky;
+    left: 0;
+    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -241,8 +282,6 @@ html[data-theme="pink"] #contenaire #planning-page-message.is-removed {
 
 /* Semaines (Ligne 1) */
 .gantt-weeks-header {
-    grid-row: 1;
-    grid-column: 2;
     display: grid;
     grid-template-columns: repeat(var(--gantt-days), minmax(0, 1fr));
     border-bottom: 1px solid var(--border);
@@ -266,8 +305,6 @@ html[data-theme="pink"] #contenaire #planning-page-message.is-removed {
 
 /* Numéros des jours (Ligne 2) */
 .gantt-days-header {
-    grid-row: 2;
-    grid-column: 2;
     display: grid;
     grid-template-columns: repeat(var(--gantt-days), minmax(0, 1fr));
 }
@@ -347,8 +384,7 @@ html[data-theme="pink"] #contenaire #planning-page-message.is-removed {
 .gantt-row {
     position: relative;
     z-index: 2;
-    display: grid;
-    grid-template-columns: var(--gantt-label-width) 1fr;
+    display: flex;
     min-height: 48px;
     border-bottom: 1px solid var(--border);
     align-items: center;
@@ -369,6 +405,7 @@ html[data-theme="pink"] #contenaire #planning-page-message.is-removed {
 
 /* Colonne étiquette d'affaire à gauche */
 .gantt-label-col {
+    flex: 0 0 var(--gantt-label-width);
     padding: 6px 12px;
     border-right: 1px solid var(--border);
     background: var(--frame);
@@ -376,7 +413,8 @@ html[data-theme="pink"] #contenaire #planning-page-message.is-removed {
     align-items: center;
     position: sticky;
     left: 0;
-    z-index: 4;
+    /* Au-dessus des barres (3), des barres selectionnees (5) et du trait du jour (6). */
+    z-index: 7;
 }
 
 .gantt-affaire-badge {
@@ -412,6 +450,8 @@ html[data-theme="pink"] #contenaire #planning-page-message.is-removed {
 
 /* Piste de la barre de Gantt */
 .gantt-track {
+    flex: 1 1 auto;
+    min-width: 0;
     display: grid;
     grid-template-columns: repeat(var(--gantt-days), minmax(0, 1fr));
     align-items: center;
@@ -421,21 +461,16 @@ html[data-theme="pink"] #contenaire #planning-page-message.is-removed {
 }
 
 /* Barres de Gantt */
+/* La barre ne porte plus de texte : son nom est a gauche, sa couleur dit le demandeur
+   et l'infobulle donne le detail. */
 .gantt-bar {
     position: relative;
     z-index: 3;
-    display: flex;
-    align-items: center;
-    gap: 6px;
     height: 32px;
-    padding: 0 8px;
+    padding: 0;
     border-radius: 4px;
-    font-size: 12px;
-    font-weight: 600;
     cursor: pointer;
     overflow: hidden;
-    text-align: left;
-    white-space: nowrap;
     background-color: var(--person-fill, var(--person-other));
     background-image: var(--person-hachure, none);
     border: 1px solid rgb(0 0 0 / 22%);
@@ -454,18 +489,6 @@ html[data-theme="pink"] #contenaire #planning-page-message.is-removed {
 .gantt-bar.is-selected {
     box-shadow: 0 0 0 1px var(--accent), 0 3px 8px rgba(0, 0, 0, 0.25);
     z-index: 5;
-}
-
-.gantt-marker {
-    font-size: 10px;
-    line-height: 1;
-    flex-shrink: 0;
-}
-
-.gantt-bar-title {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 /* ===== UNE COULEUR PAR DEMANDEUR =====
@@ -498,8 +521,7 @@ html[data-theme="pink"] #contenaire #planning-page-message.is-removed {
 }
 
 /* L'urgence se lit à la forme, pas à la teinte : elle reste visible sur toutes les couleurs. */
-.gantt-bar.is-urgent,
-.planning-timeline .vis-item.planning-timeline-urgent {
+.gantt-bar.is-urgent {
     outline: 2px dashed var(--person-ink);
     outline-offset: -4px;
 }

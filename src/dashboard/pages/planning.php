@@ -9,8 +9,18 @@ if (!$canViewAllPrefa) prefaError(403, 'Acces au planning non autorise.');
 
 $today = new DateTimeImmutable('today', new DateTimeZone('Europe/Paris'));
 $start = planningDate($_GET['start'] ?? '') ?? $today->modify('monday this week');
-$length = ($_GET['period'] ?? '28') === '7' ? 7 : 28;
+// Le zoom libre de la timeline a disparu : la période affichée se choisit ici.
+$length = (int) ($_GET['period'] ?? 28);
+if (!in_array($length, [7, 28, 56, 84], true)) $length = 28;
 $end = $start->modify('+' . ($length - 1) . ' days');
+// Le calendrier est dessine plus large que la periode demandee : une periode de marge
+// de chaque cote. Le glisser devient alors du simple defilement, fluide, et ne
+// recharge qu'en fin de geste. $start / $end restent la periode affichee, celle du
+// titre et du selecteur.
+$marge = $length;
+$renduStart = $start->modify('-' . $marge . ' days');
+$renduJours = $length * 3;
+$renduEnd = $renduStart->modify('+' . ($renduJours - 1) . ' days');
 
 $creators = $db->query("SELECT DISTINCT u.id, u.prenom, u.name, TRIM(CONCAT(u.prenom, ' ', u.name)) AS nom FROM Utilisateur u JOIN demande_prefabrication d ON d.idUsers = u.id WHERE d.id_statut = 2 ORDER BY u.prenom, u.name, u.id")->fetchAll();
 $creatorFilter = filter_var($_GET['creator'] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
@@ -105,8 +115,8 @@ $weeks = [];
 $todayCol = null;
 $months = [1 => 'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 
-for ($index = 0; $index < $length; $index++) {
-    $date = $start->modify('+' . $index . ' days');
+for ($index = 0; $index < $renduJours; $index++) {
+    $date = $renduStart->modify('+' . $index . ' days');
     $weekend = (int) $date->format('N') > 5;
     $isToday = $date->format('Y-m-d') === $today->format('Y-m-d');
     if ($isToday) $todayCol = $index + 1;
@@ -148,15 +158,15 @@ foreach ($planned as $req) {
     $first = planningDate($req['date_debut_planifiee']);
     $last = planningDate($req['date_fin_planifiee']);
     if (!$first || !$last) continue;
-    $visibleStart = max($first, $start);
-    $visibleEnd = min($last, $end);
-    $isVisible = ($first <= $end && $last >= $start);
+    $visibleStart = max($first, $renduStart);
+    $visibleEnd = min($last, $renduEnd);
+    $isVisible = ($first <= $renduEnd && $last >= $renduStart);
 
     $colStart = 1;
     $span = 1;
     if ($isVisible) {
-        $colStart = (int) $start->diff($visibleStart)->days + 1;
-        $colEnd = (int) $start->diff($visibleEnd)->days + 1;
+        $colStart = (int) $renduStart->diff($visibleStart)->days + 1;
+        $colEnd = (int) $renduStart->diff($visibleEnd)->days + 1;
         $span = max(1, $colEnd - $colStart + 1);
     }
 
@@ -218,6 +228,8 @@ $initialSelectedId = null;
         <div class="floating-field floating-always"><label for="planning-period">Vue</label><select class="floating-control" id="planning-period" name="period">
                 <option value="28" <?= $length === 28 ? 'selected' : '' ?>>4 semaines (Vue standard)</option>
                 <option value="7" <?= $length === 7 ? 'selected' : '' ?>>1 semaine</option>
+                <option value="56" <?= $length === 56 ? 'selected' : '' ?>>8 semaines</option>
+                <option value="84" <?= $length === 84 ? 'selected' : '' ?>>12 semaines</option>
             </select></div>
         <div class="floating-field floating-always"><label for="planning-creator-filter">Demandeur</label><select class="floating-control" id="planning-creator-filter" name="creator">
                 <option value="">Tous les demandeurs</option><?php foreach ($creators as $creator): ?><option value="<?= (int) $creator['id'] ?>" <?= $creatorFilter === (int) $creator['id'] ? 'selected' : '' ?>><?= prefaEscape($creator['nom']) ?></option><?php endforeach; ?>
@@ -232,76 +244,16 @@ $initialSelectedId = null;
         <div class="planning-outside-period"><span><?= count($outside) ?> demande(s) planifiée(s) hors période</span><button type="button" class="planning-button" data-planning-go-to="<?= prefaEscape($nextRequest['date_debut_planifiee']) ?>" data-planning-target="<?= (int) $nextRequest['id'] ?>">Voir le <?= prefaEscape(prefaFormatDate($nextRequest['date_debut_planifiee'])) ?></button></div>
     <?php endif; ?>
 
-    <!-- DIAGRAMME DE GANTT (Disposition demandée) -->
-    <section class="planning-timeline" data-timeline-start="<?= $start->format('Y-m-d') ?>" data-timeline-days="<?= $length ?>" aria-label="Planning des demandes" hidden>
-        <div class="planning-timeline-toolbar">
-            <div class="planning-timeline-controls">
-                <button type="button" class="planning-button planning-zoom-button" data-timeline-zoom="in" aria-label="Agrandir le calendrier" title="Agrandir le calendrier">
-                    <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        <line x1="11" y1="8" x2="11" y2="14"></line>
-                        <line x1="8" y1="11" x2="14" y2="11"></line>
-                    </svg>
-                </button>
-                <button type="button" class="planning-button planning-zoom-button" data-timeline-zoom="out" aria-label="Réduire le calendrier" title="Réduire le calendrier">
-                    <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        <line x1="8" y1="11" x2="14" y2="11"></line>
-                    </svg>
-                </button>
-                <button type="button" class="planning-button planning-reset-button" data-timeline-reset title="Recentrer sur la période">
-                    <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-                    </svg>
-                    <span>Vue complète</span>
-                </button>
-            </div>
-        </div>
-        <div class="planning-timeline-canvas"></div>
-        <div class="planning-timeline-empty" hidden>
-            <div class="planning-empty-icon" aria-hidden="true">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                    <circle cx="12" cy="15" r="2"></circle>
-                </svg>
-            </div>
-            <div class="planning-empty-text">
-                <h3>Aucune demande planifiée dans cette période</h3>
-                <p>Aucune affaire n’est programmée sur cet intervalle. Naviguez avec les flèches ou glissez sur le calendrier avec la souris pour explorer d'autres dates.</p>
-            </div>
-        </div>
-        <script type="application/json" class="planning-timeline-data">
-            <?php
-            $timelineRows = array_map(static fn($row) => [
-                'id' => (int) $row['request']['id'],
-                'reference_demande' => $row['request']['reference_demande'],
-                'name' => $row['request']['nom_affaire'] ?: $row['request']['reference_demande'],
-                'nom_affaire' => (string) ($row['request']['nom_affaire'] ?? ''),
-                'creator_id' => (int) $row['request']['creator_id'],
-                'creator_name' => (string) ($row['request']['demandeur'] ?: 'Non renseigné'),
-                'creator_slot' => $personneSlot($row['request']['creator_id']),
-                'start' => $row['request']['date_debut_planifiee'],
-                'end' => $row['request']['date_fin_planifiee'],
-                'urgent' => (bool) $row['request']['urgent'],
-            ], array_values(array_filter($ganttRows, static fn($row) => $row['isVisible'])));
-            echo json_encode($timelineRows, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE);
-            ?>
-        </script>
-    </section>
-    <div class="gantt-outer-container" data-gantt-fallback>
+    <div class="gantt-outer-container">
         <div class="gantt-scroll-wrapper" role="region" aria-label="Planning Gantt des affaires" tabindex="0">
-            <div class="gantt-layout" style="--gantt-days: <?= count($days) ?>;">
+            <div class="gantt-layout" style="--gantt-days: <?= count($days) ?>;" data-gantt-marge="<?= $marge ?>">
 
                 <!-- En-tête des colonnes -->
                 <div class="gantt-header-row">
                     <!-- Coin supérieur gauche (label affaire) -->
                     <div class="gantt-header-corner">Affaires</div>
 
+                    <div class="gantt-header-cols">
                     <!-- Ligne 1 : Semaines -->
                     <div class="gantt-weeks-header">
                         <?php foreach ($weeks as $w): ?>
@@ -318,6 +270,7 @@ $initialSelectedId = null;
                                 <?= $day['dayNum'] ?>
                             </div>
                         <?php endforeach; ?>
+                    </div>
                     </div>
                 </div>
 
@@ -354,10 +307,8 @@ $initialSelectedId = null;
                                         <button type="button" class="gantt-bar <?= $row['colorClass'] ?> <?= $r['urgent'] ? 'is-urgent' : '' ?> <?= $r['id'] == $initialSelectedId ? 'is-selected' : '' ?>"
                                             <?= $isAdmin ? 'data-plan-id' : 'data-view-plan-id' ?>="<?= (int) $r['id'] ?>"
                                             style="grid-column: <?= $row['colStart'] ?> / span <?= $row['span'] ?>;"
-                                            title="<?= prefaEscape('Demande ' . $r['reference_demande'] . ' · ' . $titleAffaire . ' · ' . prefaFormatDate($r['date_debut_planifiee']) . ' au ' . prefaFormatDate($r['date_fin_planifiee'])) ?>">
-                                            <span class="gantt-marker">▶</span>
-                                            <span class="gantt-bar-title"><?= prefaEscape($titleAffaire) ?></span>
-                                        </button>
+                                            title="<?= prefaEscape('Demande ' . $r['reference_demande'] . ' · ' . $titleAffaire . ' · ' . prefaFormatDate($r['date_debut_planifiee']) . ' au ' . prefaFormatDate($r['date_fin_planifiee'])) ?>"
+                                            aria-label="<?= prefaEscape('Demande ' . $r['reference_demande'] . ' · ' . $titleAffaire . ' · ' . prefaFormatDate($r['date_debut_planifiee']) . ' au ' . prefaFormatDate($r['date_fin_planifiee'])) ?>"></button>
                                     <?php endif; ?>
                                 </div>
                             </div>

@@ -9,6 +9,10 @@ if (!$canManageWorkshop) {
 }
 
 $workshopUsers = prefaWorkshopPersonnel($db);
+// L'administrateur désigne le responsable ; la liste ne change pas d'une ligne à l'autre.
+$chiefs = $isAdmin
+    ? $db->query("SELECT id, TRIM(CONCAT(prenom, ' ', name)) AS nom FROM Utilisateur WHERE id_role = 2 ORDER BY prenom, name, id")->fetchAll()
+    : [];
 
 // Récupérer toutes les demandes validées (statut = 2)
 $stmt = $db->query("
@@ -130,11 +134,15 @@ $totalPlans = array_sum($planCounts);
                             <td><?= !empty($row['date_livraison_prevue']) ? prefaEscape(prefaFormatDate($row['date_livraison_prevue'])) : '—' ?></td>
                             <td><?= $nbPlans ?> plan<?= $nbPlans > 1 ? 's' : '' ?></td>
                             <td><?php if (!empty($row['urgent'])): ?><span class="prefa-urgent">Urgente</span><?php else: ?>Normale<?php endif; ?></td>
-                            <td><?= $isTaken ? 'Pris en charge' : 'À prendre en charge' ?></td>
+                            <td><?= $isTaken ? prefaEscape($row['prise_en_charge_nom'] ?: 'Pris en charge') : '<span class="prefa-a-prendre">À prendre en charge</span>' ?></td>
                             <td>
                                 <button type="button" class="prefa-toggle" aria-expanded="false" aria-controls="prefa-detail-<?= $requestId ?>">Détails</button>
-                                <button type="button" class="prefa-toggle plans-iso-toggle" aria-expanded="false" aria-controls="plans-iso-detail-<?= $requestId ?>">Plans & affectations</button>
-                                <?php if ($isTaken): ?><button type="button" class="prefa-toggle atelier-open-plan-create" data-dialog="atelier-create-dialog-<?= $requestId ?>">Ajouter un plan</button><?php endif; ?>
+                                <?php if ($isTaken): ?>
+                                    <button type="button" class="prefa-toggle plans-iso-toggle" aria-expanded="false" aria-controls="plans-iso-detail-<?= $requestId ?>">Plans & affectations</button>
+                                    <button type="button" class="prefa-toggle atelier-open-plan-create" data-dialog="atelier-create-dialog-<?= $requestId ?>">Ajouter un plan</button>
+                                <?php else: ?>
+                                    <?php require __DIR__ . '/../partials/atelier_take.php'; ?>
+                                <?php endif; ?>
                             </td>
                         </tr>
                         <tr id="plans-iso-detail-<?= $requestId ?>" class="plans-iso-detail prefa-detail-row" hidden><td colspan="8">

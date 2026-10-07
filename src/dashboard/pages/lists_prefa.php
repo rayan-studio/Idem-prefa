@@ -7,6 +7,12 @@ if ($isWorkshopPersonnel) {
 }
 require_once __DIR__ . '/../partials/prefa_list_data.php';
 
+// Les chefs d'atelier ne changent pas d'une ligne à l'autre : une seule requête,
+// et seulement pour l'administrateur, qui est le seul à désigner quelqu'un d'autre.
+$chiefs = $isAdmin
+    ? $db->query("SELECT id, TRIM(CONCAT(prenom, ' ', name)) AS nom FROM Utilisateur WHERE id_role = 2 ORDER BY prenom, name, id")->fetchAll()
+    : [];
+
 /*
 |--------------------------------------------------------------------------
 | Valeurs par défaut
@@ -334,6 +340,10 @@ if ($isWorkshopPersonnel) {
                             </th>
 
                             <th scope="col">
+                                Prise en charge
+                            </th>
+
+                            <th scope="col">
                                 Actions
                             </th>
 
@@ -360,7 +370,7 @@ if ($isWorkshopPersonnel) {
 
                                 <td
                                     class="prefa-table-empty"
-                                    colspan="11">
+                                    colspan="12">
                                     Aucune demande trouvée.
                                 </td>
 

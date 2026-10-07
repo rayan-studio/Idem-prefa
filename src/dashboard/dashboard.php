@@ -47,6 +47,19 @@ $comptes = comptesList($db);
 if ($isAdmin) {
     $urgentPending = (int) $db->query('SELECT COUNT(*) FROM demande_prefabrication WHERE urgent = 1 AND id_statut = 1')->fetchColumn();
 }
+
+// Signalements de l'atelier encore à faire, pour la pastille de la rubrique.
+$approEnAttente = 0;
+// PV restant à renseigner : quatre par demande validée, moins ceux déjà tranchés.
+// Une demande jamais touchée n'a aucune ligne, d'où le calcul par soustraction.
+$pvAFaire = 0;
+if ($isAdmin || $isWorkshopChief) {
+    $approEnAttente = (int) $db->query("SELECT COUNT(*) FROM demande_approvisionnement WHERE statut = 'nouvelle'")->fetchColumn();
+    $pvAFaire = (int) $db->query("SELECT
+            (SELECT COUNT(*) FROM demande_prefabrication WHERE id_statut = 2) * 4
+          - (SELECT COUNT(*) FROM pv_prefabrication p JOIN demande_prefabrication d ON d.id = p.id_demande
+             WHERE d.id_statut = 2 AND p.statut <> 'a_faire')")->fetchColumn();
+}
 ?>
 
 <!DOCTYPE html>
@@ -71,7 +84,6 @@ if ($isAdmin) {
 
     <!-- Stylesheets -->
     <link href="../css/dashboard/settings.css?v=<?= filemtime(__DIR__ . '/../css/dashboard/settings.css') ?>" rel="stylesheet" />
-    <link href="../assets/vendor/vis-timeline/vis-timeline.min.css" rel="stylesheet" />
     <link href="../css/dashboard/dashboard-base.css?v=<?= filemtime(__DIR__ . '/../css/dashboard/dashboard-base.css') ?>" rel="stylesheet" />
     <link href="../css/dashboard/dashboard-forms.css?v=<?= filemtime(__DIR__ . '/../css/dashboard/dashboard-forms.css') ?>" rel="stylesheet" />
     <link href="../css/dashboard/prefa-form.css?v=<?= filemtime(__DIR__ . '/../css/dashboard/prefa-form.css') ?>" rel="stylesheet" />
@@ -82,8 +94,9 @@ if ($isAdmin) {
     <link href="../css/floating-fields.css?v=<?= filemtime(__DIR__ . '/../css/floating-fields.css') ?>" rel="stylesheet" />
     <link href="../css/dashboard/pink-theme.css?v=<?= filemtime(__DIR__ . '/../css/dashboard/pink-theme.css') ?>" rel="stylesheet" />
     <link href="../css/dashboard/light-theme.css?v=<?= filemtime(__DIR__ . '/../css/dashboard/light-theme.css') ?>" rel="stylesheet" />
-    <link href="../css/dashboard/planning-timeline.css?v=<?= filemtime(__DIR__ . '/../css/dashboard/planning-timeline.css') ?>" rel="stylesheet" />
     <link href="../css/dashboard/accounts.css?v=<?= filemtime(__DIR__ . '/../css/dashboard/accounts.css') ?>" rel="stylesheet" />
+    <link href="../css/dashboard/approvisionnement.css?v=<?= filemtime(__DIR__ . '/../css/dashboard/approvisionnement.css') ?>" rel="stylesheet" />
+    <link href="../css/dashboard/pv.css?v=<?= filemtime(__DIR__ . '/../css/dashboard/pv.css') ?>" rel="stylesheet" />
     <script src="../js/floating-fields.js?v=<?= filemtime(__DIR__ . '/../js/floating-fields.js') ?>" defer></script>
 </head>
 
@@ -155,6 +168,16 @@ if ($isAdmin) {
                     </button>
                 <?php endif; ?>
 
+                <?php if ($isWorkshopPersonnel): ?>
+                    <button id="btn-materiel" class="nav-btn" type="button">
+                        <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5v-9Z" />
+                            <path d="m3 7.5 9 4.5 9-4.5M12 12v9" />
+                        </svg>
+                        <span>Matériel</span>
+                    </button>
+                <?php endif; ?>
+
                 <!-- Plans / ISO & Affectations Sidebar -->
                 <?php if ($isAdmin || $isWorkshopChief): ?>
                     <button id="btn-plans-iso" class="nav-btn" type="button">
@@ -172,6 +195,29 @@ if ($isAdmin) {
                             <path d="M16 3v4M8 3v4M3 11h18M7 15h3M14 15h3M7 18h3" />
                         </svg>
                         <span>Planning</span>
+                    </button>
+
+                    <button id="btn-signalements" class="nav-btn" type="button">
+                        <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5v-9Z" />
+                            <path d="m3 7.5 9 4.5 9-4.5M12 12v9" />
+                            <path d="M12 7.5v3M12 13.5h.01" />
+                        </svg>
+                        <span>Signalements matériel</span>
+                        <?php if ($approEnAttente): ?><span class="nav-urgent-badge" aria-label="<?= $approEnAttente ?> signalements à faire" title="Signalements de l’atelier à faire"><?= $approEnAttente ?></span><?php endif; ?>
+                    </button>
+
+                <?php endif; ?>
+
+                <?php if ($isAdmin || $isWorkshopChief || $isRequester): ?>
+                    <button id="btn-pv" class="nav-btn" type="button">
+                        <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z" />
+                            <path d="M14 3v5h5" />
+                            <path d="m9 14 2 2 4-4" />
+                        </svg>
+                        <span>PV</span>
+                        <?php if ($pvAFaire): ?><span class="nav-urgent-badge" aria-label="<?= $pvAFaire ?> PV à renseigner" title="PV encore à renseigner"><?= $pvAFaire ?></span><?php endif; ?>
                     </button>
                 <?php endif; ?>
 
@@ -387,13 +433,13 @@ if ($isAdmin) {
     <script src="../js/dashboard-navigation.js?v=<?= hash_file('sha256', __DIR__ . '/../js/dashboard-navigation.js') ?>"></script>
     <script src="../js/dashboard-forms.js?v=<?= hash_file('sha256', __DIR__ . '/../js/dashboard-forms.js') ?>"></script>
     <script src="../js/prefa-interactions.js?v=<?= hash_file('sha256', __DIR__ . '/../js/prefa-interactions.js') ?>"></script>
-    <script src="../assets/vendor/vis-timeline/vis-timeline.min.js"></script>
-    <script src="../js/planning-timeline.js?v=<?= hash_file('sha256', __DIR__ . '/../js/planning-timeline.js') ?>"></script>
     <script src="../js/planning.js?v=<?= hash_file('sha256', __DIR__ . '/../js/planning.js') ?>"></script>
     <script src="../js/atelier.js?v=<?= hash_file('sha256', __DIR__ . '/../js/atelier.js') ?>"></script>
     <script src="../js/dashboard-sidebar.js?v=<?= hash_file('sha256', __DIR__ . '/../js/dashboard-sidebar.js') ?>"></script>
     <script src="../js/dashboard-accounts.js?v=<?= hash_file('sha256', __DIR__ . '/../js/dashboard-accounts.js') ?>"></script>
     <script src="../js/iso.js?v=<?= hash_file('sha256', __DIR__ . '/../js/iso.js') ?>"></script>
+    <script src="../js/approvisionnement.js?v=<?= hash_file('sha256', __DIR__ . '/../js/approvisionnement.js') ?>"></script>
+    <script src="../js/pv.js?v=<?= hash_file('sha256', __DIR__ . '/../js/pv.js') ?>"></script>
 </body>
 
 </html>

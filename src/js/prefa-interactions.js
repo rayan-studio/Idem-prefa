@@ -575,18 +575,31 @@ $(document).on('click', '.prefa-detail-close', function () {
     }
 });
 
+// Referme le volet ouvert et rend son bouton à l'état replié. Renvoie false s'il n'y
+// en avait aucun.
+function fermerVoletOuvert() {
+    const openDetail = document.querySelector('.prefa-detail-row:not([hidden])');
+    if (!openDetail) return false;
+    openDetail.hidden = true;
+    const toggleBtn = document.querySelector(`.prefa-toggle[aria-controls="${openDetail.id}"]`);
+    if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+    return true;
+}
+
 $(document).on('keydown', function (event) {
     if (event.key === 'Escape') {
         // Échap ferme d'abord la fenêtre posée par-dessus le volet. Sans ce garde-fou,
         // la même touche refermait la fenêtre ET le volet qui l'a ouverte.
         if (document.querySelector('dialog[open]')) return;
-        const openDetail = document.querySelector('.prefa-detail-row:not([hidden])');
-        if (openDetail) {
-            openDetail.hidden = true;
-            const toggleBtn = document.querySelector(`.prefa-toggle[aria-controls="${openDetail.id}"]`);
-            if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
-        }
+        fermerVoletOuvert();
     }
+});
+
+// Le voile est dessiné par body::before : un clic dessus a donc body pour cible.
+// Comme il couvre toute la page quand un volet est ouvert, c'est le geste « cliquer
+// à côté pour fermer » des fenêtres modales.
+$(document).on('click', function (event) {
+    if (event.target === document.body) fermerVoletOuvert();
 });
 
 $(document).on('click', '.btn-goto-plans-iso', function () {

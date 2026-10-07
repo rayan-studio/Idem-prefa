@@ -30,6 +30,11 @@ $isWorkshopPersonnel = (int) $actor['id_role'] === 3;
 $isRequester = (int) $actor['id_role'] === 5;
 $canEditPrefa = $isAdmin || $isRequester;
 $canManageWorkshop = $isAdmin || $isWorkshopChief;
+// Les PV sont renseignés par l’atelier. Le chargé d’affaire les consulte pour suivre
+// l’avancement, mais seulement sur les demandes qu’il a déposées.
+$canFillPv = $isAdmin || $isWorkshopChief;
+$canViewPv = $canFillPv || $isRequester;
+$pvLimiteAuDemandeur = $isRequester && !$canFillPv;
 $_SESSION['prefa_csrf'] ??= bin2hex(random_bytes(32));
 
 function prefaPost(): void

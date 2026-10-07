@@ -22,23 +22,6 @@ $activeCount = 0;
 foreach ($elements as $element) foreach ($element['affectations'] as $assignment) if ($assignment['actif']) $activeCount++;
 ?>
 <section class="atelier-section" aria-label="Travaux à affecter pour la demande <?= prefaEscape(prefaReference($requestId)) ?>">
-    <?php if ($canManageWorkshop && !$taken): ?>
-        <div class="atelier-start">
-            <p><?= $isAdmin ? 'Choisissez le chef d’atelier responsable de cette demande.' : 'Prenez en charge cette demande pour préparer les plans et répartir le travail.' ?></p>
-            <form class="atelier-action prefa-form" data-endpoint="save_atelier.php">
-                <input type="hidden" name="csrf" value="<?= prefaEscape($_SESSION['prefa_csrf']) ?>"><input type="hidden" name="id" value="<?= $requestId ?>"><input type="hidden" name="operation" value="take">
-                <?php if ($isAdmin): $chiefs = $db->query("SELECT id, TRIM(CONCAT(prenom, ' ', name)) AS nom FROM Utilisateur WHERE id_role = 2 ORDER BY prenom, name, id")->fetchAll(); ?>
-                    <div class="atelier-chief-picker"><label for="atelier-chief-<?= $requestId ?>">Chef d’atelier responsable</label><select id="atelier-chief-<?= $requestId ?>" name="chef" required>
-                            <option value="">Sélectionner un chef d’atelier</option>
-                            <?php foreach ($chiefs as $chief): ?><option value="<?= (int) $chief['id'] ?>"><?= prefaEscape($chief['nom']) ?></option><?php endforeach; ?>
-                        </select></div>
-                    <?php if (!$chiefs): ?><p class="atelier-muted">Aucun chef d’atelier disponible. Créez un compte avec ce rôle pour pouvoir l’affecter.</p><?php endif; ?>
-                <?php endif; ?>
-                <div class="atelier-form-actions"><button type="submit" <?= $isAdmin && !$chiefs ? 'disabled' : '' ?>><?= $isAdmin ? 'Affecter le chef d’atelier' : 'Prendre en charge' ?></button><span class="atelier-message" role="status" aria-live="polite"></span></div>
-            </form>
-        </div>
-    <?php endif; ?>
-
     <?php if ($canManageWorkshop && $taken): ?>
         <?php if (empty($isPlansIsoPage)): ?><button type="button" class="prefa-toggle atelier-open-plan-create" data-dialog="atelier-create-dialog-<?= $requestId ?>">Ajouter un plan</button><?php endif; ?>
         <dialog id="atelier-create-dialog-<?= $requestId ?>" class="atelier-plan-dialog" aria-labelledby="atelier-create-title-<?= $requestId ?>">
@@ -127,8 +110,8 @@ foreach ($elements as $element) foreach ($element['affectations'] as $assignment
                             <?php foreach ($types as $type => $label): $assignment = $active[$type] ?? null; ?>
                                 <section class="atelier-plan-work"><h4><?= prefaEscape($label) ?></h4>
                                     <?php if ($canManageWorkshop && $taken): ?>
-                                        <button type="button" class="atelier-edit-assignment atelier-person-button <?= $assignment ? 'is-assigned' : '' ?>" data-form="<?= $formId ?>" data-type="<?= $type ?>" data-label="<?= prefaEscape($element['reference'] . ' · ' . $label) ?>" data-user="<?= $assignment ? (int) $assignment['id_utilisateur'] : '' ?>" aria-controls="<?= $formId ?>" aria-expanded="false">
-                                            <?= $assignment ? prefaEscape($assignment['utilisateur_nom']) : '+ Affecter' ?>
+                                        <button type="button" class="atelier-edit-assignment atelier-person-button <?= $assignment ? 'is-assigned' : '' ?>" data-form="<?= $formId ?>" data-type="<?= $type ?>" data-label="<?= prefaEscape($element['reference'] . ' · ' . $label) ?>" data-user="<?= $assignment ? (int) $assignment['id_utilisateur'] : '' ?>" aria-controls="<?= $formId ?>" aria-expanded="false" title="<?= $assignment ? 'Changer la personne affectée' : 'Affecter une personne' ?> — <?= prefaEscape($label) ?>">
+                                            <?= $assignment ? prefaEscape($assignment['utilisateur_nom']) : 'Affecter' ?>
                                         </button>
                                     <?php else: ?><span><?= $assignment ? prefaEscape($assignment['utilisateur_nom']) : 'Non affecté' ?></span><?php endif; ?>
 

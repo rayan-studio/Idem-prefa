@@ -186,6 +186,29 @@
     background: var(--surface) !important;
 }
 
+/* Le volet se comporte en fenetre modale : le reste de la page s'assombrit derriere
+   lui. Le voile est porte par body et conditionne par :has(), pour suivre toutes les
+   facons d'ouvrir ou de fermer un volet sans etat a tenir a jour en JS. Il ne peut pas
+   vivre sur le volet lui-meme : son animation applique un transform, qui ferait de lui
+   le bloc contenant d'un enfant en position fixed. */
+body:has(.prefa-detail-row:not([hidden]))::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgb(0 0 0 / 35%);
+    animation: prefa-drawer-fade-in 0.25s ease forwards;
+}
+
+@keyframes prefa-drawer-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
 @keyframes prefa-drawer-slide-in {
     from {
         transform: translateX(100%);
@@ -393,7 +416,7 @@
 }
 
 .prefa-document-link:hover {
-    background: #24354b;
+    background: var(--hover);
 }
 
 .prefa-document-link:focus-visible,
@@ -1445,6 +1468,12 @@ summary {
     font-size: 13px;
 }
 
+/* Une demande validée que personne n'a reprise : un rappel discret, pas une alerte. */
+.prefa-a-prendre {
+    color: #e0a92a;
+    white-space: nowrap;
+}
+
 .prefa-dropzone {
     display: flex;
     flex-direction: column;
@@ -1472,7 +1501,7 @@ summary {
 .prefa-dropzone:hover,
 .prefa-dropzone.is-dragging {
     border-color: var(--accent);
-    background: #24354b;
+    background: var(--hover);
     box-shadow: 0 0 0 3px rgb(0 95 184 / 10%);
 }
 
@@ -1516,7 +1545,7 @@ summary {
     flex: 0 0 auto;
     padding: 4px 5px;
     border-radius: 4px;
-    background: #24354b;
+    background: var(--active);
     color: var(--accent);
     font-size: 9px;
     font-weight: 700;
@@ -1543,7 +1572,7 @@ summary {
 
 .prefa-form .prefa-file-row button:hover:not(:disabled) {
     border-color: var(--accent);
-    background: #24354b;
+    background: var(--hover);
     text-decoration: none;
 }
 
