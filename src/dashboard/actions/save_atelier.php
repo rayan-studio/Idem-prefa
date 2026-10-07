@@ -7,7 +7,7 @@ prefaPost();
 if (!$canManageWorkshop) prefaError(403, 'Action réservée au chef d’atelier ou à l’administrateur.');
 $requestId = filter_var($_POST['id'] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 $operation = $_POST['operation'] ?? '';
-if (!$requestId || !in_array($operation, ['take', 'element', 'documents', 'assign', 'revoke'], true)) prefaError(400, 'Action atelier invalide.');
+if (!$requestId || !in_array($operation, ['take', 'element', 'update_element', 'delete_element', 'documents', 'assign', 'revoke'], true)) prefaError(400, 'Action atelier invalide.');
 try {
     $db->beginTransaction();
     $stmt = $db->prepare('SELECT * FROM demande_prefabrication WHERE id = ? AND id_statut = 2 FOR UPDATE');
@@ -28,6 +28,10 @@ try {
         }
         if (!empty($request['prise_en_charge_atelier'])) { $db->rollBack(); prefaError(409, 'Cette demande est déjà prise en charge. Actualisez la liste.'); }
         $db->prepare('UPDATE demande_prefabrication SET pris_en_charge_par = ?, date_prise_en_charge = NOW(), prise_en_charge_atelier = 1 WHERE id = ?')->execute([$chiefId, $requestId]);
+    } elseif (in_array($operation, ['update_element', 'delete_element'], true)) {
+        $elementId = filter_var($_POST['element'] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if (!$elementId) { $db->rollBack(); prefaError(400, 'Plan invalide.'); }
+        atelierChangeElement($db, $requestId, $elementId, $operation, $_POST['reference'] ?? '', $_POST['libelle'] ?? '');
     } elseif (in_array($operation, ['element', 'documents'], true)) {
         $reference = trim((string) ($_POST['reference'] ?? ''));
         $label = trim((string) ($_POST['libelle'] ?? ''));
@@ -82,6 +86,9 @@ try {
     $db->commit();
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(['success' => true, 'message' => 'Atelier mis à jour.']);
+} catch (InvalidArgumentException $e) {
+    if ($db->inTransaction()) $db->rollBack();
+    prefaError(400, $e->getMessage());
 } catch (PDOException $e) {
     if ($db->inTransaction()) $db->rollBack();
     if ($e->getCode() === '23000') prefaError(409, 'Cette référence ou affectation existe déjà. Actualisez la liste.');

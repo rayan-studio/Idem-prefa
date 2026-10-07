@@ -51,6 +51,29 @@ function atelierElements(PDO $db, int $requestId): array
     return $elements;
 }
 
+/** The caller checks workshop rights and locks the validated request in a transaction. */
+function atelierChangeElement(PDO $db, int $requestId, int $elementId, string $operation, mixed $reference = '', mixed $description = ''): void
+{
+    if (!$db->inTransaction()) throw new LogicException('Une transaction est nécessaire pour modifier un plan.');
+    if (!in_array($operation, ['update_element', 'delete_element'], true)) throw new InvalidArgumentException('Action sur le plan invalide.');
+    $find = $db->prepare('SELECT id FROM element_atelier WHERE id = ? AND id_demande = ? FOR UPDATE');
+    $find->execute([$elementId, $requestId]);
+    if (!$find->fetchColumn()) throw new InvalidArgumentException('Plan introuvable dans cette demande.');
+    if ($operation === 'delete_element') {
+        // Related assignments and tracking cascade; the request attachments remain intact.
+        $db->prepare('DELETE FROM element_atelier WHERE id = ? AND id_demande = ?')->execute([$elementId, $requestId]);
+        return;
+    }
+    if (!is_string($reference) || !is_string($description)) throw new InvalidArgumentException('Saisissez un nom et une description valides.');
+    $reference = trim($reference);
+    $description = trim($description);
+    if ($reference === '' || mb_strlen($reference) > 80 || $description === '' || mb_strlen($description) > 180) {
+        throw new InvalidArgumentException('Le nom est obligatoire (80 caractères maximum), ainsi que la description (180 caractères maximum).');
+    }
+    $save = $db->prepare('UPDATE element_atelier SET reference = ?, libelle = ? WHERE id = ? AND id_demande = ?');
+    $save->execute([$reference, $description, $elementId, $requestId]);
+}
+
 function atelierDocumentName(PDO $db, int $requestId, string $kind, string $key): ?string
 {
     if ($kind === 'plan') {

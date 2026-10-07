@@ -9,9 +9,9 @@ function prefaChargerId(PDO $db, mixed $value): ?int
 {
     if ($value === '' || $value === null) return null;
     $id = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-    if (!$id) prefaError(400, 'Sélectionnez un compte Demandeure valide.');
+    if (!$id) prefaError(400, 'Sélectionnez un compte Demandeur valide.');
     $check = $db->prepare('SELECT id FROM Utilisateur WHERE id = ? AND id_role = 5');
     $check->execute([$id]);
-    if (!$check->fetchColumn()) prefaError(400, 'Ce compte ne possède pas le rôle Demandeure.');
+    if (!$check->fetchColumn()) prefaError(400, 'Ce compte ne possède pas le rôle Demandeur.');
     return (int) $id;
 }

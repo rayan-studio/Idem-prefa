@@ -2,12 +2,7 @@
 
 function userRoleLabel(array $user): string
 {
-    return match ((int) $user['id_role']) {
-        1 => 'Administrateur',
-        2 => "Chef d'atelier",
-        5 => 'Demandeure',
-        default => $user['role_name'] ?? 'Non renseigné',
-    };
+    return $user['role_name'] ?? 'Non renseigné';
 }
 
 function userCreationLabel(array $user): string

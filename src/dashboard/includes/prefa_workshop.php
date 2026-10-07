@@ -5,8 +5,7 @@ function prefaWorkshopPersonnel(PDO $db): array
     return $db->query("
         SELECT u.id, u.name, u.prenom, TRIM(CONCAT(u.prenom, ' ', u.name)) AS nom
         FROM Utilisateur u
-        JOIN role r ON r.id = u.id_role
-        WHERE r.name IN ('Utilisateur', 'Personnel atelier')
+        WHERE u.id_role = 3
         ORDER BY u.prenom, u.name, u.id
     ")->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -19,9 +18,7 @@ function prefaWorkshopPersonnelId(PDO $db, mixed $value): ?int
     $check = $db->prepare("
         SELECT u.id
         FROM Utilisateur u
-        JOIN role r ON r.id = u.id_role
-        WHERE u.id = ?
-          AND r.name IN ('Utilisateur', 'Personnel atelier')
+        WHERE u.id = ? AND u.id_role = 3
     ");
     $check->execute([$id]);
     if (!$check->fetchColumn()) prefaError(400, 'Ce compte ne possède pas le rôle Utilisateur.');

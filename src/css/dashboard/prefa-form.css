@@ -238,6 +238,27 @@
     display: none;
 }
 
+#prefa-form .prefa-message:not(:empty) {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    line-height: 1.5;
+    font-weight: 400;
+}
+
+#prefa-form .prefa-message.success {
+    background: rgb(34 197 94 / 8%);
+}
+
+#prefa-form .prefa-message.error::before {
+    content: '!';
+    flex-shrink: 0;
+    font-weight: 700;
+}
+
 .prefa-message.success,
 .status-2 {
     color: #86dba6;

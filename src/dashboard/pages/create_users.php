@@ -63,7 +63,7 @@
                         </div>
 
                         <div class="role-option" data-value="2">
-                            Chef d'atelier
+                            Gestionnaire
                         </div>
 
                         <div class="role-option" data-value="3">
@@ -71,7 +71,7 @@
                         </div>
 
                         <div class="role-option" data-value="5">
-                            Demandeure
+                            Demandeur
                         </div>
                     </div>
                 </div>

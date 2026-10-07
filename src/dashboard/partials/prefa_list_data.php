@@ -53,6 +53,8 @@ if ($priority !== '') {
 if ($q !== '') {
     $columns = [
         'CAST(d.id AS CHAR)',
+        'd.nom_affaire',
+        '(SELECT reference FROM prefa_reference WHERE id_demande = d.id)',
         's.libelle',
         'p.libelle',
         'CAST(d.date_fin_prevue AS CHAR)',

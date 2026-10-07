@@ -546,7 +546,7 @@ $(document).on('click', '.prefa-pdf-link', function (event) {
     document.body.classList.add('prefa-viewer-open');
 });
 
-$(document).on('click', '.prefa-toggle[aria-controls]', function () {
+$(document).on('click', '.prefa-toggle[aria-controls]:not(.plans-iso-toggle)', function () {
     const details = document.getElementById(this.getAttribute('aria-controls'));
     if (!details) return;
     const expanded = this.getAttribute('aria-expanded') === 'true';
@@ -594,7 +594,8 @@ $(document).on('click', '.btn-goto-plans-iso', function () {
         const card = document.getElementById('plans-iso-card-' + reqId);
         if (card) {
             clearInterval(checkCard);
-            card.open = true;
+            const button = card.querySelector('.plans-iso-toggle');
+            if (button && button.getAttribute('aria-expanded') !== 'true') button.click();
             card.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }, 50);

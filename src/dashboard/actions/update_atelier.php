@@ -2,15 +2,18 @@
 require_once __DIR__ . '/../includes/prefa_context.php';
 require_once __DIR__ . '/../includes/atelier.php';
 prefaPost();
-if (!$isWorkshopPersonnel) prefaError(403, 'Action réservée au personnel atelier.');
+if (!$isWorkshopPersonnel && !$canManageWorkshop) prefaError(403, 'Action réservée au personnel atelier et au chef d’atelier.');
 $id = filter_var($_POST['affectation'] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 $operation = $_POST['operation'] ?? '';
 if (!$id || !in_array($operation, ['progress', 'time', 'steps'], true)) prefaError(400, 'Action invalide.');
+if ($operation === 'time' && !$isWorkshopPersonnel) prefaError(403, 'Le pointage est réservé à la personne affectée.');
+// Le chef d’atelier et l’administrateur suivent tous les plans ; chacun ne pointe que pour lui-même.
+$toutesAffectations = $canManageWorkshop && $operation !== 'time';
 try {
     $db->beginTransaction();
     if ($operation === 'time') $db->prepare('SELECT id FROM Utilisateur WHERE id = ? FOR UPDATE')->execute([$actor['id']]);
-    $stmt = $db->prepare('SELECT a.* FROM affectation_atelier a JOIN element_atelier e ON e.id = a.id_element JOIN demande_prefabrication d ON d.id = e.id_demande WHERE a.id = ? AND a.id_utilisateur = ? AND a.actif = 1 AND d.id_statut = 2 FOR UPDATE');
-    $stmt->execute([$id, $actor['id']]);
+    $stmt = $db->prepare('SELECT a.* FROM affectation_atelier a JOIN element_atelier e ON e.id = a.id_element JOIN demande_prefabrication d ON d.id = e.id_demande WHERE a.id = ?' . ($toutesAffectations ? '' : ' AND a.id_utilisateur = ?') . ' AND a.actif = 1 AND d.id_statut = 2 FOR UPDATE');
+    $stmt->execute($toutesAffectations ? [$id] : [$id, $actor['id']]);
     $assignment = $stmt->fetch();
     if (!$assignment) { $db->rollBack(); prefaError(404, 'Affectation introuvable ou retirée.'); }
     $comment = trim((string) ($_POST['commentaire'] ?? ''));

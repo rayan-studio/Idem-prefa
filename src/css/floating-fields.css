@@ -47,6 +47,9 @@ body .floating-field > label {
     font-size: 14px !important;
     font-weight: 400 !important;
     line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     cursor: text;
     transition: top 160ms ease, font-size 160ms ease, color 160ms ease;
 }
@@ -96,6 +99,18 @@ body .floating-field select.floating-control:focus {
 
 .floating-field .floating-control::placeholder { color: transparent; }
 .floating-field .floating-control:focus::placeholder { color: var(--field-muted); }
+body .floating-field.floating-always .floating-control::placeholder {
+    color: var(--field-muted) !important;
+}
+
+body .floating-field input[role="combobox"].floating-control {
+    padding-right: 40px !important;
+    text-overflow: ellipsis;
+}
+
+body .floating-field input[role="combobox"].floating-control:focus {
+    padding-right: 39px !important;
+}
 body .floating-field textarea.floating-control { height: auto !important; min-height: 112px !important; resize: vertical; }
 .floating-field:has(textarea) > label { top: 27px; }
 .floating-field:has(textarea):focus-within > label,

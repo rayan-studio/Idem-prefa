@@ -21,6 +21,10 @@
         // Match the surrounding panel so the floating label cuts the border
         // without leaving a contrasting rectangle behind its text.
         document.querySelectorAll('.floating-field').forEach(wrapper => {
+            const field = wrapper.querySelector('.floating-control');
+            if (field && (field.matches('select, [role="combobox"]') || (field.getAttribute('placeholder') || '').trim() !== '')) {
+                wrapper.classList.add('floating-always');
+            }
             let parent = wrapper.parentElement;
             while (parent) {
                 const background = getComputedStyle(parent).backgroundColor;

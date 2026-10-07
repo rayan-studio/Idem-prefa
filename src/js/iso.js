@@ -1,20 +1,19 @@
 (() => {
-const searchInput = document.getElementById('plans-iso-filter-search');
-const cards = document.querySelectorAll('.plans-iso-card');
+    $(document).on('click', '.plans-iso-toggle', function () {
+        const row = document.getElementById(this.getAttribute('aria-controls'));
+        if (!row) return;
+        row.hidden = !row.hidden;
+        this.setAttribute('aria-expanded', String(!row.hidden));
+    });
 
-if (searchInput) {
-    searchInput.addEventListener('input', () => {
-        const query = searchInput.value.trim().toLowerCase();
-        cards.forEach(card => {
-            card.hidden = !!query && !(card.dataset.search || '').includes(query);
+    $(document).on('input', '#plans-iso-filter-search', function () {
+        const query = this.value.trim().toLowerCase();
+        document.querySelectorAll('.plans-iso-request').forEach(row => {
+            row.hidden = !!query && !(row.dataset.search || '').includes(query);
         });
     });
-}
 
-const refreshBtn = document.getElementById('refresh-plans-iso');
-if (refreshBtn) {
-    refreshBtn.addEventListener('click', () => {
+    $(document).on('click', '#refresh-plans-iso', function () {
         $('#content').load('pages/plans_iso.php');
     });
-}
 })();

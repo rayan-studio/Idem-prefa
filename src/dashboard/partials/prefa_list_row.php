@@ -6,7 +6,7 @@ $ownerName = trim($row['prenom'] . ' ' . $row['name']);
 ?>
 <tbody class="prefa-request<?= $isUrgentPending ? ' is-urgent-pending' : '' ?>">
     <tr>
-        <td>#<?= $requestId ?></td>
+        <td><?= prefaEscape(prefaReference($requestId)) ?></td>
         <td><?= prefaEscape($ownerName) ?></td>
         <td><?= count($attachmentsByRequest[$row['id']]) ?> fichier(s)</td>
         <td><?= prefaEscape($row['pouces_total_iso']) ?></td>
@@ -20,7 +20,7 @@ $ownerName = trim($row['prenom'] . ' ' . $row['name']);
             <button type="button" class="prefa-toggle" aria-expanded="false" aria-controls="prefa-detail-<?= $requestId ?>">
                 <?= $isAdmin && $isPending ? 'Examiner' : 'Détails' ?>
             </button>
-            <?php if ($canEditPrefa && (!$isWorkshopChief || (int) $row['idUsers'] === (int) $actor['id'])): ?><button type="button" class="edit-prefa" data-id="<?= $requestId ?>">Modifier</button><?php endif; ?>
+            <?php if ($canEditPrefa): ?><button type="button" class="edit-prefa" data-id="<?= $requestId ?>">Modifier</button><?php endif; ?>
 
             <?php if ($canEditPrefa && ($isAdmin || ($isPending && (int) $row['idUsers'] === (int) $actor['id']))): ?>
                 <button type="button" class="delete-prefa" data-id="<?= $requestId ?>" data-csrf="<?= prefaEscape($_SESSION['prefa_csrf']) ?>">Supprimer</button>

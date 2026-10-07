@@ -37,6 +37,7 @@ $materialAvailability = match ($row['matiere_disponibilite'] ?? '') {
 };
 
 $facts = [
+    'Nom de la demande' => $row['nom_affaire'] ?: 'Non renseigné',
     'Statut' => $row['libelle'],
     'Pouces ISO' => $row['pouces_total_iso'],
 
@@ -126,7 +127,7 @@ $decisionComment = trim((string) ($row['commentaire_validation'] ?? ''));
     <div>
         <h2>
             Détails de la demande
-            <span>#<?= $requestId ?></span>
+            <span><?= prefaEscape(prefaReference($requestId)) ?></span>
         </h2>
 
         <p>

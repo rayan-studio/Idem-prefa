@@ -69,7 +69,7 @@ if ($editing && !empty($request['revetement'])) {
 <section class="page prefa-page prefa-simple">
     <div class="prefa-shell">
         <div class="prefa-heading">
-            <h1><?= $editing ? 'Modifier la demande #' . (int) $request['id'] : 'Nouvelle demande' ?></h1>
+            <h1><?= $editing ? 'Modifier la demande ' . prefaEscape(prefaReference((int) $request['id'])) : 'Nouvelle demande' ?></h1>
             <p><?= $editing ? 'Après modification, la demande repassera en attente de validation.' : 'Renseignez votre affaire, puis transmettez-la pour validation.' ?></p>
         </div>
         <form id="prefa-form" class="prefa-form" novalidate enctype="multipart/form-data" data-hours-per-inch="<?= prefaEscape($hoursPerInch) ?>">
@@ -77,6 +77,10 @@ if ($editing && !empty($request['revetement'])) {
             <?php if ($editing): ?><input type="hidden" name="id" value="<?= (int) $request['id'] ?>"><?php endif; ?>
             <div class="prefa-section">
                 <div class="prefa-grid">
+                    <div class="form-group prefa-full">
+                        <label for="nom-demande">Nom de la demande <span class="required-mark" aria-hidden="true">*</span></label>
+                        <input id="nom-demande" name="nom_affaire" type="text" value="<?= $field('nom_affaire') ?>" maxlength="255" required placeholder="Ex. : Réseau vapeur — bâtiment A">
+                    </div>
                     <div class="form-group prefa-full">
                         <label for="plan-documents">Plans BPE / ISO et pièces jointes<?php if (!$editing): ?> <span class="required-mark">*</span><?php endif; ?></label>
                         <label class="prefa-dropzone" for="plan-documents" tabindex="0"><strong>Déposer des documents ici</strong><span>ou cliquez pour les choisir · PDF, images, Word, Excel · 50 Mo maximum par fichier</span></label>

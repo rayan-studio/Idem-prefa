@@ -4,6 +4,14 @@ Ce site web gére les demandes de préfabrication, réaliser en php et docker.
 
 # rajouter un users par défaut en admin :
 
+Les références des demandes suivent le format `26-DP-001`, avec un compteur par année de création. Appliquer une fois cette migration (elle peut être relancée sans renuméroter les demandes) :
+
+```powershell
+Get-Content scripts\init\prefa_references.php -Raw | docker compose exec -T php php
+```
+
+Les identifiants techniques restent inchangés. Les références supprimées restent réservées et ne sont pas réutilisées.
+
 Pour ajouter les contrôles Radiographie RT et Ressuage PT avec leurs pourcentages, appliquer `scripts/init/prefa_rt_pt.sql` à la base MySQL existante.
 
 Pour ajouter la matière et sa disponibilité (« En stock » / « À commander »), appliquer `scripts/init/prefa_matiere.sql` à la base MySQL existante. Le choix propose Acier, Inox, Aluminium et « Autre » pour mémoriser une nouvelle matière. Les anciennes demandes restent sans matière renseignée.

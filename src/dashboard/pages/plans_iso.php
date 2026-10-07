@@ -68,6 +68,7 @@ if ($validatedRequests) {
 }
 
 $totalValidated = count($validatedRequests);
+$isPlansIsoPage = true;
 $toTakeCharge = count(array_filter($validatedRequests, fn($r) => empty($r['prise_en_charge_atelier'])));
 $totalPlans = array_sum($planCounts);
 ?>
@@ -79,50 +80,76 @@ $totalPlans = array_sum($planCounts);
                 <h1 id="plans-iso-title">Plans / ISO & Affectations</h1>
                 <p>Préparez les plans et ISO, rattachez les documents techniques et organisez les affectations.</p>
             </div>
-            <button type="button" id="refresh-plans-iso" class="prefa-toggle">Actualiser</button>
+            <button type="button" id="refresh-plans-iso">
+                <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-2l2 3M4 16l2 3a7 7 0 0 1 12-2" />
+                </svg>
+                Actualiser
+            </button>
         </header>
 
-        <p class="prefa-list-summary">
-            <strong><?= $totalValidated ?></strong> demande<?= $totalValidated > 1 ? 's' : '' ?> validée<?= $totalValidated > 1 ? 's' : '' ?>
-            · <strong><?= $toTakeCharge ?></strong> à prendre en charge
-            · <strong><?= $totalPlans ?></strong> plan<?= $totalPlans > 1 ? 's' : '' ?>
-        </p>
+        <div class="prefa-filters" role="search">
+            <div class="floating-field">
+                <label for="plans-iso-filter-search">Rechercher</label>
+                <input id="plans-iso-filter-search" class="floating-control" type="search" placeholder="N° de demande, affaire ou demandeur">
+            </div>
+        </div>
 
         <?php if (!$validatedRequests): ?>
             <p class="prefa-table-empty plans-iso-empty">Aucune demande validée pour le moment.</p>
         <?php else: ?>
-            <div class="plans-iso-list" id="plans-iso-list">
+            <div class="prefa-table-scroll" role="region" aria-label="Plans et affectations des demandes" tabindex="0">
+                <table class="prefa-table plans-iso-table" id="plans-iso-list">
+                    <thead><tr>
+                        <th scope="col">Demande n°</th>
+                        <th scope="col">Nom de la demande</th>
+                        <th scope="col">Demandeur</th>
+                        <th scope="col">Date limite de livraison</th>
+                        <th scope="col">Plans / ISO</th>
+                        <th scope="col">Priorité</th>
+                        <th scope="col">Prise en charge</th>
+                        <th scope="col">Actions</th>
+                    </tr></thead>
                 <?php foreach ($validatedRequests as $index => $req):
                     $row = $req;
                     $requestId = (int) $row['id'];
                     $isTaken = !empty($row['prise_en_charge_atelier']);
                     $nbPlans = $planCounts[$requestId] ?? 0;
                     $ownerName = trim(($row['prenom'] ?? '') . ' ' . ($row['name'] ?? ''));
-                    $filterData = mb_strtolower('#' . $requestId . ' ' . ($row['nom_affaire'] ?? '') . ' ' . $ownerName);
+                    $filterData = mb_strtolower(prefaReference($requestId) . ' ' . $requestId . ' ' . ($row['nom_affaire'] ?? '') . ' ' . $ownerName);
                 ?>
-                    <details class="plans-iso-card<?= !empty($row['urgent']) ? ' is-urgent' : '' ?>"
+                    <tbody class="prefa-request plans-iso-request<?= !empty($row['urgent']) ? ' is-urgent-pending' : '' ?>"
                         id="plans-iso-card-<?= $requestId ?>"
                         data-search="<?= prefaEscape($filterData) ?>"
-                        <?= !$isTaken ? 'open' : '' ?>>
+                        >
 
-                        <summary class="plans-iso-summary">
-                            <span class="plans-iso-id">#<?= $requestId ?></span>
-                            <strong class="plans-iso-title"><?= prefaEscape($row['nom_affaire'] ?: 'Demande #' . $requestId) ?></strong>
-                            <span class="plans-iso-owner"><?= prefaEscape($ownerName) ?></span>
-                            <?php if (!empty($row['urgent'])): ?><span class="prefa-urgent">Urgente</span><?php endif; ?>
-
-                            <span class="plans-iso-meta">
-                                <?php if (!empty($row['date_livraison_prevue'])): ?>
-                                    <span><?= prefaEscape(prefaFormatDate($row['date_livraison_prevue'])) ?></span>
-                                <?php endif; ?>
-                                <span><?= $nbPlans ?> plan<?= $nbPlans > 1 ? 's' : '' ?></span>
-                            </span>
-                        </summary>
+                        <tr>
+                            <td><?= prefaEscape(prefaReference($requestId)) ?></td>
+                            <td class="prefa-affaire"><?= prefaEscape($row['nom_affaire'] ?: '—') ?></td>
+                            <td><?= prefaEscape($ownerName) ?></td>
+                            <td><?= !empty($row['date_livraison_prevue']) ? prefaEscape(prefaFormatDate($row['date_livraison_prevue'])) : '—' ?></td>
+                            <td><?= $nbPlans ?> plan<?= $nbPlans > 1 ? 's' : '' ?></td>
+                            <td><?php if (!empty($row['urgent'])): ?><span class="prefa-urgent">Urgente</span><?php else: ?>Normale<?php endif; ?></td>
+                            <td><?= $isTaken ? 'Pris en charge' : 'À prendre en charge' ?></td>
+                            <td>
+                                <button type="button" class="prefa-toggle" aria-expanded="false" aria-controls="prefa-detail-<?= $requestId ?>">Détails</button>
+                                <button type="button" class="prefa-toggle plans-iso-toggle" aria-expanded="false" aria-controls="plans-iso-detail-<?= $requestId ?>">Plans & affectations</button>
+                                <?php if ($isTaken): ?><button type="button" class="prefa-toggle atelier-open-plan-create" data-dialog="atelier-create-dialog-<?= $requestId ?>">Ajouter un plan</button><?php endif; ?>
+                            </td>
+                        </tr>
+                        <tr id="plans-iso-detail-<?= $requestId ?>" class="plans-iso-detail" hidden><td colspan="8">
                         <div class="plans-iso-body">
                             <?php require __DIR__ . '/../partials/atelier_request.php'; ?>
                         </div>
-                    </details>
+                        </td></tr>
+                        <tr id="prefa-detail-<?= $requestId ?>" class="prefa-detail-row" hidden><td colspan="8">
+                            <div class="prefa-table-detail">
+                                <?php require __DIR__ . '/../partials/prefa_detail.php'; ?>
+                            </div>
+                        </td></tr>
+                    </tbody>
                 <?php endforeach; ?>
+                </table>
             </div>
         <?php endif; ?>
     </div>

@@ -63,7 +63,7 @@ $recentProgress = $stmt->fetchAll();
                 ?>
                     <tbody class="atelier-assignment-group">
                         <tr>
-                            <td>#<?= (int) $assignment['id_demande'] ?></td>
+                            <td><?= prefaEscape(prefaReference((int) $assignment['id_demande'])) ?></td>
                             <td><strong><?= prefaEscape($assignment['reference']) ?></strong><span class="atelier-row-description"><?= prefaEscape($assignment['libelle']) ?></span></td>
                             <td><?= $types[$assignment['type_affectation']] ?></td>
                             <td><?php if ($docs): ?><?= count($docs) ?> <?= count($docs) === 1 ? 'fichier' : 'fichiers' ?><?php else: ?><span class="atelier-missing-file">Fichier à associer</span><?php endif; ?></td>
@@ -81,9 +81,13 @@ $recentProgress = $stmt->fetchAll();
                                     <?php else: ?>
                                         <p class="atelier-missing-file">Le chef d’atelier ou l’administrateur doit associer le fichier à ce plan pour que vous puissiez le consulter.</p>
                                     <?php endif; ?>
-                                    <div class="atelier-detail-columns">
-                                        <section class="atelier-detail-panel">
-                                            <h2>Étapes du plan / ISO</h2>
+                                    <div class="atelier-tabs">
+                                        <div class="atelier-tablist" role="tablist" aria-label="Suivi de l’affectation">
+                                            <button type="button" class="atelier-tab" role="tab" id="atelier-tab-etapes-<?= $id ?>" aria-controls="atelier-pane-etapes-<?= $id ?>" aria-selected="true">Étapes</button>
+                                            <button type="button" class="atelier-tab" role="tab" id="atelier-tab-avancement-<?= $id ?>" aria-controls="atelier-pane-avancement-<?= $id ?>" aria-selected="false" tabindex="-1">Avancement</button>
+                                        </div>
+
+                                        <section class="atelier-detail-panel" role="tabpanel" id="atelier-pane-etapes-<?= $id ?>" aria-labelledby="atelier-tab-etapes-<?= $id ?>">
                                             <p class="atelier-muted">Ces statuts sont partagés par les personnels affectés à cet élément et affichés dans le planning.</p>
                                             <?php $stepState = atelierElementSteps($db, (int) $assignment['id_element']); ?>
                                             <form class="atelier-action prefa-form atelier-grid" data-endpoint="update_atelier.php">
@@ -114,8 +118,7 @@ $recentProgress = $stmt->fetchAll();
                                                 </ol>
                                             </details>
                                         </section>
-                                        <section class="atelier-detail-panel">
-                                            <h2>Avancement</h2>
+                                        <section class="atelier-detail-panel" role="tabpanel" id="atelier-pane-avancement-<?= $id ?>" aria-labelledby="atelier-tab-avancement-<?= $id ?>" hidden>
                                             <form class="atelier-action prefa-form atelier-grid" data-endpoint="update_atelier.php">
                                                 <input type="hidden" name="csrf" value="<?= prefaEscape($_SESSION['prefa_csrf']) ?>"><input type="hidden" name="affectation" value="<?= $id ?>"><input type="hidden" name="operation" value="progress"><input type="hidden" name="revision" value="<?= (int) $assignment['revision'] ?>">
                                                 <div><label for="atelier-progress-<?= $id ?>">Avancement (%)</label><input id="atelier-progress-<?= $id ?>" type="number" name="avancement" min="0" max="100" step="1" value="<?= $progress ?>" required></div>
@@ -124,33 +127,11 @@ $recentProgress = $stmt->fetchAll();
                                             </form>
                                             <details class="atelier-saved-history">
                                                 <summary>Historique de l’avancement (<?= count($progressHistory) ?>)</summary>
-                                                <p class="atelier-history-context">Demande #<?= (int) $assignment['id_demande'] ?> · <?= prefaEscape($assignment['reference']) ?> · <?= prefaEscape($types[$assignment['type_affectation']]) ?></p>
+                                                <p class="atelier-history-context">Demande <?= prefaEscape(prefaReference((int) $assignment['id_demande'])) ?> · <?= prefaEscape($assignment['reference']) ?> · <?= prefaEscape($types[$assignment['type_affectation']]) ?></p>
                                                 <?php if (!$progressHistory): ?><p class="atelier-muted">Aucun avancement enregistré.</p><?php endif; ?>
                                                 <ol class="atelier-saved-history-list">
                                                     <?php foreach ($progressHistory as $entry): ?>
                                                         <li><strong><?= (int) $entry['avancement'] ?> %</strong> <span class="atelier-muted">· <?= prefaEscape(atelierLocalDateTime($entry['date_saisie'])) ?> · <?= prefaEscape($entry['auteur']) ?></span>
-                                                            <?php if ($entry['commentaire']): ?><p class="atelier-note"><?= prefaEscape($entry['commentaire']) ?></p><?php endif; ?>
-                                                        </li>
-                                                    <?php endforeach; ?>
-                                                </ol>
-                                            </details>
-                                        </section>
-                                        <section class="atelier-detail-panel">
-                                            <h2>Ajouter un pointage</h2>
-                                            <form class="atelier-action prefa-form atelier-grid" data-endpoint="update_atelier.php">
-                                                <input type="hidden" name="csrf" value="<?= prefaEscape($_SESSION['prefa_csrf']) ?>"><input type="hidden" name="affectation" value="<?= $id ?>"><input type="hidden" name="operation" value="time"><input type="hidden" name="cle_saisie" value="<?= bin2hex(random_bytes(16)) ?>">
-                                                <div><label for="atelier-date-<?= $id ?>">Date du travail</label><input id="atelier-date-<?= $id ?>" name="date" type="date" value="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d') ?>" required></div>
-                                                <div><label for="atelier-minutes-<?= $id ?>">Durée (minutes)</label><input id="atelier-minutes-<?= $id ?>" name="minutes" type="number" min="1" max="1440" step="1" required></div>
-                                                <div class="atelier-wide"><label for="atelier-time-note-<?= $id ?>">Commentaire du pointage</label><input id="atelier-time-note-<?= $id ?>" name="commentaire" maxlength="500"></div>
-                                                <div class="atelier-form-actions"><button type="submit">Enregistrer le pointage</button><span class="atelier-message" role="status" aria-live="polite"></span></div>
-                                            </form>
-                                            <details class="atelier-saved-history">
-                                                <summary>Historique des pointages (<?= count($timeHistory) ?>)</summary>
-                                                <p class="atelier-history-context">Demande #<?= (int) $assignment['id_demande'] ?> · <?= prefaEscape($assignment['reference']) ?> · <?= prefaEscape($types[$assignment['type_affectation']]) ?></p>
-                                                <?php if (!$timeHistory): ?><p class="atelier-muted">Aucun pointage enregistré pour ce travail.</p><?php endif; ?>
-                                                <ol class="atelier-saved-history-list">
-                                                    <?php foreach ($timeHistory as $entry): ?>
-                                                        <li><strong><?= (int) $entry['duree_minutes'] ?> min</strong> <span class="atelier-muted">· Travail du <?= prefaEscape(date('d/m/Y', strtotime($entry['date_travail']))) ?></span>
                                                             <?php if ($entry['commentaire']): ?><p class="atelier-note"><?= prefaEscape($entry['commentaire']) ?></p><?php endif; ?>
                                                         </li>
                                                     <?php endforeach; ?>
@@ -176,7 +157,7 @@ $recentProgress = $stmt->fetchAll();
                             <ol class="atelier-saved-history-list">
                                 <?php foreach ($recentProgress as $entry): ?>
                                     <li><strong><?= (int) $entry['avancement'] ?> %</strong> <span class="atelier-muted">· <?= prefaEscape(atelierLocalDateTime($entry['date_saisie'])) ?></span>
-                                        <p class="atelier-history-context">Demande #<?= (int) $entry['id_demande'] ?> · <?= prefaEscape($entry['reference']) ?> · <?= prefaEscape($types[$entry['type_affectation']]) ?></p>
+                                        <p class="atelier-history-context">Demande <?= prefaEscape(prefaReference((int) $entry['id_demande'])) ?> · <?= prefaEscape($entry['reference']) ?> · <?= prefaEscape($types[$entry['type_affectation']]) ?></p>
                                         <?php if ($entry['commentaire']): ?><p class="atelier-note"><?= prefaEscape($entry['commentaire']) ?></p><?php endif; ?>
                                     </li>
                                 <?php endforeach; ?>
@@ -189,7 +170,7 @@ $recentProgress = $stmt->fetchAll();
                             <ol class="atelier-saved-history-list">
                                 <?php foreach ($times as $entry): ?>
                                     <li><strong><?= (int) $entry['duree_minutes'] ?> min</strong> <span class="atelier-muted">· Travail du <?= prefaEscape(date('d/m/Y', strtotime($entry['date_travail']))) ?></span>
-                                        <p class="atelier-history-context">Demande #<?= (int) $entry['id_demande'] ?> · <?= prefaEscape($entry['reference']) ?> · <?= prefaEscape($types[$entry['type_affectation']]) ?></p>
+                                        <p class="atelier-history-context">Demande <?= prefaEscape(prefaReference((int) $entry['id_demande'])) ?> · <?= prefaEscape($entry['reference']) ?> · <?= prefaEscape($types[$entry['type_affectation']]) ?></p>
                                         <?php if ($entry['commentaire']): ?><p class="atelier-note"><?= prefaEscape($entry['commentaire']) ?></p><?php endif; ?>
                                     </li>
                                 <?php endforeach; ?>

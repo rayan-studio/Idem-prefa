@@ -38,6 +38,11 @@ if ($editing) {
 
 // Champs à donner aux code sql aprés
 $values = [];
+$requestName = $_POST['nom_affaire'] ?? '';
+if (!is_string($requestName) || trim($requestName) === '' || mb_strlen(trim($requestName)) > 255) {
+    prefaError(400, 'Saisissez un nom de demande de 255 caractères maximum.');
+}
+$values['nom_affaire'] = trim($requestName);
 
 $availability = $_POST['matiere_disponibilite'] ?? '';
 $material = $_POST['id_matiere'] ?? '';
@@ -267,7 +272,7 @@ try {
         
 
         $stmt = $db->prepare('UPDATE demande_prefabrication SET
-            plan_bpe_iso = :plan_bpe_iso, date_fin_prevue = :date_fin_prevue, date_livraison_prevue = :date_livraison_prevue,
+            nom_affaire = :nom_affaire, plan_bpe_iso = :plan_bpe_iso, date_fin_prevue = :date_fin_prevue, date_livraison_prevue = :date_livraison_prevue,
             pouces_total_iso = :pouces_total_iso, heures_chiffrees = :heures_chiffrees,
             CDN = :CDN, ` QMOS` = :QMOS, urgent = :urgent, controles_cdn = :controles_cdn,
             revetement = :revetement, commentaire_revetement = :commentaire_revetement,
@@ -278,13 +283,19 @@ try {
 
     } else {
         $stmt = $db->prepare('INSERT INTO demande_prefabrication
-        (idUsers, DateUpdate, date_creation, date_fin_prevue, date_livraison_prevue, plan_bpe_iso, pouces_total_iso, heures_chiffrees, CDN, ` QMOS`, urgent, controles_cdn, revetement, commentaire_revetement, RT, PT, controles_rt, controles_pt, id_statut, id_passivation, id_matiere, matiere_disponibilite)
-        VALUES (:idUsers, NOW(), NOW(), :date_fin_prevue, :date_livraison_prevue, :plan_bpe_iso, :pouces_total_iso, :heures_chiffrees, :CDN, :QMOS, :urgent, :controles_cdn, :revetement, :commentaire_revetement, :RT, :PT, :controles_rt, :controles_pt, 1, :id_passivation, :id_matiere, :matiere_disponibilite)');
+        (idUsers, nom_affaire, DateUpdate, date_creation, date_fin_prevue, date_livraison_prevue, plan_bpe_iso, pouces_total_iso, heures_chiffrees, CDN, ` QMOS`, urgent, controles_cdn, revetement, commentaire_revetement, RT, PT, controles_rt, controles_pt, id_statut, id_passivation, id_matiere, matiere_disponibilite)
+        VALUES (:idUsers, :nom_affaire, NOW(), NOW(), :date_fin_prevue, :date_livraison_prevue, :plan_bpe_iso, :pouces_total_iso, :heures_chiffrees, :CDN, :QMOS, :urgent, :controles_cdn, :revetement, :commentaire_revetement, :RT, :PT, :controles_rt, :controles_pt, 1, :id_passivation, :id_matiere, :matiere_disponibilite)');
     }
 
     $db->beginTransaction();
     $stmt->execute($values);
     $savedId = $editing ? $requestId : (int) $db->lastInsertId();
+    if (!$editing) {
+        $created = $db->prepare('SELECT date_creation FROM demande_prefabrication WHERE id = ?');
+        $created->execute([$savedId]);
+        $date = new DateTimeImmutable($created->fetchColumn(), new DateTimeZone('UTC'));
+        prefaAssignReference($db, $savedId, (int) $date->setTimezone(new DateTimeZone('Europe/Paris'))->format('Y'));
+    }
 
     if ($documents) {
         $directory = prefaAttachmentDirectory($savedId);

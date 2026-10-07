@@ -11,10 +11,6 @@ class User
 
     public function getRole(string $Role_ID): string
     {
-        if ((int) $Role_ID === 5) {
-            return 'Demandeure';
-        }
-
         $sql = 'SELECT * FROM role WHERE id = :id';
         $stmt = $this->db->prepare($sql);
 
@@ -28,7 +24,30 @@ class User
 
     public function login(string $identifiant, string $password): bool
     {
-        $sql = 'SELECT name, prenom, password, email, id_role, identifiant
+        $sql = 'SELECT password
+            FROM Utilisateur
+            WHERE identifiant = :identifiant
+            LIMIT 1';
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            'identifiant' => $identifiant
+        ]);
+
+        $hash = $stmt->fetchColumn();
+
+        if (!is_string($hash) || !password_verify($password, $hash)) {
+            return false;
+        }
+
+        return $this->startSession($identifiant);
+    }
+
+    /** Ouvre la session sur un compte déjà authentifié : utilisé par la bascule multi-compte. */
+    public function startSession(string $identifiant): bool
+    {
+        $sql = 'SELECT name, prenom, email, id_role, identifiant
             FROM Utilisateur
             WHERE identifiant = :identifiant
             LIMIT 1';
@@ -42,10 +61,6 @@ class User
         $user = $stmt->fetch();
 
         if (!$user) {
-            return false;
-        }
-
-        if (!password_verify($password, $user['password'])) {
             return false;
         }
 
@@ -80,10 +95,6 @@ class User
         string $password,
         ?string $email = null
     ): bool {
-        if ($id_role === 4) {
-            throw new DomainException('Sélectionnez le rôle Demandeure.');
-        }
-
         $identifiant = self::buildIdentifiant($name, $prenom);
 
         if ($this->identifiantExists($identifiant)) {

@@ -5,6 +5,7 @@ chdir('/var/www/html');
 require_once 'db.php';
 require_once 'dashboard/includes/planning.php';
 require_once 'dashboard/includes/prefa_attachments.php';
+require_once 'dashboard/includes/prefa_references.php';
 $db = new MyPDO();
 $today = new DateTimeImmutable('today', new DateTimeZone('Europe/Paris'));
 $monday = $today->modify('monday this week');
@@ -93,6 +94,8 @@ try {
         $stmt = $db->prepare('INSERT INTO demande_prefabrication (' . $columns . ') VALUES (' . implode(', ', array_fill(0, count($data), '?')) . ')');
         $stmt->execute(array_values($data));
         $id = (int) $db->lastInsertId();
+        $creationDate = new DateTimeImmutable($data['date_creation'], new DateTimeZone('UTC'));
+        prefaAssignReference($db, $id, (int) $creationDate->setTimezone(new DateTimeZone('Europe/Paris'))->format('Y'));
         $directory = prefaAttachmentDirectory($id);
         if (!is_dir($directory) && !mkdir($directory, 0770, true)) throw new RuntimeException('Cannot create demo attachment directory.');
         if (posix_geteuid() === 0 && (!chown($directory, 'www-data') || !chgrp($directory, 'www-data'))) {

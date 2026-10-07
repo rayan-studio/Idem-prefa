@@ -40,7 +40,7 @@ $(function () {
 
 });
 
-$('#btn-create-user, #btn-list-users, #btn-prefa, #btn-list-prefa, #btn-urgent-prefa, #btn-plans-iso, #btn-planning, #btn-settings').on('click', function () {
+$('#btn-create-user, #btn-list-users, #btn-prefa, #btn-list-prefa, #btn-urgent-prefa, #btn-plans-iso, #btn-planning, #btn-pointage, #btn-settings').on('click', function () {
     const button = $(this);
     const pages = {
         'btn-create-user': 'pages/create_users.php',
@@ -50,6 +50,7 @@ $('#btn-create-user, #btn-list-users, #btn-prefa, #btn-list-prefa, #btn-urgent-p
         'btn-urgent-prefa': 'pages/lists_prefa.php?view=urgent',
         'btn-plans-iso': 'pages/plans_iso.php',
         'btn-planning': 'pages/planning.php',
+        'btn-pointage': 'pages/pointage.php',
         'btn-settings': 'pages/settings.php'
     };
     const page = pages[this.id];

@@ -209,6 +209,10 @@
     white-space: normal;
 }
 
+.prefa-table-detail:hover {
+    background: transparent !important;
+}
+
 .prefa-detail-actions {
     display: inline-flex;
     align-items: center;

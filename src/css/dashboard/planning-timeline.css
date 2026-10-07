@@ -286,9 +286,10 @@
 
 /* Barres de tâches dans le planning */
 .planning-timeline .vis-item {
-    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-    border: 1px solid #3b82f6;
-    color: #ffffff;
+    background-color: var(--person-fill, var(--person-other));
+    background-image: var(--person-hachure, none);
+    border: 1px solid rgb(0 0 0 / 22%);
+    color: var(--person-ink);
     border-radius: 6px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     font-weight: 500;
@@ -311,26 +312,18 @@
     box-shadow: 0 0 0 2px #60a5fa, 0 4px 12px rgba(37, 99, 235, 0.5);
 }
 
-.planning-timeline .vis-item.planning-timeline-urgent {
-    background: linear-gradient(135deg, #9a3412 0%, #ea580c 100%);
-    border: 1px solid #f97316;
-    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.35);
-}
-
-.planning-timeline .vis-item.planning-timeline-urgent.vis-selected {
-    box-shadow: 0 0 0 2px #fdba74, 0 4px 12px rgba(234, 88, 12, 0.5);
-}
-
 .planning-timeline-task {
     display: block;
     width: 100%;
+    /* Barre sans texte : une hauteur propre, sinon l'élément s'écrase. */
+    min-height: 26px;
     padding: 7px 10px;
     background: transparent;
     color: inherit;
     border: 0;
     font: inherit;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

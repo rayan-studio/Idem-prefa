@@ -41,6 +41,7 @@ $requests = $db->query("SELECT d.id, d.nom_affaire, d.urgent, d.idUsers AS creat
 
 foreach ($requests as &$req) {
     $rId = (int) $req['id'];
+    $req['reference_demande'] = prefaReference($rId);
     $req['plans'] = prefaAttachments($rId);
 
     $elemStmt = $db->prepare('SELECT e.id, e.reference, e.libelle, s.statuts FROM element_atelier e
@@ -86,7 +87,7 @@ unset($req);
 $visible = array_values(array_filter(
     $requests,
     static fn($r) => (!$creatorFilter || (int) $r['creator_id'] === $creatorFilter)
-        && ($requestSearch === '' || (string) $r['id'] === $requestNumber)
+        && ($requestSearch === '' || (string) $r['id'] === $requestNumber || stripos($r['reference_demande'], $requestSearch) !== false)
 ));
 
 $unplanned = [];
@@ -124,9 +125,25 @@ for ($index = 0; $index < $length; $index++) {
     ];
 }
 
-$palette = ['gantt-yellow', 'gantt-lightblue', 'gantt-blue'];
+// Une couleur par demandeur. L'ordre est figé sur toutes les demandes validées, pas sur
+// celles affichées : filtrer une période ne doit pas repeindre les affaires restantes.
+// Six emplacements au plus (3 teintes validées × 2 remplissages), au-delà : « Autres ».
+$personnes = [];
+foreach ($requests as $request) {
+    $creatorId = (int) $request['creator_id'];
+    if (!$creatorId || isset($personnes[$creatorId])) continue;
+    $personnes[$creatorId] = ['nom' => $request['demandeur'] ?: 'Non renseigné', 'slot' => 0];
+}
+ksort($personnes);
+$rang = 0;
+foreach ($personnes as &$personne) {
+    $personne['slot'] = $rang < 6 ? ++$rang : 0;
+}
+unset($personne);
+
+$personneSlot = static fn($creatorId) => $personnes[(int) $creatorId]['slot'] ?? 0;
+
 $ganttRows = [];
-$colorIdx = 0;
 foreach ($planned as $req) {
     $first = planningDate($req['date_debut_planifiee']);
     $last = planningDate($req['date_fin_planifiee']);
@@ -143,15 +160,12 @@ foreach ($planned as $req) {
         $span = max(1, $colEnd - $colStart + 1);
     }
 
-    $colorClass = $palette[$colorIdx % count($palette)];
-    $colorIdx++;
-
     $ganttRows[] = [
         'request' => $req,
         'isVisible' => $isVisible,
         'colStart' => $colStart,
         'span' => $span,
-        'colorClass' => $colorClass,
+        'colorClass' => 'planning-person-' . $personneSlot($req['creator_id']),
     ];
 }
 
@@ -186,7 +200,7 @@ $initialSelectedId = null;
     </header>
 
     <form id="planning-filters" class="planning-toolbar">
-        <div class="floating-field floating-always"><label for="planning-request-filter">Numéro de demande</label><input class="floating-control" id="planning-request-filter" type="search" inputmode="numeric" name="request" value="<?= prefaEscape($requestSearch) ?>" placeholder="Ex. : 123 ou #123"></div>
+        <div class="floating-field floating-always"><label for="planning-request-filter">Numéro de demande</label><input class="floating-control" id="planning-request-filter" type="search" name="request" value="<?= prefaEscape($requestSearch) ?>" placeholder="Ex. : 26-DP-001"></div>
         <div class="planning-date-nav">
             <button type="button" class="planning-button planning-icon-button" data-planning-shift="-1" aria-label="Période précédente" title="Période précédente">
                 <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -265,10 +279,12 @@ $initialSelectedId = null;
             <?php
             $timelineRows = array_map(static fn($row) => [
                 'id' => (int) $row['request']['id'],
-                'name' => $row['request']['nom_affaire'] ?: ('Demande #' . $row['request']['id']),
+                'reference_demande' => $row['request']['reference_demande'],
+                'name' => $row['request']['nom_affaire'] ?: $row['request']['reference_demande'],
                 'nom_affaire' => (string) ($row['request']['nom_affaire'] ?? ''),
                 'creator_id' => (int) $row['request']['creator_id'],
                 'creator_name' => (string) ($row['request']['demandeur'] ?: 'Non renseigné'),
+                'creator_slot' => $personneSlot($row['request']['creator_id']),
                 'start' => $row['request']['date_debut_planifiee'],
                 'end' => $row['request']['date_fin_planifiee'],
                 'urgent' => (bool) $row['request']['urgent'],
@@ -337,9 +353,8 @@ $initialSelectedId = null;
                                     <?php if ($row['isVisible']): ?>
                                         <button type="button" class="gantt-bar <?= $row['colorClass'] ?> <?= $r['urgent'] ? 'is-urgent' : '' ?> <?= $r['id'] == $initialSelectedId ? 'is-selected' : '' ?>"
                                             <?= $isAdmin ? 'data-plan-id' : 'data-view-plan-id' ?>="<?= (int) $r['id'] ?>"
-                                            data-select-affaire="<?= (int) $r['id'] ?>"
                                             style="grid-column: <?= $row['colStart'] ?> / span <?= $row['span'] ?>;"
-                                            title="<?= prefaEscape('Demande #' . $r['id'] . ' · ' . $titleAffaire . ' · ' . prefaFormatDate($r['date_debut_planifiee']) . ' au ' . prefaFormatDate($r['date_fin_planifiee'])) ?>">
+                                            title="<?= prefaEscape('Demande ' . $r['reference_demande'] . ' · ' . $titleAffaire . ' · ' . prefaFormatDate($r['date_debut_planifiee']) . ' au ' . prefaFormatDate($r['date_fin_planifiee'])) ?>">
                                             <span class="gantt-marker">▶</span>
                                             <span class="gantt-bar-title"><?= prefaEscape($titleAffaire) ?></span>
                                         </button>
@@ -353,6 +368,33 @@ $initialSelectedId = null;
             </div>
         </div>
     </div>
+
+    <?php
+    // Légende des couleurs : les demandeurs effectivement présents dans la période affichée.
+    $legende = [];
+    foreach ($ganttRows as $row) {
+        $creatorId = (int) $row['request']['creator_id'];
+        if (!$row['isVisible'] || isset($legende[$creatorId])) continue;
+        $legende[$creatorId] = [
+            'nom' => $row['request']['demandeur'] ?: 'Non renseigné',
+            'slot' => $personneSlot($creatorId),
+        ];
+    }
+    uasort($legende, static fn($a, $b) => $a['slot'] <=> $b['slot']);
+    ?>
+    <?php if ($legende): ?>
+        <div class="planning-legend">
+            <span class="planning-legend-title">Demandeur</span>
+            <ul class="planning-legend-list">
+                <?php foreach ($legende as $personne): ?>
+                    <li class="planning-legend-item">
+                        <span class="planning-legend-swatch planning-person-<?= (int) $personne['slot'] ?>" aria-hidden="true"></span>
+                        <?= prefaEscape($personne['nom']) ?>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
 
     <!-- PANNEAU INFÉRIEUR : 4 BLOCS (Disposition de la maquette) -->
     <section class="planning-details-panel" id="planning-details-panel" aria-labelledby="planning-panel-title" hidden>
@@ -446,14 +488,14 @@ $initialSelectedId = null;
                 <?php foreach ($unplanned as $request): ?>
                     <div class="planning-backlog-item">
                         <div>
-                            <strong>#<?= (int) $request['id'] ?></strong>
+                            <strong><?= prefaEscape($request['reference_demande']) ?></strong>
                             <?php if ($request['urgent']): ?><span class="planning-urgent-badge">Urgente</span><?php endif; ?>
                             <span class="planning-backlog-owner"><?= prefaEscape($request['nom_affaire'] ?: $request['demandeur']) ?></span>
                         </div>
                         <div class="planning-backlog-meta">
                             <span><?= prefaEscape(prefaFormatDays((float) $request['heures_chiffrees'] / 24)) ?></span>
                         </div>
-                        <button type="button" class="planning-button" <?= $isAdmin ? 'data-plan-id' : 'data-view-plan-id' ?>="<?= (int) $request['id'] ?>" <?= !$isAdmin ? 'disabled' : '' ?>>Planifier</button>
+                        <button type="button" class="planning-button" <?= $isAdmin ? 'data-plan-id' : 'data-view-plan-id' ?>="<?= (int) $request['id'] ?>"><?= $isAdmin ? 'Planifier' : 'Détails' ?></button>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -467,7 +509,7 @@ $initialSelectedId = null;
                 <div class="planning-dialog-heading">
                     <div class="planning-dialog-title-wrap">
                         <span class="planning-dialog-badge">Planifier la demande</span>
-                        <h2 id="planning-dialog-title">Demande #</h2>
+                        <h2 id="planning-dialog-title">Demande</h2>
                     </div>
                     <button type="button" class="planning-dialog-close" data-planning-close aria-label="Fermer">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

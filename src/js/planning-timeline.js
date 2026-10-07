@@ -8,6 +8,7 @@
     function mount(root = document.querySelector('.planning-page')) {
         if (active?.root === root) return;
         if (active) {
+            active.observer?.disconnect();
             active.chart.destroy();
             active = null;
         }
@@ -18,31 +19,21 @@
         const days = Number(host.dataset.timelineDays);
         const last = addDays(first, days);
 
-        // Group requests by creator / chargé d'affaires
+        // Une ligne par affaire ; la couleur de la barre porte le demandeur.
         const groupsMap = new Map();
         rows.forEach(row => {
-            const hasCreator = row.creator_id !== undefined && row.creator_id !== null && row.creator_id !== '';
-            const groupId = hasCreator ? ('creator_' + row.creator_id) : String(row.id);
-            const groupName = (hasCreator && row.creator_name) ? row.creator_name : row.name;
-            if (!groupsMap.has(groupId)) {
-                groupsMap.set(groupId, {
-                    id: groupId,
-                    name: groupName,
-                    hasCreator: hasCreator,
-                    requests: []
-                });
-            }
-            groupsMap.get(groupId).requests.push(row);
+            groupsMap.set(String(row.id), { id: String(row.id), name: row.nom_affaire || row.name, requests: [row] });
         });
 
         const groups = Array.from(groupsMap.values()).map((group, index) => {
+            const row = group.requests[0];
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'planning-timeline-label';
             button.dataset.groupId = group.id;
-            button.dataset.selectAffaire = group.requests[0]?.id || group.id;
+            button.dataset.selectAffaire = row.id;
             button.setAttribute('aria-pressed', 'false');
-            button.title = `${group.name} (${group.requests.length} demande${group.requests.length > 1 ? 's' : ''})`;
+            button.title = `${row.reference_demande} · ${group.name} · ${row.creator_name}`;
 
             const nameEl = document.createElement('span');
             nameEl.className = 'planning-timeline-name';
@@ -50,38 +41,31 @@
 
             const badgeEl = document.createElement('span');
             badgeEl.className = 'planning-timeline-number';
-            if (!group.hasCreator && group.requests.length === 1) {
-                badgeEl.textContent = `#${group.requests[0].id}`;
-            } else {
-                badgeEl.textContent = `${group.requests.length} aff.`;
-            }
+            badgeEl.textContent = row.reference_demande;
 
             button.append(badgeEl, nameEl);
             return { id: group.id, content: button, order: index };
         });
 
         const items = rows.map(row => {
-            const hasCreator = row.creator_id !== undefined && row.creator_id !== null && row.creator_id !== '';
-            const groupId = hasCreator ? ('creator_' + row.creator_id) : String(row.id);
             const content = document.createElement('button');
             content.type = 'button';
             content.className = 'planning-timeline-task';
             content.dataset.selectAffaire = row.id;
 
-            const displayLabel = row.nom_affaire 
-                ? `#${row.id} · ${row.nom_affaire}` 
-                : (row.name && row.name !== row.creator_name ? `#${row.id} · ${row.name}` : `#${row.id}`);
-
-            content.textContent = displayLabel;
-            content.title = `Demande #${row.id}${row.nom_affaire ? ' · ' + row.nom_affaire : ''} · ${formatDate(utcDate(row.start))} au ${formatDate(utcDate(row.end))}${row.urgent ? ' · Urgente' : ''}`;
+            // La barre reste nue : l'affaire est déjà nommée à gauche et la couleur renvoie
+            // à la légende. Le demandeur est porté par l'infobulle et le nom accessible.
+            const resume = `Demande ${row.reference_demande}${row.nom_affaire ? ' · ' + row.nom_affaire : ''} · ${row.creator_name} · ${formatDate(utcDate(row.start))} au ${formatDate(utcDate(row.end))}${row.urgent ? ' · Urgente' : ''}`;
+            content.setAttribute('aria-label', resume);
+            content.title = resume;
             return {
                 id: row.id,
-                group: groupId,
+                group: String(row.id),
                 type: 'range',
                 content,
                 start: utcDate(row.start),
                 end: addDays(utcDate(row.end), 1),
-                className: row.urgent ? 'planning-timeline-urgent' : '',
+                className: 'planning-person-' + (row.creator_slot ?? 0) + (row.urgent ? ' planning-timeline-urgent' : ''),
             };
         });
 
@@ -121,7 +105,28 @@
             }
         }, { passive: false });
 
-        active = { root, host, chart, ids: new Set(rows.map(row => row.id)), groupsMap };
+        // Le contenu des groupes (boutons) n'est mesurable qu'une fois la mise en page faite :
+        // sans ce redessin différé la timeline reste sous-dimensionnée pendant une seconde.
+        requestAnimationFrame(() => chart.redraw());
+
+        // autoResize compare largeur ET hauteur du conteneur toutes les secondes et redessine
+        // dès que l'une bouge. Or la hauteur est dictée par la timeline elle-même et retombe
+        // à 2 px près d'un redessin à l'autre : le sondage se relançait indéfiniment et toute
+        // la page tremblait. On coupe le sondage périodique et on ne réagit qu'à la largeur
+        // (fenêtre : l'écouteur posé par vis ; barre latérale : l'observer ci-dessous).
+        if (chart.watchTimer) {
+            clearInterval(chart.watchTimer);
+            chart.watchTimer = undefined;
+        }
+        let largeur = host.offsetWidth;
+        const observer = new ResizeObserver(() => {
+            if (host.offsetWidth === largeur) return;
+            largeur = host.offsetWidth;
+            chart._onResize?.();
+        });
+        observer.observe(host);
+
+        active = { root, host, chart, observer, ids: new Set(rows.map(row => row.id)), groupsMap };
         // Use Paris's calendar date without treating planned dates as timestamps.
         const parisToday = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
         chart.addCustomTime(addDays(utcDate(parisToday), 0.5), 'planning-today');

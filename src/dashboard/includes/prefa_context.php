@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../db.php';
+require_once __DIR__ . '/prefa_references.php';
 session_start();
 header('Cache-Control: no-store');
 date_default_timezone_set('Europe/Paris');
@@ -24,8 +25,9 @@ if (!$actor) prefaError(401, 'Veuillez vous reconnecter.');
 $isAdmin = (int) $actor['id_role'] === 1;
 $isWorkshopChief = (int) $actor['id_role'] === 2;
 $canViewAllPrefa = $isAdmin || $isWorkshopChief;
-$isWorkshopPersonnel = in_array($actor['role_name'], ['Utilisateur', 'Personnel atelier'], true);
-$isRequester = in_array((int) $actor['id_role'], [2, 4, 5], true);
+$isWorkshopPersonnel = (int) $actor['id_role'] === 3;
+// Les demandes sont créées et modifiées par le demandeur, pas par l’atelier.
+$isRequester = (int) $actor['id_role'] === 5;
 $canEditPrefa = $isAdmin || $isRequester;
 $canManageWorkshop = $isAdmin || $isWorkshopChief;
 $_SESSION['prefa_csrf'] ??= bin2hex(random_bytes(32));

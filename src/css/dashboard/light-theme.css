@@ -87,10 +87,6 @@ body[data-theme="light"],
     color: #2563eb !important;
 }
 
-[data-theme="light"] #left-panel .nav-footer {
-    border-top: 1px solid var(--border-subtle);
-}
-
 [data-theme="light"] #left-panel .nav-footer:hover,
 [data-theme="light"] #left-panel .nav-footer:focus-within {
     background: #f1f5f9 !important;
@@ -204,8 +200,14 @@ body[data-theme="light"],
     background: #f1f5f9 !important;
 }
 
-[data-theme="light"] .plans-iso-body {
+[data-theme="light"] .plans-iso-body .atelier-new-element {
+    background: transparent !important;
+    border: 0 !important;
+}
+
+[data-theme="light"] .plans-iso-body .atelier-new-element > summary {
     background: #ffffff !important;
+    border: 1px solid var(--border);
 }
 
 [data-theme="light"] .atelier-start {
@@ -389,15 +391,9 @@ body[data-theme="light"],
 [data-theme="light"] .atelier-plans-table td {
     background: #ffffff !important;
     color: #0f172a !important;
-    border-bottom: 1px solid var(--border-subtle) !important;
-}
-
-[data-theme="light"] tbody tr:nth-child(even) td {
-    background: #fafbfc !important;
 }
 
 /* hover sur lignes de tableau désactivé – uniquement sur les boutons/actions */
-
 [data-theme="light"] .atelier-editor-row td {
     background: #f8fafc !important;
 }
@@ -483,12 +479,6 @@ body[data-theme="light"],
 [data-theme="light"] .planning-timeline .vis-grid.vis-saturday,
 [data-theme="light"] .planning-timeline .vis-grid.vis-sunday {
     background: rgba(241, 245, 249, 0.7) !important;
-}
-
-[data-theme="light"] .planning-timeline .vis-item {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
-    border-color: #60a5fa !important;
-    color: #ffffff !important;
 }
 
 [data-theme="light"] .planning-timeline .vis-item.vis-selected {
@@ -712,22 +702,12 @@ body[data-theme="light"],
 }
 
 /* ===== GANTT - BARRES ===== */
-[data-theme="light"] .gantt-yellow {
-    background: #fef9c3 !important;
-    border-color: #ca8a04 !important;
-    color: #713f12 !important;
-}
-
-[data-theme="light"] .gantt-lightblue {
-    background: #dbeafe !important;
-    border-color: #3b82f6 !important;
-    color: #1e3a8a !important;
-}
-
-[data-theme="light"] .gantt-blue {
-    background: #2563eb !important;
-    border-color: #1d4ed8 !important;
-    color: #ffffff !important;
+/* Mêmes teintes, échelonnées pour la surface claire. */
+[data-theme="light"] .planning-page {
+    --person-a: #2a78d6;
+    --person-b: #eb6834;
+    --person-c: #1baf7a;
+    --person-other: #64748b;
 }
 
 /* ===== BLOCS INFÉRIEURS DU PLANNING (4 CARTES) ===== */
@@ -1065,10 +1045,6 @@ body[data-theme="light"],
     background: #f8fafc !important;
 }
 
-[data-theme="light"] .prefa-table tbody tr:hover td {
-    background: #f1f5f9 !important;
-}
-
 /* ===== DROPDOWN / SELECT GÉNÉRAL ===== */
 [data-theme="light"] select option {
     background: #ffffff !important;
@@ -1134,6 +1110,423 @@ body[data-theme="light"],
 }
 
 /* ===== PLANNING ISO - CARD URGENTE ===== */
+[data-theme="light"] .delete-prefa {
+    color: #b42318;
+    background: #fff;
+    border-color: #f0b4ae;
+}
+
+[data-theme="light"] .delete-prefa:hover:not(:disabled) {
+    color: #912018;
+    background: #fff1f0;
+    border-color: #dc8178;
+}
+
+[data-theme="light"] .delete-prefa:focus-visible {
+    outline: 2px solid #b42318;
+    outline-offset: 2px;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plans-table > thead > tr > th {
+    background: #e2e8f0 !important;
+}
+
 [data-theme="light"] .plans-iso-card.is-urgent .plans-iso-summary {
     border-left: 3px solid #f59e0b;
+}
+
+/* ==========================================================================
+   PLANS & AFFECTATIONS - PANNEAU DÉPLIÉ (couleurs uniquement)
+   La mise en page vit dans atelier.css, commune aux trois thèmes.
+   ========================================================================== */
+
+[data-theme="light"] .plans-iso-page .plans-iso-toggle[aria-expanded="true"] {
+    background: #eff6ff !important;
+    border-color: #bfdbfe !important;
+    color: #1d4ed8 !important;
+}
+
+[data-theme="light"] .plans-iso-page .plans-iso-toggle[aria-expanded="true"]:hover {
+    background: #dbeafe !important;
+}
+
+[data-theme="light"] .plans-iso-table .plans-iso-detail > td,
+[data-theme="light"] .plans-iso-page .plans-iso-body {
+    background: #f8fafc !important;
+}
+
+[data-theme="light"] .plans-iso-page .plans-iso-body {
+    border-left-color: #93c5fd;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-section summary {
+    color: #64748b;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-section summary:hover {
+    color: #2563eb;
+}
+
+/* ===== CARTE D'UN PLAN ===== */
+
+[data-theme="light"] .plans-iso-page .atelier-plan-block {
+    background: #ffffff;
+    border-color: var(--border-subtle);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-identity .atelier-missing-file {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-files-inline .prefa-document-link {
+    background: #f1f5f9 !important;
+    border: 1px solid transparent !important;
+    color: #334155 !important;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-files-inline .prefa-document-link:hover {
+    background: #eff6ff !important;
+    border-color: #bfdbfe !important;
+    color: #1d4ed8 !important;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-document-edit {
+    background: #f8fafc;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-document-edit .atelier-checkbox {
+    color: #0f172a !important;
+    cursor: pointer;
+}
+
+/* ===== LES TROIS POSTES ===== */
+
+[data-theme="light"] .plans-iso-page .atelier-plan-work-grid {
+    border-color: var(--border-subtle);
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-work {
+    background: #f8fafc;
+    border-bottom-color: var(--border-subtle);
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-work h4 {
+    color: #475569 !important;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-work .atelier-person-button {
+    background: transparent !important;
+    border: 1px dashed var(--border) !important;
+    color: #2563eb !important;
+    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-work .atelier-person-button:hover {
+    background: #eff6ff !important;
+    border-color: #93c5fd !important;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-work .atelier-person-button.is-assigned {
+    background: #ffffff !important;
+    border: 1px solid var(--border-subtle) !important;
+    color: #0f172a !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-work .atelier-person-button.is-assigned::before {
+    content: "";
+    flex: 0 0 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #dbeafe url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E") center / 14px 14px no-repeat;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-work .atelier-person-button.is-assigned:hover {
+    border-color: #93c5fd !important;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-work .atelier-person-button[aria-expanded="true"],
+[data-theme="light"] .plans-iso-page .atelier-plan-work .atelier-person-button[aria-expanded="true"]:hover {
+    border: 1px solid #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-work .atelier-work-status {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-work .atelier-work-status.is-progress {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-work .atelier-work-status.is-done {
+    background: #dcfce7;
+    color: #166534;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-work-report .atelier-note {
+    background: #ffffff;
+    border: 1px solid var(--border-subtle);
+    color: #334155 !important;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-edit-progress {
+    border-color: var(--border-subtle) !important;
+    color: #2563eb !important;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-edit-progress:hover {
+    background: #eff6ff !important;
+    border-color: #93c5fd !important;
+}
+
+/* ===== ÉDITEUR D'AFFECTATION & PRISE EN CHARGE ===== */
+
+[data-theme="light"] .plans-iso-page .atelier-plan-block .atelier-manage-panel {
+    background: #f8fafc !important;
+    border: 1px solid #dbeafe !important;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-block .prefa-form button,
+[data-theme="light"] .plans-iso-page .atelier-start .prefa-form button {
+    border-radius: 7px;
+    font-weight: 600;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-manage-form .atelier-cancel-assignment {
+    border-color: var(--border-subtle) !important;
+    font-weight: 500 !important;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-manage-form .atelier-remove-assignment {
+    border-color: #fecaca;
+    font-weight: 500;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-manage-form .atelier-remove-assignment:hover:not(:disabled) {
+    background: #fef2f2;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-start {
+    background: #ffffff !important;
+    border: 1px solid var(--border-subtle) !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+[data-theme="light"] .plans-iso-page .atelier-start > p {
+    color: #334155 !important;
+}
+
+/* ===== ACTIONS & HISTORIQUE ===== */
+
+[data-theme="light"] .plans-iso-page .atelier-plan-actions .prefa-toggle {
+    border-color: var(--border-subtle) !important;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-actions .prefa-toggle:hover {
+    border-color: var(--border) !important;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-actions .atelier-plan-delete-button {
+    background: transparent !important;
+    border-color: transparent !important;
+    color: #475569 !important;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-actions .atelier-plan-delete-button:hover {
+    background: #fef2f2 !important;
+    border-color: #fecaca !important;
+    color: #b91c1c !important;
+}
+
+[data-theme="light"] .plans-iso-page .atelier-plan-block > .atelier-assignment-history {
+    border-top-color: var(--border-subtle);
+}
+
+[data-theme="light"] .plans-iso-page .atelier-history-timeline {
+    border-left-color: var(--border-subtle) !important;
+}
+
+/* ==========================================================================
+   COMPTES : MENU DE BASCULE ET AJOUT DE COMPTE
+   ========================================================================== */
+
+[data-theme="light"] .account-chevron {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .account-menu {
+    background: #ffffff !important;
+    border-color: var(--border-subtle) !important;
+    box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12) !important;
+}
+
+[data-theme="light"] .account-menu-title {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .account-item,
+[data-theme="light"] .account-add,
+[data-theme="light"] .account-manage,
+[data-theme="light"] .account-menu .account-logout {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .account-identity span {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .account-item:hover,
+[data-theme="light"] .account-add:hover,
+[data-theme="light"] .account-manage:hover,
+[data-theme="light"] .account-menu .account-logout:hover {
+    background: #f1f5f9 !important;
+}
+
+[data-theme="light"] .account-item.is-current {
+    background: #eff6ff !important;
+}
+
+[data-theme="light"] .account-item.is-current .account-identity strong {
+    color: #1d4ed8 !important;
+}
+
+[data-theme="light"] .account-check {
+    color: #2563eb !important;
+}
+
+[data-theme="light"] .account-action-icon {
+    background: #e2e8f0 !important;
+    color: #475569 !important;
+}
+
+[data-theme="light"] .account-add .account-action-icon {
+    color: #15803d !important;
+}
+
+[data-theme="light"] .account-menu .account-logout .icon {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .account-remove {
+    color: #b91c1c !important;
+}
+
+[data-theme="light"] .account-remove:hover {
+    background: #fef2f2 !important;
+    color: #991b1b !important;
+}
+
+[data-theme="light"] .account-menu.is-managing .account-item:hover {
+    background: transparent !important;
+}
+
+[data-theme="light"] .account-menu.is-managing .account-manage {
+    background: #eff6ff !important;
+    color: #1d4ed8 !important;
+}
+
+[data-theme="light"] .account-menu-separator {
+    background: var(--border-subtle) !important;
+}
+
+[data-theme="light"] .account-dialog-intro,
+[data-theme="light"] .account-message {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .account-message.is-error {
+    color: #b91c1c !important;
+}
+
+[data-theme="light"] .account-dialog-footer,
+[data-theme="light"] .account-dialog-heading .account-dialog-close {
+    border-color: var(--border) !important;
+}
+
+[data-theme="light"] .account-dialog-footer .account-dialog-close,
+[data-theme="light"] .account-dialog-heading .account-dialog-close {
+    background: #ffffff !important;
+    color: #334155 !important;
+}
+
+[data-theme="light"] .account-dialog-footer .account-dialog-close:hover,
+[data-theme="light"] .account-dialog-heading .account-dialog-close:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .account-dialog-footer .account-submit {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+[data-theme="light"] .account-dialog-footer .account-submit:hover:not(:disabled) {
+    background: #1d4ed8 !important;
+}
+
+/* ==========================================================================
+   ONGLETS DE SUIVI ET SAISIE DE L’AVANCEMENT
+   ========================================================================== */
+
+[data-theme="light"] .atelier-tablist {
+    border-bottom-color: var(--border) !important;
+}
+
+[data-theme="light"] .atelier-tab {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .atelier-tab:hover {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .atelier-tab[aria-selected="true"] {
+    color: #2563eb !important;
+    border-bottom-color: #2563eb !important;
+}
+
+[data-theme="light"] .atelier-page .atelier-detail-panel {
+    background: #ffffff !important;
+    border-color: var(--border-subtle) !important;
+}
+
+
+[data-theme="light"] .planning-legend {
+    background: #ffffff !important;
+    border-color: var(--border-subtle) !important;
+}
+
+[data-theme="light"] .planning-legend-title {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .planning-legend-item {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .nav-theme {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .nav-theme:hover,
+[data-theme="light"] .nav-theme[aria-expanded="true"] {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .theme-swatch {
+    border-color: var(--border-subtle) !important;
+}
+
+[data-theme="light"] .pointage-input {
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
 }

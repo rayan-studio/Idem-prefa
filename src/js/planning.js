@@ -201,7 +201,7 @@
         else STANDARD_STEPS.forEach(([key, label]) => {
             rows.push([label, ...elements.map(elem => stepStatus(elem, key))]);
         });
-        downloadCSV(`avancement_affaire_${req.id}_${req.nom_affaire || 'prefa'}.csv`, rows);
+        downloadCSV(`avancement_affaire_${req.reference_demande}_${req.nom_affaire || 'prefa'}.csv`, rows);
     }
     function exportCommentaires() {
         const currentId = Number(root()?.dataset?.selectedId || 0);
@@ -215,7 +215,7 @@
             rows.push([`"${c.date}"`, `"${c.auteur.replace(/"/g, '""')}"`, `"${c.texte.replace(/"/g, '""')}"`]);
         });
 
-        downloadCSV(`commentaires_affaire_${req.id}_${req.nom_affaire || 'prefa'}.csv`, rows);
+        downloadCSV(`commentaires_affaire_${req.reference_demande}_${req.nom_affaire || 'prefa'}.csv`, rows);
     }
 
     // =========================================================================
@@ -293,6 +293,18 @@
     $(document).on('click', '[data-select-affaire]', function () {
         selectAffaire(this.dataset.selectAffaire);
     });
+    $(document).on('click', '[data-view-plan-id]', function () {
+        selectAffaire(this.dataset.viewPlanId);
+        const panel = document.getElementById('planning-details-panel');
+        const page = root();
+        if (!panel || !page) return;
+        // Ne défiler que si le panneau n’est pas déjà visible, sinon la page saute à chaque clic.
+        const cible = panel.getBoundingClientRect();
+        const vue = page.getBoundingClientRect();
+        if (cible.top < vue.top || cible.top > vue.bottom - 80) {
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
     document.addEventListener('planning:select', event => selectAffaire(event.detail.id));
     document.addEventListener('planning:edit', event => {
         const button = root()?.querySelector(`.gantt-bar[data-plan-id="${Number(event.detail.id)}"]`);
@@ -334,7 +346,7 @@
 
         form.elements.start.value = startDateStr;
         form.elements.end.value = endDateStr;
-        $('#planning-dialog-title').text('Demande #' + request.id);
+        $('#planning-dialog-title').text('Demande ' + request.reference_demande);
         const durationDays = Math.ceil(hours / 24);
         const inches = parseInt(request.pouces_total_iso || 0, 10);
         

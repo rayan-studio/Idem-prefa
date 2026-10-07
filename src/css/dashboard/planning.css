@@ -432,6 +432,10 @@ html[data-theme="pink"] #contenaire #planning-page-message.is-removed {
     overflow: hidden;
     text-align: left;
     white-space: nowrap;
+    background-color: var(--person-fill, var(--person-other));
+    background-image: var(--person-hachure, none);
+    border: 1px solid rgb(0 0 0 / 22%);
+    color: var(--person-ink);
     text-overflow: ellipsis;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
     transition: transform 0.1s, filter 0.15s, box-shadow 0.15s;
@@ -460,27 +464,40 @@ html[data-theme="pink"] #contenaire #planning-page-message.is-removed {
     white-space: nowrap;
 }
 
-/* Couleurs des barres harmonisées */
-.gantt-yellow {
-    background: #3e331b;
-    border: 1px solid #ca8a04;
-    color: #fef08a;
+/* ===== UNE COULEUR PAR DEMANDEUR =====
+   Trois teintes dont la séparation est vérifiée (vision normale et daltonismes) sur les
+   deux surfaces de l'application, doublées d'une hachure à 45° pour les demandeurs 4 à 6.
+   Au-delà de six : gris « Autres ». La barre et l'infobulle nomment toujours la personne,
+   la couleur n'est donc jamais le seul indice. */
+.planning-page {
+    --person-a: #3987e5;
+    --person-b: #d95926;
+    --person-c: #199e70;
+    --person-other: #64748b;
+    --person-ink: #0b0b0b;
 }
 
-.gantt-lightblue {
-    background: #1e3552;
-    border: 1px solid #3b82f6;
-    color: #bfdbfe;
+.planning-person-1 { --person-fill: var(--person-a); }
+.planning-person-2 { --person-fill: var(--person-b); }
+.planning-person-3 { --person-fill: var(--person-c); }
+.planning-person-4 { --person-fill: var(--person-a); }
+.planning-person-5 { --person-fill: var(--person-b); }
+.planning-person-6 { --person-fill: var(--person-c); }
+.planning-person-0 { --person-fill: var(--person-other); }
+
+.planning-person-4,
+.planning-person-5,
+.planning-person-6 {
+    --person-hachure: repeating-linear-gradient(45deg, rgb(0 0 0 / 26%) 0 5px, transparent 5px 10px);
+    /* Pas resserré : dans une pastille de légende, la hachure doit rester lisible. */
+    --person-hachure-pastille: repeating-linear-gradient(45deg, rgb(0 0 0 / 34%) 0 2px, transparent 2px 4px);
 }
 
-.gantt-blue {
-    background: #1d4ed8;
-    border: 1px solid #60a5fa;
-    color: #ffffff;
-}
-
-.gantt-bar.is-urgent {
-    border-left: 4px solid #ea580c !important;
+/* L'urgence se lit à la forme, pas à la teinte : elle reste visible sur toutes les couleurs. */
+.gantt-bar.is-urgent,
+.planning-timeline .vis-item.planning-timeline-urgent {
+    outline: 2px dashed var(--person-ink);
+    outline-offset: -4px;
 }
 
 .gantt-empty-notice {
@@ -1603,4 +1620,54 @@ dialog#planning-dialog::backdrop {
         flex-wrap: wrap;
         gap: 6px;
     }
+}
+
+/* ===== LÉGENDE DES COULEURS (sous le planning) ===== */
+
+.planning-legend {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-top: 14px;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--frame);
+}
+
+.planning-legend-title {
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.planning-legend-list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.planning-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text);
+    font-size: 12.5px;
+}
+
+.planning-legend-swatch {
+    flex-shrink: 0;
+    width: 24px;
+    height: 13px;
+    border-radius: 3px;
+    background-color: var(--person-fill, var(--person-other));
+    background-image: var(--person-hachure-pastille, none);
+    border: 1px solid rgb(0 0 0 / 22%);
 }
