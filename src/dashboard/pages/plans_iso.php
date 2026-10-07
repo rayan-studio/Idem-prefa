@@ -137,10 +137,18 @@ $totalPlans = array_sum($planCounts);
                                 <?php if ($isTaken): ?><button type="button" class="prefa-toggle atelier-open-plan-create" data-dialog="atelier-create-dialog-<?= $requestId ?>">Ajouter un plan</button><?php endif; ?>
                             </td>
                         </tr>
-                        <tr id="plans-iso-detail-<?= $requestId ?>" class="plans-iso-detail" hidden><td colspan="8">
-                        <div class="plans-iso-body">
-                            <?php require __DIR__ . '/../partials/atelier_request.php'; ?>
-                        </div>
+                        <tr id="plans-iso-detail-<?= $requestId ?>" class="plans-iso-detail prefa-detail-row" hidden><td colspan="8">
+                            <div class="plans-iso-body">
+                                <div class="prefa-detail-heading">
+                                    <div>
+                                        <h2>Plans &amp; affectations <span><?= prefaEscape(prefaReference($requestId)) ?></span></h2>
+                                        <p><?= prefaEscape($row['nom_affaire'] ?: 'Demande sans nom') ?></p>
+                                    </div>
+                                    <button type="button" class="prefa-detail-close" data-close-target="plans-iso-detail-<?= $requestId ?>" aria-label="Fermer le volet">✕</button>
+                                </div>
+
+                                <?php require __DIR__ . '/../partials/atelier_request.php'; ?>
+                            </div>
                         </td></tr>
                         <tr id="prefa-detail-<?= $requestId ?>" class="prefa-detail-row" hidden><td colspan="8">
                             <div class="prefa-table-detail">

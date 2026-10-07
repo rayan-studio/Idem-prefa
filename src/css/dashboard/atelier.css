@@ -1229,6 +1229,50 @@
     flex-wrap: wrap;
 }
 
+/* Le volet latéral fait 720 px quelle que soit la taille de la fenêtre : la media query
+   ci-dessus ne s'y déclenche pas. On y replie donc les colonnes dans tous les cas. */
+.prefa-detail-row .atelier-plan-work {
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+    row-gap: 6px;
+    padding: 12px 14px;
+}
+
+.prefa-detail-row .atelier-plan-work h4 {
+    grid-column: 1 / -1;
+}
+
+.prefa-detail-row .atelier-plan-work .atelier-person-button,
+.prefa-detail-row .atelier-plan-work > span:not(.atelier-work-status) {
+    grid-column: 1;
+}
+
+.prefa-detail-row .atelier-plan-work .atelier-work-status {
+    grid-column: 2;
+    justify-self: start;
+}
+
+.prefa-detail-row .atelier-plan-work .atelier-edit-progress,
+.prefa-detail-row .atelier-plan-work .atelier-work-report {
+    grid-column: 1 / -1;
+}
+
+.prefa-detail-row .atelier-plan-block {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.prefa-detail-row .atelier-plan-actions-area {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.prefa-detail-row .plans-iso-body {
+    border-left: 0;
+}
+
+.prefa-detail-row .prefa-detail-heading {
+    margin-bottom: 16px;
+}
+
 /* Sous 1100 px les colonnes se replient : le libellé du poste coiffe sa ligne. */
 @media (max-width: 1100px) {
     .atelier-plan-work {
