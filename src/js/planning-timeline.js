@@ -105,10 +105,6 @@
             }
         }, { passive: false });
 
-        // Le contenu des groupes (boutons) n'est mesurable qu'une fois la mise en page faite :
-        // sans ce redessin différé la timeline reste sous-dimensionnée pendant une seconde.
-        requestAnimationFrame(() => chart.redraw());
-
         // autoResize compare largeur ET hauteur du conteneur toutes les secondes et redessine
         // dès que l'une bouge. Or la hauteur est dictée par la timeline elle-même et retombe
         // à 2 px près d'un redessin à l'autre : le sondage se relançait indéfiniment et toute
@@ -118,11 +114,56 @@
             clearInterval(chart.watchTimer);
             chart.watchTimer = undefined;
         }
+
+        // Une fois la première mise en page faite, la hauteur est figée. Tant que la
+        // timeline peut grandir et rétrécir au fil du défilement, tout ce qui est en
+        // dessous remonte et redescend à chaque image.
+        let hauteurFigee = 0;
+        let hauteurVue = 0;
+        function figerHauteur() {
+            if (hauteurFigee) return true;
+            const mesuree = canvasEl.offsetHeight;
+            if (mesuree <= 0) { hauteurVue = 0; return false; }
+            // Deux mesures identiques avant de figer : la toute première tombe souvent
+            // avant que les libellés de groupe ne soient dimensionnés, et figerait une
+            // timeline écrasée. Si la hauteur ne se stabilise jamais, on ne fige rien.
+            if (mesuree !== hauteurVue) { hauteurVue = mesuree; return false; }
+            hauteurFigee = mesuree;
+            chart.setOptions({ height: hauteurFigee });
+            return true;
+        }
+
+        // vis mesure son conteneur à la construction. Quand la page arrive en AJAX ou
+        // que la police n'est pas encore substituée, cette mesure vaut 0 : la timeline
+        // reste pliée jusqu'au premier redimensionnement de la fenêtre — d'où le
+        // « elle ne se charge pas tant que je n'ouvre pas la console ». On réessaie
+        // jusqu'à obtenir des dimensions crédibles.
+        function rendre() {
+            if (active && active.chart !== chart) return true;   // une autre page a pris la main
+            chart.redraw();
+            return canvasEl.offsetWidth > 0 && figerHauteur();
+        }
+        requestAnimationFrame(() => {
+            if (rendre()) return;
+            [50, 150, 400, 1000, 2000].forEach(delai => setTimeout(() => {
+                if (!hauteurFigee) rendre();
+            }, delai));
+        });
+        // La substitution de police change la hauteur des libellés de groupe.
+        document.fonts?.ready.then(() => { if (active?.chart === chart) chart.redraw(); });
+
         let largeur = host.offsetWidth;
+        let differe = false;
         const observer = new ResizeObserver(() => {
-            if (host.offsetWidth === largeur) return;
-            largeur = host.offsetWidth;
-            chart._onResize?.();
+            if (differe || Math.abs(host.offsetWidth - largeur) < 2) return;
+            differe = true;
+            // Redessiner depuis le callback relancerait l'observateur dans la même
+            // passe de mise en page : on repasse par la frame suivante.
+            requestAnimationFrame(() => {
+                differe = false;
+                largeur = host.offsetWidth;
+                chart._onResize?.();
+            });
         });
         observer.observe(host);
 

@@ -112,6 +112,35 @@ input[type="number"]::-webkit-outer-spin-button {
     flex-shrink: 0;
 }
 
+/* Croix de fermeture des fenêtres : un bouton fantôme, pas un bouton de formulaire.
+   Elle annule les bordures et le fond que les boutons de pied lui imposaient. */
+.modal-close {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 0.12s cubic-bezier(0.32, 0.72, 0, 1), color 0.12s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.modal-close:hover {
+    background: var(--hover);
+    color: var(--text);
+}
+
+.modal-close:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 /* ===== LAYOUT ===== */
 
 #contenaire {

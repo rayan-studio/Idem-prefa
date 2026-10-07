@@ -90,15 +90,23 @@ if ($canViewAllPrefa) {
     );
 }
 
+// « Décision » restait flou : on nomme le sens de la décision, qui dépend du statut.
+// Validée et refusée alimentent les mêmes colonnes, d'où l'aiguillage.
+[$auteurLabel, $dateLabel] = match ((int) $row['id_statut']) {
+    2 => ['Validée par', 'Validée le'],
+    3 => ['Refusée par', 'Refusée le'],
+    default => ['Décision par', 'Décision du'],
+};
+
 if (!empty($row['valideur_prenom']) || !empty($row['valideur_name'])) {
-    $facts['Décision par'] = trim(
+    $facts[$auteurLabel] = trim(
         ($row['valideur_prenom'] ?? '') . ' ' .
         ($row['valideur_name'] ?? '')
     );
 }
 
 if (!empty($row['date_validation'])) {
-    $facts['Décision du'] = prefaFormatDate(
+    $facts[$dateLabel] = prefaFormatDate(
         $row['date_validation'],
         true
     );

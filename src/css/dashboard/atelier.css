@@ -1384,7 +1384,7 @@
     border-top: 1px solid var(--border);
 }
 
-.atelier-plan-dialog .atelier-close-plan-edit {
+.atelier-plan-dialog .atelier-close-plan-edit:not(.modal-close) {
     background: var(--surface);
     border-color: var(--border);
     color: var(--text);

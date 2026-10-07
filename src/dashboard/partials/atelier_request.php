@@ -45,7 +45,7 @@ foreach ($elements as $element) foreach ($element['affectations'] as $assignment
             <form class="atelier-action prefa-form" data-endpoint="save_atelier.php">
                 <div class="atelier-plan-dialog-heading">
                     <h2 id="atelier-create-title-<?= $requestId ?>">Ajouter un plan</h2>
-                    <button type="button" class="atelier-close-plan-edit" aria-label="Fermer">×</button>
+                    <button type="button" class="atelier-close-plan-edit modal-close" aria-label="Fermer"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
                 </div>
                 <input type="hidden" name="csrf" value="<?= prefaEscape($_SESSION['prefa_csrf']) ?>"><input type="hidden" name="id" value="<?= $requestId ?>"><input type="hidden" name="operation" value="element">
                 <div><label for="atelier-ref-<?= $requestId ?>">Nom du plan</label><input id="atelier-ref-<?= $requestId ?>" name="reference" maxlength="80" required></div>
@@ -209,7 +209,7 @@ foreach ($elements as $element) foreach ($element['affectations'] as $assignment
                 <form class="atelier-action prefa-form" data-endpoint="save_atelier.php">
                     <div class="atelier-plan-dialog-heading">
                         <h2 id="atelier-plan-dialog-title-<?= $requestId ?>">Modifier le plan</h2>
-                        <button type="button" class="atelier-close-plan-edit" aria-label="Fermer">×</button>
+                        <button type="button" class="atelier-close-plan-edit modal-close" aria-label="Fermer"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
                     </div>
                     <input type="hidden" name="csrf" value="<?= prefaEscape($_SESSION['prefa_csrf']) ?>">
                     <input type="hidden" name="id" value="<?= $requestId ?>">
@@ -229,7 +229,7 @@ foreach ($elements as $element) foreach ($element['affectations'] as $assignment
                 <form class="atelier-action prefa-form" data-endpoint="update_atelier.php">
                     <div class="atelier-plan-dialog-heading">
                         <h2 id="atelier-progress-dialog-title-<?= $requestId ?>">Saisir l’avancement</h2>
-                        <button type="button" class="atelier-close-plan-edit" aria-label="Fermer">×</button>
+                        <button type="button" class="atelier-close-plan-edit modal-close" aria-label="Fermer"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
                     </div>
                     <p class="atelier-muted atelier-progress-target"></p>
                     <input type="hidden" name="csrf" value="<?= prefaEscape($_SESSION['prefa_csrf']) ?>">

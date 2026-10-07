@@ -5,6 +5,10 @@
 .planning-page {
     height: 100%;
     overflow-y: auto;
+    /* Gouttière réservée en permanence : sans elle, l'apparition de la barre de
+       défilement rétrécit la page de ~15 px, la timeline se redessine, la hauteur
+       retombe, la barre disparaît… et le bas de la page oscille sans fin. */
+    scrollbar-gutter: stable;
     padding: 24px 28px 48px;
     background: var(--surface);
     color: var(--text);

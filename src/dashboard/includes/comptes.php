@@ -39,7 +39,7 @@ function comptesList(PDO $db): array
     if (!$comptes) return [];
     $placeholders = implode(',', array_fill(0, count($comptes), '?'));
     $stmt = $db->prepare("
-        SELECT u.identifiant, u.name, u.prenom, r.name AS role_name
+        SELECT u.identifiant, u.name, u.prenom, u.id_role, r.name AS role_name
         FROM Utilisateur u
         JOIN role r ON r.id = u.id_role
         WHERE u.identifiant IN ($placeholders)

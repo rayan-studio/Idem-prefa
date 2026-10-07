@@ -944,7 +944,7 @@ summary {
     .nav-btn,
     #btn-hide,
     #create-user-form button,
-    .prefa-form button,
+    .prefa-form button:not(.modal-close),
     #refresh-prefa,
     .prefa-toggle,
     .edit-prefa,

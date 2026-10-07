@@ -17,6 +17,7 @@ $urgentPending = 0;
 
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/includes/comptes.php';
+require_once __DIR__ . '/includes/user_display.php';
 $db = new MyPDO(__DIR__ . '/../my_setting.ini');
 $_SESSION['prefa_csrf'] ??= bin2hex(random_bytes(32));
 
@@ -194,6 +195,9 @@ if ($isAdmin) {
                     <span class="nav-subfooter">
                         <span class="title"><?= htmlspecialchars($name . ' ' . $prenom) ?></span>
                         <span class="subtitle"><?= htmlspecialchars($role) ?></span>
+                        <?php if ($complement = roleComplement($roleId)): ?>
+                            <span class="subtitle subtitle-metier"><?= htmlspecialchars($complement) ?></span>
+                        <?php endif; ?>
                     </span>
 
                     <svg class="icon account-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -272,7 +276,7 @@ if ($isAdmin) {
                         </span>
                         <span class="account-identity">
                             <strong><?= htmlspecialchars($nomComplet) ?></strong>
-                            <span><?= htmlspecialchars($compte['role_name']) ?></span>
+                            <span><?= htmlspecialchars($compte['role_name']) ?><?php if ($metier = roleComplement((int) $compte['id_role'])): ?> · <?= htmlspecialchars($metier) ?><?php endif; ?></span>
                         </span>
                         <?php if ($estActif): ?>
                             <svg class="icon account-check" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
@@ -350,7 +354,7 @@ if ($isAdmin) {
         <form id="account-form" method="post">
             <div class="account-dialog-heading">
                 <h2 id="account-dialog-title">Ajouter un compte</h2>
-                <button type="button" class="account-dialog-close" aria-label="Fermer">×</button>
+                <button type="button" class="account-dialog-close modal-close" aria-label="Fermer"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
             </div>
 
             <p class="account-dialog-intro">Connectez-vous à un autre compte : vous passerez ensuite de l’un à l’autre sans ressaisir de mot de passe.</p>

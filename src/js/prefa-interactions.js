@@ -577,6 +577,9 @@ $(document).on('click', '.prefa-detail-close', function () {
 
 $(document).on('keydown', function (event) {
     if (event.key === 'Escape') {
+        // Échap ferme d'abord la fenêtre posée par-dessus le volet. Sans ce garde-fou,
+        // la même touche refermait la fenêtre ET le volet qui l'a ouverte.
+        if (document.querySelector('dialog[open]')) return;
         const openDetail = document.querySelector('.prefa-detail-row:not([hidden])');
         if (openDetail) {
             openDetail.hidden = true;

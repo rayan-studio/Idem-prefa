@@ -170,7 +170,7 @@
     font-weight: 700;
 }
 
-.prefa-form button,
+.prefa-form button:not(.modal-close),
 #refresh-prefa {
     display: inline-flex;
     align-items: center;
@@ -185,7 +185,7 @@
     cursor: pointer;
 }
 
-.prefa-form button:hover:not(:disabled) {
+.prefa-form button:not(.modal-close):hover:not(:disabled) {
     background: var(--accent-hover);
 }
 
