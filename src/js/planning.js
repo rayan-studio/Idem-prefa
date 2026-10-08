@@ -66,7 +66,12 @@
     // SÉLECTION D'UNE AFFAIRE ET AFFICHAGE DU PANNEAU INFÉRIEUR (4 BLOCS)
     // =========================================================================
 
-    const STANDARD_STEPS = [['decoupage', 'Découpage'], ['pliage', 'Pliage'], ['pointage', 'Pointage'], ['soudage', 'Soudage'], ['passivation', 'Passivation'], ['autre', 'Autre']];
+    // Liste tenue par atelierSteps() côté serveur et embarquée dans la page : la recopier
+    // ici ferait dériver la matrice dès qu'une étape est ajoutée.
+    function standardSteps() {
+        const data = root()?.querySelector('#planning-steps');
+        return data ? Object.entries(JSON.parse(data.textContent)) : [];
+    }
 
     function selectAffaire(affaireId) {
         const idNum = Number(affaireId);
@@ -148,7 +153,7 @@
             $('<tr>').append($('<td>').text('Aucun élément / ISO associé à cette demande.')).appendTo(tbody);
             return;
         }
-        STANDARD_STEPS.forEach(([key, label]) => {
+        standardSteps().forEach(([key, label]) => {
             const tr = $('<tr>').appendTo(tbody);
             $('<td class="step-label">').text(label).appendTo(tr);
             elements.forEach(elem => {
@@ -197,7 +202,7 @@
         const elements = req.elements || [];
         const rows = [['Étape', ...elements.map(e => e.reference || e.libelle || 'Repère')]];
         if (!elements.length) rows.push(['Aucun élément / ISO associé à cette demande.']);
-        else STANDARD_STEPS.forEach(([key, label]) => {
+        else standardSteps().forEach(([key, label]) => {
             rows.push([label, ...elements.map(elem => stepStatus(elem, key))]);
         });
         downloadCSV(`avancement_affaire_${req.reference_demande}_${req.nom_affaire || 'prefa'}.csv`, rows);

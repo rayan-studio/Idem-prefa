@@ -515,4 +515,10 @@ $initialSelectedId = null;
     <script id="planning-data" type="application/json">
         <?= json_encode($requests, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) ?>
     </script>
+
+    <!-- Les étapes viennent d'atelierSteps() : la matrice suit la liste du serveur, sans
+         quoi une étape ajoutée en PHP s'enregistre sans jamais s'afficher ici. -->
+    <script id="planning-steps" type="application/json">
+        <?= json_encode(atelierSteps(), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) ?>
+    </script>
 </section>
