@@ -20,7 +20,9 @@ $documentGroups = [
         'title' => 'QMOS',
         'files' => $qmosByRequest[$requestId] ?? [],
         'action' => 'download_qmos.php',
-        'legacy' => $row['QMOS'] ?? '',
+        // La colonne s'appelle bien « espace QMOS » : l'espace fait partie du nom en base.
+        // Sans lui la clé n'existe pas, et l'ancienne référence disparaît sans un mot.
+        'legacy' => $row[' QMOS'] ?? '',
     ],
     [
         'title' => 'DMOS',
