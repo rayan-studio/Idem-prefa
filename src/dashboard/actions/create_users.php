@@ -1,9 +1,12 @@
 <?php
 
-header('Content-Type: application/json');
-
-require_once __DIR__ . '/../../db.php';
+require_once __DIR__ . '/../includes/prefa_context.php';
 require_once __DIR__ . '/../../api/User.php';
+
+prefaPost();
+if (!$isAdmin) prefaError(403, 'Seul un administrateur peut créer un compte.');
+
+header('Content-Type: application/json');
 
 $email = trim($_POST['email'] ?? '');
 $name = trim($_POST['name'] ?? '');
@@ -22,7 +25,14 @@ if ($name === '' || $prenom === '' || $role === '' || $password === '') {
     exit;
 }
 
-$db = new MyPDO(__DIR__ . '/../../my_setting.ini');
+// Le rôle vient du formulaire : il décide des droits du compte, donc il est relu en base
+// plutôt que recopié tel quel.
+$role = filter_var($role, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+if (!$role) prefaError(400, 'Choisissez un rôle dans la liste.');
+$known = $db->prepare('SELECT 1 FROM role WHERE id = ?');
+$known->execute([$role]);
+if (!$known->fetchColumn()) prefaError(400, 'Choisissez un rôle dans la liste.');
+
 $user = new User($db);
 
 try {

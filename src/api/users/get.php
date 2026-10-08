@@ -1,12 +1,13 @@
 <?php
-require_once __DIR__ . '/../../db.php';
+require_once __DIR__ . '/../../dashboard/includes/prefa_context.php';
 require_once __DIR__ . '/../../dashboard/includes/user_display.php';
+
+if (!$isAdmin) prefaError(403, 'Seul un administrateur peut consulter les comptes.');
 
 $q = trim((string) ($_GET['q'] ?? ''));
 $roleFilter = filter_var($_GET['role'] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
 $page = max(1, (int) ($_GET['page'] ?? 1));
 $limit = 10;
-$db = new MyPDO();
 $where = '';
 $params = [];
 $conditions = [];
@@ -60,7 +61,8 @@ $pageUrl = static function ($number) use ($q, $roleFilter) {
                 <td>
                     <button hx-get="/api/users/edit.php?id=<?= (int) $user['id'] ?>"
                             hx-target="closest tr" hx-swap="outerHTML">Modifier</button>
-                    <button hx-post="/dashboard/actions/delete_user.php?id=<?= (int) $user['id'] ?>"
+                    <button hx-post="/dashboard/actions/delete_user.php"
+                            hx-vals='<?= prefaEscape(json_encode(['id' => (int) $user['id'], 'csrf' => $_SESSION['prefa_csrf']])) ?>'
                             hx-confirm="Supprimer cet utilisateur ?"
                             hx-target="closest tr" hx-swap="outerHTML">Supprimer</button>
                 </td>

@@ -1,3 +1,10 @@
+<?php
+
+require_once __DIR__ . '/../includes/prefa_context.php';
+
+if (!$isAdmin) prefaError(403, 'Seul un administrateur peut créer un compte.');
+
+?>
 <section class="page">
     <div class="form-card">
 
@@ -7,6 +14,7 @@
         </div>
 
         <form id="create-user-form">
+            <input type="hidden" name="csrf" value="<?= prefaEscape($_SESSION['prefa_csrf']) ?>">
             <div class="form-group">
                 <label for="name">Nom</label>
                 <input

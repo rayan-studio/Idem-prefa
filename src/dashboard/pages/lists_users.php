@@ -1,6 +1,8 @@
 <?php
-require_once __DIR__ . '/../../db.php';
-$db = new MyPDO(__DIR__ . '/../../my_setting.ini');
+require_once __DIR__ . '/../includes/prefa_context.php';
+
+if (!$isAdmin) prefaError(403, 'Seul un administrateur peut consulter les comptes.');
+
 $roles = $db->query('SELECT id AS id_role, name AS role_name FROM role ORDER BY id')->fetchAll();
 ?>
 

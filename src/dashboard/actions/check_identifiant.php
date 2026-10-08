@@ -1,17 +1,12 @@
 <?php
 
-session_start();
-header('Content-Type: application/json; charset=utf-8');
-header('Cache-Control: no-store');
-
-if (!isset($_SESSION['identifiant'])) {
-    http_response_code(401);
-    echo json_encode(['message' => 'Veuillez vous reconnecter.']);
-    exit;
-}
-
-require_once __DIR__ . '/../../db.php';
+require_once __DIR__ . '/../includes/prefa_context.php';
 require_once __DIR__ . '/../../api/User.php';
+
+// Le test d'identifiant dit si un compte existe : il reste réservé à qui gère les comptes.
+if (!$isAdmin) prefaError(403, 'Seul un administrateur peut vérifier un identifiant.');
+
+header('Content-Type: application/json; charset=utf-8');
 
 $name = trim($_POST['name'] ?? '');
 $prenom = trim($_POST['prenom'] ?? '');
@@ -23,7 +18,7 @@ if ($name === '' || $prenom === '') {
 }
 
 try {
-    $user = new User(new MyPDO(__DIR__ . '/../../my_setting.ini'));
+    $user = new User($db);
     $identifiant = User::buildIdentifiant($name, $prenom);
     $available = !$user->identifiantExists($identifiant);
     echo json_encode([

@@ -1,15 +1,20 @@
 <?php
-require_once __DIR__ . '/../../db.php';
+require_once __DIR__ . '/../../dashboard/includes/prefa_context.php';
 require_once __DIR__ . '/../../dashboard/includes/user_display.php';
-$id = $_GET['id'];
-$db = new MyPDO();
+
+if (!$isAdmin) prefaError(403, 'Seul un administrateur peut modifier un compte.');
+
+$id = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+if (!$id) prefaError(400, 'Compte invalide.');
+
 $sql = "SELECT u.*, r.name AS role_name FROM Utilisateur u LEFT JOIN role r ON r.id = u.id_role WHERE u.id = :id";
 $stmt = $db->prepare($sql);
 $stmt->execute([
-    ':id' => $_GET['id']
+    ':id' => $id
 ]);
 
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
+if (!$user) prefaError(404, 'Compte introuvable.');
 
 ?>
 
@@ -18,6 +23,7 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
         <?= (int) $user['id'] ?>
         <input type="hidden" name="id"
             value="<?= (int) $user['id'] ?>">
+        <input type="hidden" name="csrf" value="<?= prefaEscape($_SESSION['prefa_csrf']) ?>">
     </td>
     <td>
         <input
@@ -31,9 +37,7 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     </td>
     <td>
-        <?= $user['identifiant'] ?>
-        <input type="hidden" name="identifiant"
-            value="<?= $user['identifiant'] ?>">
+        <?= htmlspecialchars($user['identifiant'], ENT_QUOTES, 'UTF-8') ?>
     </td>
     <td><?= htmlspecialchars(userRoleLabel($user), ENT_QUOTES, 'UTF-8') ?></td>
     <td><?= htmlspecialchars(userCreationLabel($user), ENT_QUOTES, 'UTF-8') ?></td>
@@ -48,7 +52,7 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         <button
             hx-post="/dashboard/actions/delete_user.php"
-            hx-vals=\'{"id": ' . (int) $user[' id'] . '}\'
+            hx-vals='<?= prefaEscape(json_encode(['id' => (int) $user['id'], 'csrf' => $_SESSION['prefa_csrf']])) ?>'
             hx-confirm="Supprimer cet utilisateur ?"
             hx-target="closest tr"
             hx-swap="outerHTML">

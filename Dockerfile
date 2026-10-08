@@ -3,7 +3,11 @@ FROM php:8.3-apache
 # Installer les extensions MySQL nécessaires
 RUN docker-php-ext-install mysqli pdo_mysql
 RUN printf 'upload_max_filesize=50M\npost_max_size=512M\nmax_file_uploads=1000\n' > /usr/local/etc/php/conf.d/prefa-uploads.ini
-RUN printf '<Directory /var/www/html/uploads>\nRequire all denied\n</Directory>\n' > /etc/apache2/conf-available/prefa-uploads.conf && a2enconf prefa-uploads
+# Les pièces jointes sont déposées sous la racine web, mais ne doivent jamais être servies
+# directement : elles passent par les actions download_*.php, qui vérifient la session et
+# l'appartenance de la demande. Sans ce refus, l'adresse d'un fichier suffit à le lire sans
+# être connecté. AllowOverride vaut None ici, donc un .htaccess dans le dossier ne ferait rien.
+RUN printf '<Directory /var/www/html/uploads>\nRequire all denied\n</Directory>\n<Directory /var/www/html/dashboard/uploads>\nRequire all denied\n</Directory>\n' > /etc/apache2/conf-available/prefa-uploads.conf && a2enconf prefa-uploads
 
 # Copier l'application web
 COPY ./src /var/www/html/
